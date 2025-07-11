@@ -1,0 +1,232 @@
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useAuth } from "@/lib/providers/auth-provider";
+import { useCreateCategory, useUpdateCategory } from "@/hooks/use-categories";
+import { Plus, Edit } from "lucide-react";
+import type { Category } from "@/types";
+
+interface CategoryFormData {
+  name: string;
+  type: "income" | "expense";
+  color: string;
+}
+
+interface CategoryFormProps {
+  category?: Category;
+  mode: "create" | "edit";
+  trigger?: React.ReactNode;
+}
+
+const colorOptions = [
+  "#ef4444",
+  "#f97316",
+  "#eab308",
+  "#22c55e",
+  "#06b6d4",
+  "#3b82f6",
+  "#8b5cf6",
+  "#ec4899",
+  "#6b7280",
+  "#84cc16",
+];
+
+export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
+  const [open, setOpen] = useState(false);
+  const { user } = useAuth();
+  const createCategory = useCreateCategory();
+  const updateCategory = useUpdateCategory();
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<CategoryFormData>({
+    defaultValues: category
+      ? {
+          name: category.name,
+          type: category.type,
+          color: category.color,
+        }
+      : {
+          name: "",
+          type: "expense",
+          color: "#3b82f6",
+        },
+  });
+
+  const watchedColor = watch("color");
+
+  const onSubmit = async (data: CategoryFormData) => {
+    try {
+      if (mode === "create" && user?.id) {
+        await createCategory.mutateAsync({
+          userId: user.id,
+          data: {
+            ...data,
+            icon: "tag",
+            isDefault: false,
+          },
+        });
+      } else if (mode === "edit" && user?.id && category) {
+        await updateCategory.mutateAsync({
+          userId: user.id,
+          categoryId: category.id,
+          data: {
+            ...data,
+            icon: category.icon,
+            isDefault: category.isDefault,
+          },
+        });
+      }
+
+      setOpen(false);
+      reset();
+    } catch (error) {
+      console.error("Category save failed:", error);
+    }
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (!newOpen) {
+      reset();
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        {trigger || (
+          <Button size="sm">
+            {mode === "create" ? (
+              <>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Category
+              </>
+            ) : (
+              <>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </>
+            )}
+          </Button>
+        )}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>
+            {mode === "create" ? "Add Category" : "Edit Category"}
+          </DialogTitle>
+          <DialogDescription>
+            {mode === "create"
+              ? "Create a new category to organize your transactions."
+              : "Update the category details."}
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Name */}
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              placeholder="Enter category name"
+              {...register("name", { required: "Name is required" })}
+            />
+            {errors.name && (
+              <p className="text-sm text-red-600">{errors.name.message}</p>
+            )}
+          </div>
+
+          {/* Type */}
+          <div className="space-y-2">
+            <Label htmlFor="type">Type</Label>
+            <Select
+              value={watch("type")}
+              onValueChange={(value: "income" | "expense") =>
+                setValue("type", value)
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="expense">Expense</SelectItem>
+                <SelectItem value="income">Income</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.type && (
+              <p className="text-sm text-red-600">{errors.type.message}</p>
+            )}
+          </div>
+
+          {/* Color */}
+          <div className="space-y-2">
+            <Label htmlFor="color">Color</Label>
+            <div className="grid grid-cols-5 gap-2">
+              {colorOptions.map((color) => (
+                <button
+                  key={color}
+                  type="button"
+                  className={`w-8 h-8 rounded-full border-2 transition-all ${
+                    watchedColor === color
+                      ? "border-gray-900 scale-110"
+                      : "border-gray-300 hover:border-gray-600"
+                  }`}
+                  style={{ backgroundColor: color }}
+                  onClick={() => setValue("color", color)}
+                />
+              ))}
+            </div>
+            {errors.color && (
+              <p className="text-sm text-red-600">{errors.color.message}</p>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting
+                ? mode === "create"
+                  ? "Adding..."
+                  : "Updating..."
+                : mode === "create"
+                ? "Add Category"
+                : "Update Category"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}

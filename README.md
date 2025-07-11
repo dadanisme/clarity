@@ -1,36 +1,152 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Clarity - Money Management App
+
+A simple, effective web-based money management application built with Next.js, TypeScript, and Firebase.
+
+## Features
+
+- **Authentication**: Secure user registration and login with Firebase Auth
+- **Transaction Management**: Add, edit, and delete transactions with categories
+- **Category Management**: Create custom categories with colors and icons
+- **Dashboard**: Overview of income, expenses, and balance
+- **Cross-device Sync**: Real-time data synchronization across devices
+- **Responsive Design**: Works seamlessly on desktop and mobile
+
+## Tech Stack
+
+- **Frontend**: Next.js 14 (App Router), TypeScript, Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Backend**: Firebase (Firestore, Authentication)
+- **State Management**: TanStack Query, React Hook Form
+- **Validation**: Zod
+- **Icons**: Lucide React
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Firebase project
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd clarity
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set up Firebase:
+
+   - Create a new Firebase project at [Firebase Console](https://console.firebase.google.com/)
+   - Enable Authentication (Email/Password)
+   - Create a Firestore database
+   - Get your Firebase configuration
+
+4. Create environment variables:
+   Create a `.env.local` file in the root directory with your Firebase config:
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+```
+
+5. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # Authentication routes
+│   ├── (dashboard)/       # Protected dashboard routes
+│   └── globals.css        # Global styles
+├── components/            # Reusable components
+│   ├── ui/               # shadcn/ui components
+│   └── layout/           # Layout components
+├── lib/                  # Utilities and configurations
+│   ├── firebase/         # Firebase configuration
+│   ├── providers/        # React providers
+│   ├── utils/            # Helper functions
+│   └── validations/      # Zod schemas
+├── hooks/                # Custom React hooks
+└── types/                # TypeScript type definitions
+```
 
-## Learn More
+## Firebase Security Rules
 
-To learn more about Next.js, take a look at the following resources:
+Set up Firestore security rules to ensure user data isolation:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+      match /categories/{categoryId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
 
-## Deploy on Vercel
+      match /transactions/{transactionId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+  }
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+
+### Adding New Components
+
+This project uses shadcn/ui. To add new components:
+
+```bash
+npx shadcn@latest add <component-name>
+```
+
+## Deployment
+
+The app can be deployed to Vercel:
+
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Add your environment variables in Vercel dashboard
+4. Deploy!
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
