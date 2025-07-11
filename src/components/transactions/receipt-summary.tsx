@@ -10,7 +10,7 @@ export function ReceiptSummary({ parsedReceipt }: ReceiptSummaryProps) {
   return (
     <div className="border rounded-lg bg-card p-4">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-col sm:flex-row items-center space-x-2">
           <h4 className="font-semibold">Receipt Summary</h4>
           {parsedReceipt.timestamp && (
             <span className="text-sm text-muted-foreground">
