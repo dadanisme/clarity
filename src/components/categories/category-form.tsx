@@ -230,7 +230,7 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
 
           {/* Submit Button */}
           <div className="pt-4">
-            {mode === "edit" && !category?.isDefault && (
+            {mode === "edit" && (
               <div className="flex space-x-2">
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
@@ -275,13 +275,6 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
               <div className="flex justify-end">
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? "Adding..." : "Add Category"}
-                </Button>
-              </div>
-            )}
-            {mode === "edit" && category?.isDefault && (
-              <div className="flex justify-end">
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Updating..." : "Update Category"}
                 </Button>
               </div>
             )}
