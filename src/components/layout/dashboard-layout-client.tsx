@@ -134,7 +134,7 @@ export function DashboardLayoutClient({
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center space-x-2 block px-3 py-2 rounded-md text-base font-medium cursor-pointer transition-colors ${
+                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium cursor-pointer transition-colors ${
                     isActive
                       ? "text-blue-600 bg-blue-50"
                       : "text-gray-600 hover:text-gray-900"
