@@ -16,6 +16,7 @@ import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionGroup } from "@/components/transactions/transaction-group";
 import { TimeframeControls } from "@/components/transactions/timeframe-controls";
 import { Plus } from "lucide-react";
+import { format } from "date-fns";
 
 export function TransactionsContent() {
   const { user } = useAuth();
@@ -50,6 +51,27 @@ export function TransactionsContent() {
 
   const handleDateSelect = (date: Date) => {
     setCurrentPeriod(date);
+  };
+
+  const getEmptyStateMessage = () => {
+    if (transactions.length === 0) {
+      return "No transactions yet. Add your first transaction to get started!";
+    }
+
+    switch (timeframe) {
+      case "daily":
+        return `No transactions in ${format(
+          currentPeriod,
+          "MMMM yyyy"
+        )}. Try selecting a different month or add a transaction for this period.`;
+      case "weekly":
+        const quarter = Math.floor(currentPeriod.getMonth() / 3) + 1;
+        return `No transactions in Q${quarter} ${currentPeriod.getFullYear()}. Try selecting a different quarter or add a transaction for this period.`;
+      case "monthly":
+        return `No transactions in ${currentPeriod.getFullYear()}. Try selecting a different year or add a transaction for this period.`;
+      default:
+        return "No transactions found for the selected period.";
+    }
   };
 
   return (
@@ -92,9 +114,9 @@ export function TransactionsContent() {
             <div className="text-center py-8 text-gray-500">
               Loading transactions...
             </div>
-          ) : transactions.length === 0 ? (
+          ) : sortedGroups.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              No transactions yet. Add your first transaction to get started!
+              {getEmptyStateMessage()}
             </div>
           ) : (
             <div className="space-y-6">
