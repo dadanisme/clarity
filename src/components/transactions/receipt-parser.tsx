@@ -84,9 +84,12 @@ export function ReceiptParser({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="outline">
+          <Button variant="outline" className="relative">
             <Camera className="w-4 h-4 mr-2" />
-            Parse Receipt
+            AI Scan
+            <span className="absolute -top-2 -right-1 bg-warning text-warning-foreground text-xs px-1.5 py-0.5 rounded-full">
+              New
+            </span>
           </Button>
         )}
       </DialogTrigger>

@@ -56,8 +56,11 @@ export function useFloatingActionButton() {
             userCategories={categories}
             userId={user?.id}
             trigger={
-              <div className="w-14 h-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center">
+              <div className="w-14 h-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center relative">
                 <Camera className="w-6 h-6 text-secondary-foreground" />
+                <span className="absolute -top-1 -right-1 bg-warning text-warning-foreground text-xs px-1.5 py-0.5 rounded-full">
+                  New
+                </span>
               </div>
             }
           />
