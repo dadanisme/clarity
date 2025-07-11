@@ -19,13 +19,10 @@ export function AuthGuard({
   const router = useRouter();
 
   useEffect(() => {
-    console.log("AuthGuard state:", { loading, user: user?.id, requireAuth });
     if (!loading) {
       if (requireAuth && !user) {
-        console.log("Redirecting to:", redirectTo);
         router.push(redirectTo);
       } else if (!requireAuth && user) {
-        console.log("Redirecting to dashboard");
         router.push("/dashboard");
       }
     }

@@ -36,22 +36,16 @@ export function TransactionsContent() {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
-          <p className="text-gray-600">Manage your financial transactions</p>
-        </div>
-        <div className="flex justify-end sm:justify-end">
-          <TransactionForm
-            mode="create"
-            trigger={
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Transaction
-              </Button>
-            }
-          />
-        </div>
+      <div className="flex justify-end mb-8">
+        <TransactionForm
+          mode="create"
+          trigger={
+            <Button>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Transaction
+            </Button>
+          }
+        />
       </div>
 
       {/* Transactions List */}

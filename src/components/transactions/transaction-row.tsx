@@ -70,7 +70,7 @@ export function TransactionRow({
               transaction={transaction}
               mode="edit"
               trigger={
-                <Button size="sm" variant="ghost" className="hidden md:flex">
+                <Button variant="ghost" className="hidden md:flex">
                   <Edit className="w-4 h-4" />
                 </Button>
               }
@@ -78,7 +78,6 @@ export function TransactionRow({
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
-                  size="sm"
                   variant="ghost"
                   className="text-red-600 hover:text-red-700"
                 >

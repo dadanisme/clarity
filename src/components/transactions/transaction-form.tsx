@@ -127,7 +127,7 @@ export function TransactionForm({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button size="sm">
+          <Button>
             {mode === "create" ? (
               <>
                 <Plus className="w-4 h-4 mr-2" />

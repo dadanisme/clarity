@@ -23,7 +23,7 @@ export interface Transaction {
   amount: number;
   type: "income" | "expense";
   categoryId: string;
-  description: string;
+  description?: string;
   date: Date;
   createdAt: Date;
   updatedAt: Date;

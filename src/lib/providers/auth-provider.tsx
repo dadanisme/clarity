@@ -35,17 +35,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log("Auth state changed:", firebaseUser?.uid);
       setFirebaseUser(firebaseUser);
 
       if (firebaseUser) {
         try {
           let userData = await getUser(firebaseUser.uid);
-          console.log("User data fetched:", userData);
 
           // If user document doesn't exist, create it
           if (!userData) {
-            console.log("User document doesn't exist, creating...");
             const newUserData = {
               displayName: firebaseUser.displayName || "User",
               email: firebaseUser.email || "",
@@ -54,7 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               },
             };
             userData = await createUser(firebaseUser.uid, newUserData);
-            console.log("User document created:", userData);
           }
 
           setUser(userData);
@@ -72,9 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    console.log("Signing in with email:", email);
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    console.log("Sign in successful:", result.user.uid);
+    await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signUp = async (
@@ -82,13 +76,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     password: string,
     displayName: string
   ) => {
-    console.log("Signing up with email:", email);
     const { user: newFirebaseUser } = await createUserWithEmailAndPassword(
       auth,
       email,
       password
     );
-    console.log("Sign up successful:", newFirebaseUser.uid);
 
     // Update the display name
     await updateProfile(newFirebaseUser, { displayName });

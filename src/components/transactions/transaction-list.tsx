@@ -42,9 +42,10 @@ export function TransactionList() {
 
   // Filter transactions
   const filteredTransactions = transactions.filter((transaction) => {
-    const matchesSearch = transaction.description
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      transaction.description
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ?? false;
     const matchesType = typeFilter === "all" || transaction.type === typeFilter;
     const matchesCategory =
       categoryFilter === "all" || transaction.categoryId === categoryFilter;

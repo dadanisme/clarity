@@ -156,7 +156,7 @@ export function CategoryList() {
                       category={category}
                       mode="edit"
                       trigger={
-                        <Button size="sm" variant="ghost">
+                        <Button variant="ghost">
                           <Edit className="w-4 h-4" />
                         </Button>
                       }
@@ -165,7 +165,6 @@ export function CategoryList() {
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
-                            size="sm"
                             variant="ghost"
                             className="text-red-600 hover:text-red-700"
                           >
