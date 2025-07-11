@@ -50,9 +50,6 @@ export function ReceiptItemEditor({
       <div className="flex items-center justify-between">
         <div>
           <h6 className="font-medium text-sm">Editing Item</h6>
-          <p className="text-xs text-muted-foreground">
-            Press Cmd+Enter to save, Esc to cancel
-          </p>
         </div>
         <div className="flex items-center space-x-2">
           <Button size="sm" variant="outline" onClick={onSave}>
