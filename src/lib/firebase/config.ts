@@ -1,7 +1,11 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  connectAuthEmulator,
+} from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getStorage, connectStorageEmulator } from "firebase/storage";
 
 // Validate environment variables
 const requiredEnvVars = {
@@ -36,5 +40,18 @@ export const storage = getStorage(app);
 
 // Initialize Google Auth Provider
 export const googleProvider = new GoogleAuthProvider();
+
+// Connect to emulators in development
+if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
+  // Only connect to emulators if they're running (check if we're in browser)
+  try {
+    connectAuthEmulator(auth, "http://localhost:9099");
+    connectFirestoreEmulator(db, "localhost", 8080);
+    connectStorageEmulator(storage, "localhost", 9199);
+    console.log("🔥 Connected to Firebase emulators");
+  } catch {
+    console.log("⚠️ Firebase emulators not running, using production services");
+  }
+}
 
 export default app;

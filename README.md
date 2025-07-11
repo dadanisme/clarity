@@ -70,6 +70,36 @@ npm run dev
 
 6. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+### Firebase Emulators (Optional)
+
+For local development without hitting Firebase limits, you can use Firebase emulators:
+
+1. Start Firebase emulators:
+
+```bash
+npm run emulators
+```
+
+2. Or run both emulators and dev server together:
+
+```bash
+npm run dev:emulators
+```
+
+3. Access the Firebase Emulator UI at [http://localhost:4000](http://localhost:4000)
+
+4. Export/Import emulator data (useful for testing):
+
+```bash
+# Export current emulator data
+npm run emulators:export
+
+# Import saved emulator data
+npm run emulators:import
+```
+
+**Note**: The app automatically connects to emulators in development mode when they're running.
+
 ## Project Structure
 
 ```
@@ -121,6 +151,10 @@ service cloud.firestore {
 - `npm run build` - Build for production
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
+- `npm run emulators` - Start Firebase emulators
+- `npm run dev:emulators` - Start both emulators and dev server
+- `npm run emulators:export` - Export emulator data
+- `npm run emulators:import` - Import emulator data
 
 ### Adding New Components
 
