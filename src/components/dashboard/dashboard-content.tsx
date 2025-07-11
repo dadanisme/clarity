@@ -1,18 +1,19 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { useTransactions } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
-import { Plus, TrendingUp, TrendingDown, DollarSign, Tag } from "lucide-react";
+import {
+  Plus,
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  Tag,
+  ArrowRight,
+} from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency, formatTransactionAmount } from "@/lib/utils";
 
@@ -109,22 +110,24 @@ export function DashboardContent() {
       </div>
 
       {/* Recent Transactions */}
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle>Recent Transactions</CardTitle>
-              <CardDescription>Your latest financial activity</CardDescription>
-            </div>
-            <Button
-              variant="outline"
-              onClick={() => router.push("/transactions")}
-            >
-              View All
-            </Button>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold">Recent Transactions</h2>
+            <p className="text-sm text-muted-foreground">
+              Your latest financial activity
+            </p>
           </div>
-        </CardHeader>
-        <CardContent>
+          <Button
+            variant="outline"
+            onClick={() => router.push("/transactions")}
+          >
+            View All
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
+
+        <div>
           {transactionsLoading ? (
             <div className="text-center py-8 text-gray-500">
               Loading transactions...
@@ -138,7 +141,7 @@ export function DashboardContent() {
               {recentTransactions.map((transaction) => (
                 <div
                   key={transaction.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
+                  className="flex items-center justify-between p-4 border rounded-lg bg-white"
                 >
                   <div className="flex items-center space-x-4">
                     <div
@@ -177,8 +180,8 @@ export function DashboardContent() {
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
