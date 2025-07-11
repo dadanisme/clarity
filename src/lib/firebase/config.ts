@@ -2,14 +2,28 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyC0H7LzWsyB7009jRNzdXNK5WFPRGw2ywM",
-  authDomain: "money-management-1f742.firebaseapp.com",
-  projectId: "money-management-1f742",
-  storageBucket: "money-management-1f742.firebasestorage.app",
-  messagingSenderId: "129493849965",
-  appId: "1:129493849965:web:648d7a8c2beaa54f95ac64",
+// Validate environment variables
+const requiredEnvVars = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
+
+// Check if all required environment variables are present
+const missingVars = Object.entries(requiredEnvVars)
+  .filter(([, value]) => !value)
+  .map(([key]) => key);
+
+if (missingVars.length > 0) {
+  throw new Error(
+    `Missing required Firebase environment variables: ${missingVars.join(", ")}`
+  );
+}
+
+const firebaseConfig = requiredEnvVars;
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
