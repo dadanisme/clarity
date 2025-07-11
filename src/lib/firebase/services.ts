@@ -130,6 +130,54 @@ export const deleteProfileImage = async (imageUrl: string): Promise<void> => {
   }
 };
 
+// Receipt image upload services
+export const uploadReceiptImage = async (
+  userId: string,
+  file: File
+): Promise<string> => {
+  // Validate file type
+  if (!file.type.startsWith("image/")) {
+    throw new Error("File must be an image");
+  }
+
+  // Validate file size (max 10MB)
+  const maxSize = 10 * 1024 * 1024; // 10MB
+  if (file.size > maxSize) {
+    throw new Error("Image must be less than 10MB");
+  }
+
+  // Create a unique filename
+  const fileExtension = file.name.split(".").pop();
+  const fileName = `receipt-images/${userId}/${Date.now()}.${fileExtension}`;
+
+  // Upload to Firebase Storage
+  const storageRef = ref(storage, fileName);
+  await uploadBytes(storageRef, file);
+
+  // Get download URL
+  const downloadURL = await getDownloadURL(storageRef);
+
+  return downloadURL;
+};
+
+export const deleteReceiptImage = async (imageUrl: string): Promise<void> => {
+  try {
+    // Extract the file path from the URL
+    const url = new URL(imageUrl);
+    const path = decodeURIComponent(
+      url.pathname.split("/o/")[1]?.split("?")[0] || ""
+    );
+
+    if (path) {
+      const storageRef = ref(storage, path);
+      await deleteObject(storageRef);
+    }
+  } catch (error) {
+    console.error("Error deleting receipt image:", error);
+    // Don't throw error as the image might not exist
+  }
+};
+
 // Category services
 export const getCategories = async (userId: string): Promise<Category[]> => {
   const categoriesRef = collection(db, "users", userId, "categories");

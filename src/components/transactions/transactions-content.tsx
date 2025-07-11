@@ -2,13 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/providers/auth-provider";
-import { useTransactions } from "@/hooks/use-transactions";
+import {
+  useTransactions,
+  useCreateTransaction,
+} from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { useTransactionGroups } from "@/hooks/use-transaction-groups";
+import { createTransactionsFromReceipt } from "@/lib/utils/category-mapper";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionGroup } from "@/components/transactions/transaction-group";
 import { TimeframeControls } from "@/components/transactions/timeframe-controls";
 import { DummyDataButton } from "@/components/transactions/dummy-data-button";
+import { ReceiptParser } from "@/components/transactions/receipt-parser";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
 import { TransactionSkeletonList } from "./transaction-skeleton-list";
@@ -19,6 +24,49 @@ export function TransactionsContent() {
     user?.id || ""
   );
   const { data: categories = [] } = useCategories(user?.id || "");
+  const createTransaction = useCreateTransaction();
+
+  const handleReceiptParsed = async (
+    items: Array<{
+      amount: number;
+      discount: number | null;
+      tax: number;
+      serviceFee: number;
+      category: string;
+      description: string;
+    }>,
+    total: number,
+    timestamp: string | null
+  ) => {
+    if (!user?.id) return;
+
+    try {
+      // Create transactions from receipt items
+      const transactions = createTransactionsFromReceipt(
+        items,
+        categories,
+        user.id
+      );
+
+      // If we have a timestamp, use it for the date
+      if (timestamp) {
+        const date = new Date(timestamp);
+        if (!isNaN(date.getTime())) {
+          transactions.forEach((t) => (t.date = date));
+        }
+      }
+
+      // Create all transactions
+      for (const transaction of transactions) {
+        await createTransaction.mutateAsync({
+          userId: user.id,
+          data: transaction,
+        });
+      }
+    } catch (error) {
+      console.error("Failed to create transactions from receipt:", error);
+    }
+  };
   const {
     timeframe,
     setTimeframe,
@@ -69,15 +117,22 @@ export function TransactionsContent() {
       {/* Header */}
       <div className="hidden md:flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         {process.env.NODE_ENV === "development" ? <DummyDataButton /> : <div />}
-        <TransactionForm
-          mode="create"
-          trigger={
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Transaction
-            </Button>
-          }
-        />
+        <div className="flex gap-2">
+          <ReceiptParser
+            onReceiptParsed={handleReceiptParsed}
+            userCategories={categories}
+            userId={user?.id}
+          />
+          <TransactionForm
+            mode="create"
+            trigger={
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Transaction
+              </Button>
+            }
+          />
+        </div>
       </div>
 
       {/* Timeframe Control */}

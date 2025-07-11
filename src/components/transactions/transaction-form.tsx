@@ -44,6 +44,8 @@ import {
 } from "@/hooks/use-transactions";
 import { transactionSchema } from "@/lib/validations";
 import { Plus, Edit, Trash2 } from "lucide-react";
+import { ReceiptParser } from "./receipt-parser";
+import { createTransactionsFromReceipt } from "@/lib/utils/category-mapper";
 
 import { DatePicker } from "@/components/ui/date-picker";
 import type { Transaction } from "@/types";
@@ -68,6 +70,51 @@ export function TransactionForm({
   const createTransaction = useCreateTransaction();
   const updateTransaction = useUpdateTransaction();
   const deleteTransaction = useDeleteTransaction();
+
+  const handleReceiptParsed = async (
+    items: Array<{
+      amount: number;
+      discount: number | null;
+      tax: number;
+      serviceFee: number;
+      category: string;
+      description: string;
+    }>,
+    _total: number,
+    timestamp: string | null
+  ) => {
+    if (!user?.id) return;
+
+    try {
+      // Create transactions from receipt items
+      const transactions = createTransactionsFromReceipt(
+        items,
+        categories,
+        user.id
+      );
+
+      // If we have a timestamp, use it for the date
+      if (timestamp) {
+        const date = new Date(timestamp);
+        if (!isNaN(date.getTime())) {
+          transactions.forEach((t) => (t.date = date));
+        }
+      }
+
+      // Create all transactions
+      for (const transaction of transactions) {
+        await createTransaction.mutateAsync({
+          userId: user.id,
+          data: transaction,
+        });
+      }
+
+      setOpen(false);
+      reset();
+    } catch (error) {
+      console.error("Failed to create transactions from receipt:", error);
+    }
+  };
 
   const {
     register,
@@ -181,6 +228,15 @@ export function TransactionForm({
               ? "Add a new transaction to track your finances."
               : "Update the transaction details."}
           </DialogDescription>
+          {mode === "create" && (
+            <div className="flex justify-end">
+              <ReceiptParser
+                onReceiptParsed={handleReceiptParsed}
+                userCategories={categories}
+                userId={user?.id}
+              />
+            </div>
+          )}
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Amount */}
