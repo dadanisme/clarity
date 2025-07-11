@@ -8,6 +8,7 @@ import { useTransactionGroups } from "@/hooks/use-transaction-groups";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionGroup } from "@/components/transactions/transaction-group";
 import { TimeframeControls } from "@/components/transactions/timeframe-controls";
+import { DummyDataButton } from "@/components/transactions/dummy-data-button";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
 import { TransactionSkeletonList } from "./transaction-skeleton-list";
@@ -66,7 +67,8 @@ export function TransactionsContent() {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="hidden md:flex justify-end mb-6">
+      <div className="hidden md:flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        {process.env.NODE_ENV === "development" ? <DummyDataButton /> : <div />}
         <TransactionForm
           mode="create"
           trigger={

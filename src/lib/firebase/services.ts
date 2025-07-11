@@ -342,3 +342,27 @@ export const deleteTransaction = async (
   );
   await deleteDoc(transactionRef);
 };
+
+export const createMultipleTransactions = async (
+  userId: string,
+  transactions: Omit<Transaction, "id" | "createdAt" | "updatedAt">[]
+) => {
+  const transactionsRef = collection(db, "users", userId, "transactions");
+
+  const promises = transactions.map((transaction) => {
+    const transactionData: Omit<Transaction, "id"> = {
+      ...transaction,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    return addDoc(transactionsRef, transactionData);
+  });
+
+  const results = await Promise.all(promises);
+  return results.map((docRef, index) => ({
+    id: docRef.id,
+    ...transactions[index],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  }));
+};
