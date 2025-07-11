@@ -27,10 +27,19 @@ export const createUser = async (
   userData: Omit<User, "id" | "createdAt">
 ) => {
   const userRef = doc(db, "users", userId);
+
+  // Create user object, excluding undefined profileImage
   const user: Omit<User, "id"> = {
-    ...userData,
+    displayName: userData.displayName,
+    email: userData.email,
+    settings: userData.settings,
     createdAt: new Date(),
   };
+
+  // Only add profileImage if it's not undefined
+  if (userData.profileImage !== undefined) {
+    (user as User).profileImage = userData.profileImage;
+  }
 
   await setDoc(userRef, user);
   return { id: userId, ...user };
@@ -64,7 +73,13 @@ export const updateUser = async (
   updates: Partial<Pick<User, "displayName" | "profileImage">>
 ) => {
   const userRef = doc(db, "users", userId);
-  await updateDoc(userRef, { ...updates, updatedAt: new Date() });
+
+  // Filter out undefined values as Firestore doesn't support them
+  const cleanUpdates = Object.fromEntries(
+    Object.entries(updates).filter(([, value]) => value !== undefined)
+  );
+
+  await updateDoc(userRef, { ...cleanUpdates, updatedAt: new Date() });
 };
 
 // Image upload services
