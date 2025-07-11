@@ -1,12 +1,5 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { useTransactions } from "@/hooks/use-transactions";
@@ -85,50 +78,42 @@ export function TransactionsContent() {
       </div>
 
       {/* Timeframe Control */}
-      <Card className="mb-6">
-        <CardContent>
-          <TimeframeControls
-            timeframe={timeframe}
-            currentPeriod={currentPeriod}
-            onTimeframeChange={setTimeframe}
-            onPrevious={goToPrevious}
-            onNext={goToNext}
-            onDateSelect={handleDateSelect}
-          />
-        </CardContent>
-      </Card>
+      <div className="mb-6">
+        <TimeframeControls
+          timeframe={timeframe}
+          currentPeriod={currentPeriod}
+          onTimeframeChange={setTimeframe}
+          onPrevious={goToPrevious}
+          onNext={goToNext}
+          onDateSelect={handleDateSelect}
+        />
+      </div>
 
       {/* Transactions List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Transactions</CardTitle>
-          <CardDescription>Your complete transaction history</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="text-center py-8 text-gray-500">
-              Loading transactions...
-            </div>
-          ) : sortedGroups.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              {getEmptyStateMessage()}
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {sortedGroups.map(([groupKey, groupTransactions]) => (
-                <TransactionGroup
-                  key={groupKey}
-                  groupKey={groupKey}
-                  groupTransactions={groupTransactions}
-                  timeframe={timeframe}
-                  getCategoryName={getCategoryName}
-                  getCategoryColor={getCategoryColor}
-                />
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <div>
+        {isLoading ? (
+          <div className="text-center py-8 text-gray-500">
+            Loading transactions...
+          </div>
+        ) : sortedGroups.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            {getEmptyStateMessage()}
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {sortedGroups.map(([groupKey, groupTransactions]) => (
+              <TransactionGroup
+                key={groupKey}
+                groupKey={groupKey}
+                groupTransactions={groupTransactions}
+                timeframe={timeframe}
+                getCategoryName={getCategoryName}
+                getCategoryColor={getCategoryColor}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

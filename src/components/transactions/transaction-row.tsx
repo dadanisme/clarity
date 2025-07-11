@@ -23,7 +23,7 @@ export function TransactionRow({
         trigger={<div className="block md:hidden absolute inset-0 z-10" />}
       />
       {/* Row content */}
-      <div className="flex items-center justify-between p-4 border rounded-lg md:cursor-default cursor-pointer hover:bg-gray-50 transition-colors">
+      <div className="flex items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
         <div className="flex items-center space-x-4">
           <div
             className="w-3 h-3 rounded-full"

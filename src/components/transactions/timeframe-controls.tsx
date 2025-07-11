@@ -220,7 +220,6 @@ export function TimeframeControls({
 
       {/* Group by Control */}
       <div className="space-y-2">
-        <label className="text-sm font-medium">Group by</label>
         <SegmentedControl
           value={timeframe}
           onValueChange={handleTimeframeChange}
