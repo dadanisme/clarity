@@ -139,7 +139,7 @@ export function SignUpForm() {
             Already have an account?{" "}
             <Link
               href="/signin"
-              className="text-blue-600 hover:underline cursor-pointer"
+              className="text-primary hover:underline cursor-pointer"
             >
               Sign in
             </Link>

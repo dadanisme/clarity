@@ -102,7 +102,7 @@ export function SignInForm() {
             Don&apos;t have an account?{" "}
             <Link
               href="/signup"
-              className="text-blue-600 hover:underline cursor-pointer"
+              className="text-primary hover:underline cursor-pointer"
             >
               Sign up
             </Link>

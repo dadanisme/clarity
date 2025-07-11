@@ -65,7 +65,7 @@ export function TransactionsContent() {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex justify-end mb-6">
+      <div className="hidden md:flex justify-end mb-6">
         <TransactionForm
           mode="create"
           trigger={

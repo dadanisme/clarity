@@ -54,7 +54,7 @@ export function DashboardContent() {
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="flex justify-end mb-8">
-        <div className="flex gap-2">
+        <div className="hidden md:flex gap-2">
           <Button variant="outline" onClick={() => router.push("/categories")}>
             <Tag className="w-4 h-4 mr-2" />
             Categories

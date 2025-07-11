@@ -15,7 +15,7 @@ export default function CategoriesPage() {
       <DashboardLayout>
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="space-y-6">
-            <div className="flex justify-end">
+            <div className="hidden md:flex justify-end">
               <CategoryForm mode="create" />
             </div>
 

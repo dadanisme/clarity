@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { Wallet, BarChart3, Settings, LogOut, Tag } from "lucide-react";
+import { FloatingActionButton } from "@/components/ui/floating-action-button";
+import { useFloatingActionButton } from "@/hooks/use-floating-action-button";
 
 interface DashboardLayoutClientProps {
   children: React.ReactNode;
@@ -25,6 +27,7 @@ export function DashboardLayoutClient({
   const { user, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const floatingActionButton = useFloatingActionButton();
 
   const handleLogout = async () => {
     try {
@@ -53,7 +56,7 @@ export function DashboardLayoutClient({
                 href="/dashboard"
                 className="flex items-center space-x-2 cursor-pointer"
               >
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                   <Wallet className="w-5 h-5 text-white" />
                 </div>
                 <span className="text-xl font-bold text-gray-900">Clarity</span>
@@ -71,7 +74,7 @@ export function DashboardLayoutClient({
                     href={item.href}
                     className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium cursor-pointer transition-colors ${
                       isActive
-                        ? "text-blue-600 bg-blue-50"
+                        ? "text-primary bg-primary/10"
                         : "text-gray-600 hover:text-gray-900"
                     }`}
                   >
@@ -136,7 +139,7 @@ export function DashboardLayoutClient({
                   href={item.href}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium cursor-pointer transition-colors ${
                     isActive
-                      ? "text-blue-600 bg-blue-50"
+                      ? "text-primary bg-primary/10"
                       : "text-gray-600 hover:text-gray-900"
                   }`}
                   onClick={() => setIsMobileMenuOpen(false)}
@@ -167,7 +170,7 @@ export function DashboardLayoutClient({
                 href={item.href}
                 className={`flex flex-col items-center py-3 px-2 transition-colors ${
                   isActive
-                    ? "text-blue-600"
+                    ? "text-primary"
                     : "text-gray-600 hover:text-gray-900"
                 }`}
               >
@@ -178,6 +181,11 @@ export function DashboardLayoutClient({
           })}
         </div>
       </nav>
+
+      {/* Floating Action Button */}
+      <FloatingActionButton show={floatingActionButton.show}>
+        {floatingActionButton.children}
+      </FloatingActionButton>
     </div>
   );
 }
