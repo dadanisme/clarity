@@ -17,6 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/lib/providers/auth-provider";
+import { GoogleSignInButton } from "./google-signin-button";
 
 const signUpSchema = z
   .object({
@@ -136,6 +137,19 @@ export function SignUpForm() {
               {isSubmitting ? "Creating account..." : "Create account"}
             </Button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <GoogleSignInButton />
 
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}

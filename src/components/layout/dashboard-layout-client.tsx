@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -100,6 +100,12 @@ export function DashboardLayoutClient({
                     className="relative h-8 w-8 rounded-full"
                   >
                     <Avatar className="h-8 w-8">
+                      {user?.profileImage && (
+                        <AvatarImage
+                          src={user.profileImage}
+                          alt={user.displayName}
+                        />
+                      )}
                       <AvatarFallback>
                         {user?.displayName?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
@@ -107,11 +113,28 @@ export function DashboardLayoutClient({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuItem className="flex flex-col items-start space-y-1">
-                    <span className="font-medium">{user?.displayName}</span>
-                    <span className="text-sm text-muted-foreground">
-                      {user?.email}
-                    </span>
+                  <DropdownMenuItem className="flex flex-col items-start space-y-1 p-4">
+                    <div className="flex items-center space-x-3 w-full">
+                      <Avatar className="h-10 w-10">
+                        {user?.profileImage && (
+                          <AvatarImage
+                            src={user.profileImage}
+                            alt={user.displayName}
+                          />
+                        )}
+                        <AvatarFallback>
+                          {user?.displayName?.charAt(0).toUpperCase() || "U"}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <span className="font-medium truncate">
+                          {user?.displayName}
+                        </span>
+                        <span className="text-sm text-muted-foreground truncate">
+                          {user?.email}
+                        </span>
+                      </div>
+                    </div>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => router.push("/settings")}

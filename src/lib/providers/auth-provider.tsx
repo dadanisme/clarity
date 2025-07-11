@@ -6,14 +6,18 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithPopup,
   signOut,
-  updateProfile,
+  updateProfile as updateFirebaseProfile,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase/config";
+import { auth, googleProvider } from "@/lib/firebase/config";
 import {
   createUser,
   getUser,
   createDefaultCategories,
+  updateUser,
+  uploadProfileImage as uploadProfileImageToStorage,
+  deleteProfileImage,
 } from "@/lib/firebase/services";
 import type { User } from "@/types";
 
@@ -22,11 +26,17 @@ interface AuthContextType {
   firebaseUser: FirebaseUser | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signUp: (
     email: string,
     password: string,
     displayName: string
   ) => Promise<void>;
+  updateProfile: (
+    updates: Partial<Pick<User, "displayName" | "profileImage">>
+  ) => Promise<void>;
+  uploadProfileImage: (file: File) => Promise<void>;
+  removeProfileImage: () => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -50,6 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const newUserData = {
               displayName: firebaseUser.displayName || "User",
               email: firebaseUser.email || "",
+              profileImage: firebaseUser.photoURL || undefined,
               settings: {
                 theme: "system" as const,
               },
@@ -82,6 +93,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await signInWithEmailAndPassword(auth, email, password);
   };
 
+  const signInWithGoogle = async () => {
+    await signInWithPopup(auth, googleProvider);
+  };
+
   const signUp = async (
     email: string,
     password: string,
@@ -94,7 +109,67 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
 
     // Update the display name
-    await updateProfile(newFirebaseUser, { displayName });
+    await updateFirebaseProfile(newFirebaseUser, { displayName });
+  };
+
+  const updateProfile = async (
+    updates: Partial<Pick<User, "displayName" | "profileImage">>
+  ) => {
+    if (!firebaseUser) {
+      throw new Error("No user logged in");
+    }
+
+    // Update Firebase Auth profile if displayName is being updated
+    if (updates.displayName) {
+      await updateFirebaseProfile(firebaseUser, {
+        displayName: updates.displayName,
+      });
+    }
+
+    // Update Firestore user document
+    await updateUser(firebaseUser.uid, updates);
+
+    // Update local user state
+    if (user) {
+      setUser({ ...user, ...updates });
+    }
+  };
+
+  const uploadProfileImage = async (file: File) => {
+    if (!firebaseUser) {
+      throw new Error("No user logged in");
+    }
+
+    // Delete old image if it exists and is not from Google
+    if (
+      user?.profileImage &&
+      !user.profileImage.includes("googleusercontent.com")
+    ) {
+      await deleteProfileImage(user.profileImage);
+    }
+
+    // Upload new image
+    const imageUrl = await uploadProfileImageToStorage(firebaseUser.uid, file);
+
+    // Update user profile
+    await updateProfile({ profileImage: imageUrl });
+  };
+
+  const removeProfileImage = async () => {
+    if (!firebaseUser) {
+      throw new Error("No user logged in");
+    }
+
+    // Delete image from storage if it exists and is not from Google
+    if (
+      user?.profileImage &&
+      !user.profileImage.includes("googleusercontent.com")
+    ) {
+      await deleteProfileImage(user.profileImage);
+    }
+
+    // Update user profile
+    await updateProfile({ profileImage: undefined });
   };
 
   const logout = async () => {
@@ -106,7 +181,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     firebaseUser,
     loading,
     signIn,
+    signInWithGoogle,
     signUp,
+    updateProfile,
+    uploadProfileImage,
+    removeProfileImage,
     logout,
   };
 

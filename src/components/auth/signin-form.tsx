@@ -17,6 +17,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/lib/providers/auth-provider";
+import { GoogleSignInButton } from "./google-signin-button";
 
 const signInSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -99,6 +100,19 @@ export function SignInForm() {
               {isSubmitting ? "Signing in..." : "Sign in"}
             </Button>
           </form>
+
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <GoogleSignInButton />
 
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}

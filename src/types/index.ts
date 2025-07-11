@@ -2,6 +2,7 @@ export interface User {
   id: string;
   displayName: string;
   email: string;
+  profileImage?: string;
   createdAt: Date;
   settings: {
     theme: "light" | "dark" | "system";

@@ -12,7 +12,13 @@ import {
   orderBy,
   limit,
 } from "firebase/firestore";
-import { db } from "./config";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
+import { db, storage } from "./config";
 import type { User, Category, Transaction } from "@/types";
 
 // User services
@@ -51,6 +57,62 @@ export const updateUserSettings = async (
 ) => {
   const userRef = doc(db, "users", userId);
   await updateDoc(userRef, { settings });
+};
+
+export const updateUser = async (
+  userId: string,
+  updates: Partial<Pick<User, "displayName" | "profileImage">>
+) => {
+  const userRef = doc(db, "users", userId);
+  await updateDoc(userRef, { ...updates, updatedAt: new Date() });
+};
+
+// Image upload services
+export const uploadProfileImage = async (
+  userId: string,
+  file: File
+): Promise<string> => {
+  // Validate file type
+  if (!file.type.startsWith("image/")) {
+    throw new Error("File must be an image");
+  }
+
+  // Validate file size (max 5MB)
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  if (file.size > maxSize) {
+    throw new Error("Image must be less than 5MB");
+  }
+
+  // Create a unique filename
+  const fileExtension = file.name.split(".").pop();
+  const fileName = `profile-images/${userId}/${Date.now()}.${fileExtension}`;
+
+  // Upload to Firebase Storage
+  const storageRef = ref(storage, fileName);
+  await uploadBytes(storageRef, file);
+
+  // Get download URL
+  const downloadURL = await getDownloadURL(storageRef);
+
+  return downloadURL;
+};
+
+export const deleteProfileImage = async (imageUrl: string): Promise<void> => {
+  try {
+    // Extract the file path from the URL
+    const url = new URL(imageUrl);
+    const path = decodeURIComponent(
+      url.pathname.split("/o/")[1]?.split("?")[0] || ""
+    );
+
+    if (path) {
+      const storageRef = ref(storage, path);
+      await deleteObject(storageRef);
+    }
+  } catch (error) {
+    console.error("Error deleting profile image:", error);
+    // Don't throw error as the image might not exist or be from Google
+  }
 };
 
 // Category services

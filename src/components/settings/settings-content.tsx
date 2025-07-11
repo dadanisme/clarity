@@ -19,6 +19,7 @@ import {
 import { useAuth } from "@/lib/providers/auth-provider";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { ProfileForm } from "./profile-form";
 
 export function SettingsContent() {
   const { user } = useAuth();
@@ -37,27 +38,33 @@ export function SettingsContent() {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="mb-8"></div>
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-foreground">Settings</h1>
+        <p className="text-muted-foreground">
+          Manage your account settings and preferences
+        </p>
+      </div>
 
-      {/* Account Settings */}
+      {/* Profile Settings */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Profile</CardTitle>
+          <CardDescription>
+            Update your profile information and display name
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ProfileForm />
+        </CardContent>
+      </Card>
+
+      {/* Account Information */}
       <Card className="mb-6">
         <CardHeader>
           <CardTitle>Account Information</CardTitle>
-          <CardDescription>
-            Your account details and profile information
-          </CardDescription>
+          <CardDescription>Your account details (read-only)</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="name">Full Name</Label>
-            <p className="text-sm text-muted-foreground mt-1">
-              {user?.displayName}
-            </p>
-          </div>
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <p className="text-sm text-muted-foreground mt-1">{user?.email}</p>
-          </div>
           <div>
             <Label htmlFor="memberSince">Member Since</Label>
             <p className="text-sm text-muted-foreground mt-1">
