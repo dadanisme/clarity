@@ -42,8 +42,8 @@ export function DashboardLayoutClient({
   };
 
   const navigation = [
-    { name: "Dashboard", href: "/dashboard", icon: BarChart3 },
     { name: "Transactions", href: "/transactions", icon: Wallet },
+    { name: "Overview", href: "/overview", icon: BarChart3 },
     { name: "Categories", href: "/categories", icon: Tag },
   ];
 
@@ -56,7 +56,7 @@ export function DashboardLayoutClient({
             {/* Logo */}
             <div className="flex items-center">
               <Link
-                href="/dashboard"
+                href="/transactions"
                 className="flex items-center space-x-2 cursor-pointer"
               >
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">

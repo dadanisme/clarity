@@ -14,12 +14,12 @@ export function useFloatingActionButton() {
   const { data: categories = [] } = useCategories(user?.id || "");
 
   // Only show on specific pages
-  const shouldShow =
-    pathname === "/dashboard" ||
+  const show =
     pathname === "/transactions" ||
+    pathname === "/overview" ||
     pathname === "/categories";
 
-  if (!shouldShow) {
+  if (!show) {
     return { show: false };
   }
 

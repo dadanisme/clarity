@@ -50,7 +50,7 @@ export function SignUpForm() {
     try {
       setError("");
       await signUp(data.email, data.password, data.displayName);
-      router.push("/dashboard");
+      router.push("/transactions");
     } catch {
       setError("Failed to create account. Please try again.");
     }

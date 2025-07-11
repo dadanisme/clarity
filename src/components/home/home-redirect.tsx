@@ -12,8 +12,8 @@ export function HomeRedirect() {
   useEffect(() => {
     if (!loading) {
       if (user) {
-        // User is authenticated, redirect to dashboard
-        router.replace("/dashboard");
+        // User is authenticated, redirect to transactions
+        router.replace("/transactions");
       } else {
         // User is not authenticated, redirect to signin
         router.replace("/signin");

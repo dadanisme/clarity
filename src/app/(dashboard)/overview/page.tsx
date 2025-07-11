@@ -4,11 +4,11 @@ import { AuthGuard } from "@/components/auth/auth-guard";
 import { DashboardContent } from "@/components/dashboard/dashboard-content";
 
 export const metadata: Metadata = {
-  title: "Dashboard | Clarity",
-  description: "Your financial overview and recent transactions",
+  title: "Overview | Clarity",
+  description: "Your financial overview and insights",
 };
 
-export default function DashboardPage() {
+export default function OverviewPage() {
   return (
     <AuthGuard>
       <DashboardLayout>

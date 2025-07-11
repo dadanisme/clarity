@@ -24,7 +24,7 @@ export function AuthGuard({
       if (requireAuth && !user) {
         router.push(redirectTo);
       } else if (!requireAuth && user) {
-        router.push("/dashboard");
+        router.push("/transactions");
       }
     }
   }, [user, loading, requireAuth, redirectTo, router]);

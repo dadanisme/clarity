@@ -43,7 +43,7 @@ export function SignInForm() {
     try {
       setError("");
       await signIn(data.email, data.password);
-      router.push("/dashboard");
+      router.push("/transactions");
     } catch {
       setError("Invalid email or password");
     }
