@@ -11,10 +11,11 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { useTransactions } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
+import { useTransactionGroups } from "@/hooks/use-transaction-groups";
 import { TransactionForm } from "@/components/transactions/transaction-form";
-import { Plus, Edit } from "lucide-react";
-import { format } from "date-fns";
-import { formatTransactionAmount } from "@/lib/utils";
+import { TransactionGroup } from "@/components/transactions/transaction-group";
+import { TimeframeControls } from "@/components/transactions/timeframe-controls";
+import { Plus } from "lucide-react";
 
 export function TransactionsContent() {
   const { user } = useAuth();
@@ -22,6 +23,15 @@ export function TransactionsContent() {
     user?.id || ""
   );
   const { data: categories = [] } = useCategories(user?.id || "");
+  const {
+    timeframe,
+    setTimeframe,
+    currentPeriod,
+    sortedGroups,
+    goToPrevious,
+    goToNext,
+    setCurrentPeriod,
+  } = useTransactionGroups(transactions);
 
   const getCategoryName = (categoryId: string) => {
     const category = categories.find((c) => c.id === categoryId);
@@ -33,10 +43,19 @@ export function TransactionsContent() {
     return category?.color || "#6b7280";
   };
 
+  const handleDelete = (transactionId: string) => {
+    // TODO: Implement delete functionality
+    console.log("Delete transaction:", transactionId);
+  };
+
+  const handleDateSelect = (date: Date) => {
+    setCurrentPeriod(date);
+  };
+
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex justify-end mb-8">
+      <div className="flex justify-end mb-6">
         <TransactionForm
           mode="create"
           trigger={
@@ -47,6 +66,20 @@ export function TransactionsContent() {
           }
         />
       </div>
+
+      {/* Timeframe Control */}
+      <Card className="mb-6">
+        <CardContent>
+          <TimeframeControls
+            timeframe={timeframe}
+            currentPeriod={currentPeriod}
+            onTimeframeChange={setTimeframe}
+            onPrevious={goToPrevious}
+            onNext={goToNext}
+            onDateSelect={handleDateSelect}
+          />
+        </CardContent>
+      </Card>
 
       {/* Transactions List */}
       <Card>
@@ -64,71 +97,17 @@ export function TransactionsContent() {
               No transactions yet. Add your first transaction to get started!
             </div>
           ) : (
-            <div className="space-y-4">
-              {transactions.map((transaction) => (
-                <div key={transaction.id} className="relative">
-                  {/* Mobile click-to-edit overlay */}
-                  <TransactionForm
-                    mode="edit"
-                    transaction={transaction}
-                    trigger={
-                      <div className="block md:hidden absolute inset-0 z-10" />
-                    }
-                  />
-
-                  {/* Transaction content */}
-                  <div className="flex items-center justify-between p-4 border rounded-lg md:cursor-default cursor-pointer hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center space-x-4">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{
-                          backgroundColor: getCategoryColor(
-                            transaction.categoryId
-                          ),
-                        }}
-                      />
-                      <div>
-                        <p className="font-medium">{transaction.description}</p>
-                        <p className="text-sm text-gray-500">
-                          {getCategoryName(transaction.categoryId)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
-                        <p
-                          className={`font-medium ${
-                            transaction.type === "income"
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }`}
-                        >
-                          {formatTransactionAmount(
-                            transaction.amount,
-                            transaction.type
-                          )}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {format(transaction.date, "MMM dd, yyyy")}
-                        </p>
-                      </div>
-                      {/* Edit button - hidden on mobile, visible on desktop */}
-                      <TransactionForm
-                        mode="edit"
-                        transaction={transaction}
-                        trigger={
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="hidden md:flex"
-                          >
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
+            <div className="space-y-6">
+              {sortedGroups.map(([groupKey, groupTransactions]) => (
+                <TransactionGroup
+                  key={groupKey}
+                  groupKey={groupKey}
+                  groupTransactions={groupTransactions}
+                  timeframe={timeframe}
+                  getCategoryName={getCategoryName}
+                  getCategoryColor={getCategoryColor}
+                  handleDelete={handleDelete}
+                />
               ))}
             </div>
           )}

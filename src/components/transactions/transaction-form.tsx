@@ -41,12 +41,14 @@ interface TransactionFormProps {
   transaction?: Transaction;
   mode: "create" | "edit";
   trigger?: React.ReactNode;
+  defaultDate?: Date;
 }
 
 export function TransactionForm({
   transaction,
   mode,
   trigger,
+  defaultDate,
 }: TransactionFormProps) {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
@@ -76,7 +78,7 @@ export function TransactionForm({
           type: "expense",
           categoryId: "",
           description: "",
-          date: new Date(),
+          date: defaultDate || new Date(),
         },
   });
 
