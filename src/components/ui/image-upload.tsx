@@ -3,7 +3,8 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Upload, X, Loader2 } from "lucide-react";
+import { Upload, X } from "lucide-react";
+import { Spinner } from "@/components/ui/loading";
 
 interface ImageUploadProps {
   currentImageUrl?: string;
@@ -82,7 +83,7 @@ export function ImageUpload({
             >
               {isUploading ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <Spinner size="sm" />
                   Uploading...
                 </>
               ) : (

@@ -10,6 +10,7 @@ import { TransactionGroup } from "@/components/transactions/transaction-group";
 import { TimeframeControls } from "@/components/transactions/timeframe-controls";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
+import { TransactionSkeletonList } from "./transaction-skeleton-list";
 
 export function TransactionsContent() {
   const { user } = useAuth();
@@ -92,9 +93,7 @@ export function TransactionsContent() {
       {/* Transactions List */}
       <div>
         {isLoading ? (
-          <div className="text-center py-8 text-muted-foreground">
-            Loading transactions...
-          </div>
+          <TransactionSkeletonList count={10} />
         ) : sortedGroups.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             {getEmptyStateMessage()}

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/providers/auth-provider";
+import { PageLoading } from "@/components/ui/loading";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -29,11 +30,7 @@ export function AuthGuard({
   }, [user, loading, requireAuth, redirectTo, router]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
-      </div>
-    );
+    return <PageLoading text="Authenticating..." />;
   }
 
   if (requireAuth && !user) {

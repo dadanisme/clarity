@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AuthGuard } from "@/components/auth/auth-guard";
+import { HomeRedirect } from "@/components/home/home-redirect";
 
 export const metadata: Metadata = {
   title: "Clarity - Money Management",
@@ -8,10 +9,8 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <AuthGuard>
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
-      </div>
+    <AuthGuard requireAuth={false}>
+      <HomeRedirect />
     </AuthGuard>
   );
 }

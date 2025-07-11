@@ -22,6 +22,7 @@ import { useTransactions } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { TransactionRow } from "./transaction-row";
 import { Search, Filter } from "lucide-react";
+import { TransactionSkeletonList } from "./transaction-skeleton-list";
 
 export function TransactionList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -62,8 +63,8 @@ export function TransactionList() {
   if (isLoading) {
     return (
       <Card>
-        <CardContent className="flex items-center justify-center py-8">
-          <div className="text-muted-foreground">Loading transactions...</div>
+        <CardContent className="py-8">
+          <TransactionSkeletonList count={8} />
         </CardContent>
       </Card>
     );

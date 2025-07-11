@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency, formatTransactionAmount } from "@/lib/utils";
+import { TransactionSkeletonList } from "@/components/transactions/transaction-skeleton-list";
 
 export function DashboardContent() {
   const { user } = useAuth();
@@ -129,9 +130,7 @@ export function DashboardContent() {
 
         <div>
           {transactionsLoading ? (
-            <div className="text-center py-8 text-muted-foreground">
-              Loading transactions...
-            </div>
+            <TransactionSkeletonList count={5} />
           ) : recentTransactions.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               No transactions yet. Add your first transaction to get started!
