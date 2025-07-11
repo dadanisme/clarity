@@ -136,7 +136,7 @@ export function TransactionsContent() {
       </div>
 
       {/* Timeframe Control */}
-      <div className="mb-6">
+      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mb-6 py-2">
         <TimeframeControls
           timeframe={timeframe}
           currentPeriod={currentPeriod}
