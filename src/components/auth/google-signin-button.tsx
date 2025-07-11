@@ -43,7 +43,7 @@ export function GoogleSignInButton({
       type="button"
       variant={variant}
       size={size}
-      className={`w-full bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 ${className}`}
+      className={`w-full bg-background text-foreground border border-input hover:bg-accent hover:text-accent-foreground ${className}`}
       onClick={handleGoogleSignIn}
       disabled={isLoading}
     >
