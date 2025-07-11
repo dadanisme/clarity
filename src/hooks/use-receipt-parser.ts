@@ -2,23 +2,15 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import {
-  uploadReceiptImage,
-  deleteReceiptImage,
-} from "@/lib/firebase/services";
 import { ReceiptItem, ParsedReceipt, UserCategory } from "@/types/receipt";
 import { calculateTotal } from "@/lib/utils/receipt-utils";
 import { useImageUpload } from "./use-image-upload";
 
 interface UseReceiptParserProps {
   userCategories?: UserCategory[];
-  userId?: string;
 }
 
-export function useReceiptParser({
-  userCategories,
-  userId,
-}: UseReceiptParserProps) {
+export function useReceiptParser({ userCategories }: UseReceiptParserProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [userOrder, setUserOrder] = useState("");
   const [parsedReceipt, setParsedReceipt] = useState<ParsedReceipt | null>(
@@ -111,22 +103,27 @@ export function useReceiptParser({
 
     setIsLoading(true);
     try {
-      if (!userId) {
-        toast.error("User not authenticated. Please sign in again.");
-        return;
-      }
+      // Convert image to base64
+      const base64Image = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const result = e.target?.result as string;
+          // Remove the data:image/jpeg;base64, prefix
+          const base64 = result.split(",")[1];
+          resolve(base64);
+        };
+        reader.readAsDataURL(selectedImage);
+      });
 
-      // First, upload the image to Firebase Storage
-      const imageUrl = await uploadReceiptImage(userId, selectedImage);
-
-      // Then send the URL to the API
+      // Send base64 image directly to the API
       const response = await fetch("/api/parse-receipt", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          imageUrl,
+          base64Image,
+          mimeType: selectedImage.type,
           userOrder,
           userCategories,
         }),
@@ -140,9 +137,6 @@ export function useReceiptParser({
       const data = await response.json();
       setParsedReceipt(data);
       toast.success("Receipt parsed successfully!");
-
-      // Clean up the uploaded image after successful parsing
-      await deleteReceiptImage(imageUrl);
     } catch (error) {
       console.error("Error parsing receipt:", error);
       toast.error(

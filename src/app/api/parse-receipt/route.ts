@@ -6,11 +6,18 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { imageUrl, userOrder, userCategories } = body;
+    const { base64Image, mimeType, userOrder, userCategories } = body;
 
-    if (!imageUrl) {
+    if (!base64Image) {
       return NextResponse.json(
-        { error: "Image URL is required" },
+        { error: "Base64 image is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!mimeType) {
+      return NextResponse.json(
+        { error: "MIME type is required" },
         { status: 400 }
       );
     }
@@ -21,19 +28,6 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-
-    // Fetch image from URL and convert to base64
-    const imageResponse = await fetch(imageUrl);
-    if (!imageResponse.ok) {
-      return NextResponse.json(
-        { error: "Failed to fetch image from URL" },
-        { status: 400 }
-      );
-    }
-
-    const imageBuffer = await imageResponse.arrayBuffer();
-    const base64Image = Buffer.from(imageBuffer).toString("base64");
-    const mimeType = imageResponse.headers.get("content-type") || "image/jpeg";
 
     // Define the structured output schema
     const schema = {

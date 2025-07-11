@@ -121,7 +121,6 @@ export function TransactionsContent() {
           <ReceiptParser
             onReceiptParsed={handleReceiptParsed}
             userCategories={categories}
-            userId={user?.id}
           />
           <TransactionForm
             mode="create"

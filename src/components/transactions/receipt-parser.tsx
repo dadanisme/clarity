@@ -28,14 +28,12 @@ interface ReceiptParserProps {
   ) => void;
   trigger?: React.ReactNode;
   userCategories?: UserCategory[];
-  userId?: string;
 }
 
 export function ReceiptParser({
   onReceiptParsed,
   trigger,
   userCategories,
-  userId,
 }: ReceiptParserProps) {
   const [open, setOpen] = useState(false);
 
@@ -56,7 +54,7 @@ export function ReceiptParser({
     saveEdit,
     cancelEdit,
     updateEditingValues,
-  } = useReceiptParser({ userCategories, userId });
+  } = useReceiptParser({ userCategories });
 
   const handleUseParsedData = () => {
     if (!parsedReceipt) return;

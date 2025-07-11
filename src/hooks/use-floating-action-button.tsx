@@ -54,7 +54,6 @@ export function useFloatingActionButton() {
               // User can manually create transactions from the parsed data
             }}
             userCategories={categories}
-            userId={user?.id}
             trigger={
               <div className="w-14 h-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center relative">
                 <Camera className="w-6 h-6 text-secondary-foreground" />
