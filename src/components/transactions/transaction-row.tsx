@@ -42,7 +42,7 @@ export function TransactionRow({
         <div className="flex items-center space-x-2">
           <div className="text-right">
             <p
-              className={`font-medium ${
+              className={`font-medium whitespace-nowrap ${
                 transaction.type === "income"
                   ? "text-success"
                   : "text-destructive"
