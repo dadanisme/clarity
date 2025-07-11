@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Edit3, Trash2 } from "lucide-react";
 import { ReceiptItem, ParsedReceipt, UserCategory } from "@/types/receipt";
 import { ReceiptItemEditor } from "./receipt-item-editor";
 import { SwipeActions } from "@/components/ui/swipe-actions";
@@ -62,20 +60,10 @@ export function ReceiptItemList({
               />
             ) : (
               <SwipeActions
-                actions={[
-                  {
-                    label: "Edit",
-                    onClick: () => onStartEditing(index, item),
-                    variant: "outline",
-                    icon: <Edit3 className="w-3 h-3" />,
-                  },
-                  {
-                    label: "Delete",
-                    onClick: () => onRemoveItem(index),
-                    variant: "destructive",
-                    icon: <Trash2 className="w-3 h-3" />,
-                  },
-                ]}
+                showEditIndicator={true}
+                showDeleteIndicator={true}
+                onEdit={() => onStartEditing(index, item)}
+                onDelete={() => onRemoveItem(index)}
               >
                 <div className="p-4">
                   {/* Desktop Layout */}
@@ -94,33 +82,15 @@ export function ReceiptItemList({
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="text-right">
-                        <p className="font-medium text-destructive">
-                          {formatCurrency(item.amount)}
+                    <div className="text-right">
+                      <p className="font-medium text-destructive">
+                        {formatCurrency(item.amount)}
+                      </p>
+                      {item.tax > 0 && (
+                        <p className="text-xs text-muted-foreground">
+                          +{formatCurrency(item.tax)} tax
                         </p>
-                        {item.tax > 0 && (
-                          <p className="text-xs text-muted-foreground">
-                            +{formatCurrency(item.tax)} tax
-                          </p>
-                        )}
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => onStartEditing(index, item)}
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => onRemoveItem(index)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                      )}
                     </div>
                   </div>
 

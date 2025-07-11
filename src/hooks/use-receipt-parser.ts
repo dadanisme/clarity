@@ -111,11 +111,13 @@ export function useReceiptParser({
 
     setIsLoading(true);
     try {
+      if (!userId) {
+        toast.error("User not authenticated. Please sign in again.");
+        return;
+      }
+
       // First, upload the image to Firebase Storage
-      const imageUrl = await uploadReceiptImage(
-        userId || "temp",
-        selectedImage
-      );
+      const imageUrl = await uploadReceiptImage(userId, selectedImage);
 
       // Then send the URL to the API
       const response = await fetch("/api/parse-receipt", {
