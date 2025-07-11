@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -24,6 +24,7 @@ export function DashboardLayoutClient({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     try {
@@ -63,11 +64,16 @@ export function DashboardLayoutClient({
             <nav className="hidden md:flex space-x-8">
               {navigation.map((item) => {
                 const Icon = item.icon;
+                const isActive = pathname === item.href;
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium cursor-pointer"
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium cursor-pointer transition-colors ${
+                      isActive
+                        ? "text-blue-600 bg-blue-50"
+                        : "text-gray-600 hover:text-gray-900"
+                    }`}
                   >
                     <Icon className="w-4 h-4" />
                     <span>{item.name}</span>
@@ -123,11 +129,16 @@ export function DashboardLayoutClient({
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-b">
             {navigation.map((item) => {
               const Icon = item.icon;
+              const isActive = pathname === item.href;
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 block px-3 py-2 rounded-md text-base font-medium cursor-pointer"
+                  className={`flex items-center space-x-2 block px-3 py-2 rounded-md text-base font-medium cursor-pointer transition-colors ${
+                    isActive
+                      ? "text-blue-600 bg-blue-50"
+                      : "text-gray-600 hover:text-gray-900"
+                  }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Icon className="w-4 h-4" />
@@ -140,7 +151,33 @@ export function DashboardLayoutClient({
       )}
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">{children}</main>
+      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 pb-20 md:pb-6">
+        {children}
+      </main>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+        <div className="flex justify-center space-x-6 px-6">
+          {navigation.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`flex flex-col items-center py-3 px-2 transition-colors ${
+                  isActive
+                    ? "text-blue-600"
+                    : "text-gray-600 hover:text-gray-900"
+                }`}
+              >
+                <Icon className="w-5 h-5 mb-1" />
+                <span className="text-xs font-medium">{item.name}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

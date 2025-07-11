@@ -7,13 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -25,6 +18,7 @@ import { useAuth } from "@/lib/providers/auth-provider";
 import { useCreateCategory, useUpdateCategory } from "@/hooks/use-categories";
 import { Plus, Edit } from "lucide-react";
 import type { Category } from "@/types";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 
 interface CategoryFormData {
   name: string;
@@ -162,22 +156,20 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
           </div>
 
           {/* Type */}
-          <div className="space-y-2">
-            <Label htmlFor="type">Type</Label>
-            <Select
-              value={watch("type")}
-              onValueChange={(value: "income" | "expense") =>
-                setValue("type", value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="expense">Expense</SelectItem>
-                <SelectItem value="income">Income</SelectItem>
-              </SelectContent>
-            </Select>
+          <div>
+            <div className="space-y-2">
+              <Label htmlFor="type">Type</Label>
+              <SegmentedControl
+                value={watch("type")}
+                onValueChange={(value) =>
+                  setValue("type", value as "income" | "expense")
+                }
+                options={[
+                  { value: "expense", label: "Expense" },
+                  { value: "income", label: "Income" },
+                ]}
+              />
+            </div>
             {errors.type && (
               <p className="text-sm text-red-600">{errors.type.message}</p>
             )}

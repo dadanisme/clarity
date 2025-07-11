@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
   Card,
   CardContent,
@@ -105,21 +99,17 @@ export function CategoryList() {
             {/* Type Filter */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Type</label>
-              <Select
+              <SegmentedControl
                 value={typeFilter}
-                onValueChange={(value: "all" | "income" | "expense") =>
-                  setTypeFilter(value)
+                onValueChange={(value) =>
+                  setTypeFilter(value as "all" | "income" | "expense")
                 }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="income">Income</SelectItem>
-                  <SelectItem value="expense">Expense</SelectItem>
-                </SelectContent>
-              </Select>
+                options={[
+                  { value: "all", label: "All" },
+                  { value: "income", label: "Income" },
+                  { value: "expense", label: "Expense" },
+                ]}
+              />
             </div>
           </div>
         </CardContent>

@@ -12,7 +12,7 @@ import { useAuth } from "@/lib/providers/auth-provider";
 import { useTransactions } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { TransactionForm } from "@/components/transactions/transaction-form";
-import { Plus } from "lucide-react";
+import { Plus, Edit } from "lucide-react";
 import { format } from "date-fns";
 import { formatTransactionAmount } from "@/lib/utils";
 
@@ -36,20 +36,22 @@ export function TransactionsContent() {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Transactions</h1>
           <p className="text-gray-600">Manage your financial transactions</p>
         </div>
-        <TransactionForm
-          mode="create"
-          trigger={
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Transaction
-            </Button>
-          }
-        />
+        <div className="flex justify-end sm:justify-end">
+          <TransactionForm
+            mode="create"
+            trigger={
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Transaction
+              </Button>
+            }
+          />
+        </div>
       </div>
 
       {/* Transactions List */}
@@ -70,42 +72,67 @@ export function TransactionsContent() {
           ) : (
             <div className="space-y-4">
               {transactions.map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{
-                        backgroundColor: getCategoryColor(
-                          transaction.categoryId
-                        ),
-                      }}
-                    />
-                    <div>
-                      <p className="font-medium">{transaction.description}</p>
-                      <p className="text-sm text-gray-500">
-                        {getCategoryName(transaction.categoryId)}
-                      </p>
+                <div key={transaction.id} className="relative">
+                  {/* Mobile click-to-edit overlay */}
+                  <TransactionForm
+                    mode="edit"
+                    transaction={transaction}
+                    trigger={
+                      <div className="block md:hidden absolute inset-0 z-10" />
+                    }
+                  />
+
+                  {/* Transaction content */}
+                  <div className="flex items-center justify-between p-4 border rounded-lg md:cursor-default cursor-pointer hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center space-x-4">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{
+                          backgroundColor: getCategoryColor(
+                            transaction.categoryId
+                          ),
+                        }}
+                      />
+                      <div>
+                        <p className="font-medium">{transaction.description}</p>
+                        <p className="text-sm text-gray-500">
+                          {getCategoryName(transaction.categoryId)}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-right">
-                    <p
-                      className={`font-medium ${
-                        transaction.type === "income"
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {formatTransactionAmount(
-                        transaction.amount,
-                        transaction.type
-                      )}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {format(transaction.date, "MMM dd, yyyy")}
-                    </p>
+                    <div className="flex items-center space-x-4">
+                      <div className="text-right">
+                        <p
+                          className={`font-medium ${
+                            transaction.type === "income"
+                              ? "text-green-600"
+                              : "text-red-600"
+                          }`}
+                        >
+                          {formatTransactionAmount(
+                            transaction.amount,
+                            transaction.type
+                          )}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {format(transaction.date, "MMM dd, yyyy")}
+                        </p>
+                      </div>
+                      {/* Edit button - hidden on mobile, visible on desktop */}
+                      <TransactionForm
+                        mode="edit"
+                        transaction={transaction}
+                        trigger={
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="hidden md:flex"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
               ))}

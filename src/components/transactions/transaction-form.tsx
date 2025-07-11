@@ -111,6 +111,15 @@ export function TransactionForm({
     setOpen(newOpen);
     if (!newOpen) {
       reset();
+    } else if (newOpen && transaction && mode === "edit") {
+      // Reset form with transaction data when opening in edit mode
+      reset({
+        amount: transaction.amount,
+        type: transaction.type,
+        categoryId: transaction.categoryId,
+        description: transaction.description || "",
+        date: transaction.date,
+      });
     }
   };
 

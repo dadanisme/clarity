@@ -53,14 +53,14 @@ export function DashboardContent() {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-600">
             Welcome back! Here&apos;s your financial overview.
           </p>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex gap-2 justify-end">
           <Button variant="outline" onClick={() => router.push("/categories")}>
             <Tag className="w-4 h-4 mr-2" />
             Categories

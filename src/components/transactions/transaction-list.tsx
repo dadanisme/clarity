@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -10,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
   Card,
   CardContent,
@@ -17,27 +17,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/lib/providers/auth-provider";
 import {
   useTransactions,
   useDeleteTransaction,
 } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
-import { TransactionForm } from "./transaction-form";
-import { Edit, Trash2, Search, Filter } from "lucide-react";
-import { format } from "date-fns";
-import { formatTransactionAmount } from "@/lib/utils";
+import { TransactionRow } from "./transaction-row";
+import { Search, Filter } from "lucide-react";
 
 export function TransactionList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -123,27 +110,21 @@ export function TransactionList() {
                 />
               </div>
             </div>
-
             {/* Type Filter */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Type</label>
-              <Select
+              <SegmentedControl
                 value={typeFilter}
-                onValueChange={(value: "all" | "income" | "expense") =>
-                  setTypeFilter(value)
+                onValueChange={(value) =>
+                  setTypeFilter(value as "all" | "income" | "expense")
                 }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="income">Income</SelectItem>
-                  <SelectItem value="expense">Expense</SelectItem>
-                </SelectContent>
-              </Select>
+                options={[
+                  { value: "all", label: "All" },
+                  { value: "income", label: "Income" },
+                  { value: "expense", label: "Expense" },
+                ]}
+              />
             </div>
-
             {/* Category Filter */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Category</label>
@@ -170,7 +151,6 @@ export function TransactionList() {
           </div>
         </CardContent>
       </Card>
-
       {/* Transactions List */}
       <Card>
         <CardHeader>
@@ -190,87 +170,13 @@ export function TransactionList() {
           ) : (
             <div className="space-y-4">
               {filteredTransactions.map((transaction) => (
-                <div
+                <TransactionRow
                   key={transaction.id}
-                  className="flex items-center justify-between p-4 border rounded-lg"
-                >
-                  <div className="flex items-center space-x-4">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{
-                        backgroundColor: getCategoryColor(
-                          transaction.categoryId
-                        ),
-                      }}
-                    />
-                    <div>
-                      <p className="font-medium">{transaction.description}</p>
-                      <p className="text-sm text-gray-500">
-                        {getCategoryName(transaction.categoryId)} •{" "}
-                        {format(transaction.date, "MMM dd, yyyy")}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="text-right">
-                      <p
-                        className={`font-medium ${
-                          transaction.type === "income"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {formatTransactionAmount(
-                          transaction.amount,
-                          transaction.type
-                        )}
-                      </p>
-                    </div>
-                    <div className="flex space-x-1">
-                      <TransactionForm
-                        transaction={transaction}
-                        mode="edit"
-                        trigger={
-                          <Button size="sm" variant="ghost">
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                        }
-                      />
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Delete Transaction
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to delete &quot;
-                              {transaction.description}&quot;? This action
-                              cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDelete(transaction.id)}
-                              className="bg-red-600 hover:bg-red-700"
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </div>
-                </div>
+                  transaction={transaction}
+                  getCategoryName={getCategoryName}
+                  getCategoryColor={getCategoryColor}
+                  handleDelete={handleDelete}
+                />
               ))}
             </div>
           )}
