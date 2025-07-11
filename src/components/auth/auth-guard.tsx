@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { PageLoading } from "@/components/ui/loading";
+import { PATHS } from "@/lib/paths";
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -24,7 +25,7 @@ export function AuthGuard({
       if (requireAuth && !user) {
         router.push(redirectTo);
       } else if (!requireAuth && user) {
-        router.push("/transactions");
+        router.push(PATHS.transactions);
       }
     }
   }, [user, loading, requireAuth, redirectTo, router]);

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { PageLoading } from "@/components/ui/loading";
+import { PATHS } from "@/lib/paths";
 
 export function HomeRedirect() {
   const { user, loading } = useAuth();
@@ -13,10 +14,10 @@ export function HomeRedirect() {
     if (!loading) {
       if (user) {
         // User is authenticated, redirect to transactions
-        router.replace("/transactions");
+        router.replace(PATHS.transactions);
       } else {
         // User is not authenticated, redirect to signin
-        router.replace("/signin");
+        router.replace(PATHS.signin);
       }
     }
   }, [user, loading, router]);

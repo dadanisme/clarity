@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { GoogleSignInButton } from "./google-signin-button";
+import { PATHS } from "@/lib/paths";
 
 const signUpSchema = z
   .object({
@@ -50,7 +51,7 @@ export function SignUpForm() {
     try {
       setError("");
       await signUp(data.email, data.password, data.displayName);
-      router.push("/transactions");
+      router.push(PATHS.transactions);
     } catch {
       setError("Failed to create account. Please try again.");
     }

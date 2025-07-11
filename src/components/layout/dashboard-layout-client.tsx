@@ -17,6 +17,7 @@ import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { useFloatingActionButton } from "@/hooks/use-floating-action-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useThemeSync } from "@/hooks/use-theme-sync";
+import { PATHS } from "@/lib/paths";
 
 interface DashboardLayoutClientProps {
   children: React.ReactNode;
@@ -42,9 +43,9 @@ export function DashboardLayoutClient({
   };
 
   const navigation = [
-    { name: "Transactions", href: "/transactions", icon: Wallet },
-    { name: "Overview", href: "/overview", icon: BarChart3 },
-    { name: "Categories", href: "/categories", icon: Tag },
+    { name: "Transactions", href: PATHS.transactions, icon: Wallet },
+    { name: "Overview", href: PATHS.overview, icon: BarChart3 },
+    { name: "Categories", href: PATHS.categories, icon: Tag },
   ];
 
   return (
@@ -56,7 +57,7 @@ export function DashboardLayoutClient({
             {/* Logo */}
             <div className="flex items-center">
               <Link
-                href="/transactions"
+                href={PATHS.transactions}
                 className="flex items-center space-x-2 cursor-pointer"
               >
                 <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">

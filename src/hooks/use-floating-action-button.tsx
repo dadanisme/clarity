@@ -7,6 +7,7 @@ import { CategoryForm } from "@/components/categories/category-form";
 import { ReceiptParser } from "@/components/transactions/receipt-parser";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { useCategories } from "@/hooks/use-categories";
+import { PATHS } from "@/lib/paths";
 
 export function useFloatingActionButton() {
   const pathname = usePathname();
@@ -15,9 +16,9 @@ export function useFloatingActionButton() {
 
   // Only show on specific pages
   const show =
-    pathname === "/transactions" ||
-    pathname === "/overview" ||
-    pathname === "/categories";
+    pathname === PATHS.transactions ||
+    pathname === PATHS.overview ||
+    pathname === PATHS.categories;
 
   if (!show) {
     return { show: false };

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { GoogleSignInButton } from "./google-signin-button";
+import { PATHS } from "@/lib/paths";
 
 const signInSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -43,7 +44,7 @@ export function SignInForm() {
     try {
       setError("");
       await signIn(data.email, data.password);
-      router.push("/transactions");
+      router.push(PATHS.transactions);
     } catch {
       setError("Invalid email or password");
     }
