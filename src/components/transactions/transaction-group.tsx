@@ -30,7 +30,7 @@ export function TransactionGroup({
         const weekStart = startOfWeek(date, { weekStartsOn: 1 });
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekEnd.getDate() + 6);
-        return `Week of ${format(weekStart, "MMM d")} - ${format(
+        return `${format(weekStart, "MMM d")} - ${format(
           weekEnd,
           "MMM d, yyyy"
         )}`;
