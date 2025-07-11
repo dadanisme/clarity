@@ -18,10 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/lib/providers/auth-provider";
-import {
-  useTransactions,
-  useDeleteTransaction,
-} from "@/hooks/use-transactions";
+import { useTransactions } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { TransactionRow } from "./transaction-row";
 import { Search, Filter } from "lucide-react";
@@ -38,7 +35,6 @@ export function TransactionList() {
     user?.id || ""
   );
   const { data: categories = [] } = useCategories(user?.id || "");
-  const deleteTransaction = useDeleteTransaction();
 
   // Filter transactions
   const filteredTransactions = transactions.filter((transaction) => {
@@ -61,19 +57,6 @@ export function TransactionList() {
   const getCategoryColor = (categoryId: string) => {
     const category = categories.find((c) => c.id === categoryId);
     return category?.color || "#6b7280";
-  };
-
-  const handleDelete = async (transactionId: string) => {
-    if (user?.id) {
-      try {
-        await deleteTransaction.mutateAsync({
-          userId: user.id,
-          transactionId,
-        });
-      } catch (error) {
-        console.error("Delete failed:", error);
-      }
-    }
   };
 
   if (isLoading) {
@@ -130,8 +113,8 @@ export function TransactionList() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Category</label>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger>
-                  <SelectValue />
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="All categories" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All Categories</SelectItem>
@@ -152,7 +135,8 @@ export function TransactionList() {
           </div>
         </CardContent>
       </Card>
-      {/* Transactions List */}
+
+      {/* Transactions */}
       <Card>
         <CardHeader>
           <CardTitle>Transactions</CardTitle>
@@ -176,7 +160,6 @@ export function TransactionList() {
                   transaction={transaction}
                   getCategoryName={getCategoryName}
                   getCategoryColor={getCategoryColor}
-                  handleDelete={handleDelete}
                 />
               ))}
             </div>

@@ -11,7 +11,6 @@ interface TransactionGroupProps {
   timeframe: "daily" | "weekly" | "monthly";
   getCategoryName: (id: string) => string;
   getCategoryColor: (id: string) => string;
-  handleDelete: (id: string) => void;
 }
 
 export function TransactionGroup({
@@ -20,7 +19,6 @@ export function TransactionGroup({
   timeframe,
   getCategoryName,
   getCategoryColor,
-  handleDelete,
 }: TransactionGroupProps) {
   const getGroupTitle = (groupKey: string) => {
     const date = new Date(groupKey);
@@ -67,7 +65,6 @@ export function TransactionGroup({
             transaction={transaction}
             getCategoryName={getCategoryName}
             getCategoryColor={getCategoryColor}
-            handleDelete={handleDelete}
           />
         ))}
       </div>

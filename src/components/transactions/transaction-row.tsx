@@ -1,31 +1,18 @@
 import { TransactionForm } from "./transaction-form";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit } from "lucide-react";
 import { format } from "date-fns";
 import { formatTransactionAmount } from "@/lib/utils";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Transaction } from "@/types";
 
 export function TransactionRow({
   transaction,
   getCategoryName,
   getCategoryColor,
-  handleDelete,
 }: {
   transaction: Transaction;
   getCategoryName: (id: string) => string;
   getCategoryColor: (id: string) => string;
-  handleDelete: (id: string) => void;
 }) {
   return (
     <div className="relative">
@@ -75,35 +62,6 @@ export function TransactionRow({
                 </Button>
               }
             />
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to delete &quot;
-                    {transaction.description}&quot;? This action cannot be
-                    undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => handleDelete(transaction.id)}
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
           </div>
         </div>
       </div>

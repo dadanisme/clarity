@@ -44,11 +44,6 @@ export function TransactionsContent() {
     return category?.color || "#6b7280";
   };
 
-  const handleDelete = (transactionId: string) => {
-    // TODO: Implement delete functionality
-    console.log("Delete transaction:", transactionId);
-  };
-
   const handleDateSelect = (date: Date) => {
     setCurrentPeriod(date);
   };
@@ -128,7 +123,6 @@ export function TransactionsContent() {
                   timeframe={timeframe}
                   getCategoryName={getCategoryName}
                   getCategoryColor={getCategoryColor}
-                  handleDelete={handleDelete}
                 />
               ))}
             </div>

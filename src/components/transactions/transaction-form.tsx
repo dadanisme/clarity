@@ -24,14 +24,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { useCategories } from "@/hooks/use-categories";
 import {
   useCreateTransaction,
   useUpdateTransaction,
+  useDeleteTransaction,
 } from "@/hooks/use-transactions";
 import { transactionSchema } from "@/lib/validations";
-import { Plus, Edit } from "lucide-react";
+import { Plus, Edit, Trash2 } from "lucide-react";
 
 import { DatePicker } from "@/components/ui/date-picker";
 import type { Transaction } from "@/types";
@@ -55,6 +67,7 @@ export function TransactionForm({
   const { data: categories = [] } = useCategories(user?.id || "");
   const createTransaction = useCreateTransaction();
   const updateTransaction = useUpdateTransaction();
+  const deleteTransaction = useDeleteTransaction();
 
   const {
     register,
@@ -106,6 +119,20 @@ export function TransactionForm({
       reset();
     } catch (error) {
       console.error("Transaction save failed:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (user?.id && transaction) {
+      try {
+        await deleteTransaction.mutateAsync({
+          userId: user.id,
+          transactionId: transaction.id,
+        });
+        setOpen(false);
+      } catch (error) {
+        console.error("Delete failed:", error);
+      }
     }
   };
 
@@ -253,23 +280,56 @@ export function TransactionForm({
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? mode === "create"
-                  ? "Adding..."
-                  : "Updating..."
-                : mode === "create"
-                ? "Add Transaction"
-                : "Update Transaction"}
-            </Button>
+          <div className="pt-4">
+            {mode === "edit" && (
+              <div className="flex space-x-2">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="flex-1 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete &quot;
+                        {transaction?.description}&quot;? This action cannot be
+                        undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDelete}
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1"
+                >
+                  {isSubmitting ? "Updating..." : "Update Transaction"}
+                </Button>
+              </div>
+            )}
+            {mode === "create" && (
+              <div className="flex justify-end">
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Adding..." : "Add Transaction"}
+                </Button>
+              </div>
+            )}
           </div>
         </form>
       </DialogContent>
