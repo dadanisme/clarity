@@ -10,7 +10,11 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
-import { createUser, getUser } from "@/lib/firebase/services";
+import {
+  createUser,
+  getUser,
+  createDefaultCategories,
+} from "@/lib/firebase/services";
 import type { User } from "@/types";
 
 interface AuthContextType {
@@ -51,6 +55,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               },
             };
             userData = await createUser(firebaseUser.uid, newUserData);
+
+            // Create default categories for new users
+            try {
+              await createDefaultCategories(firebaseUser.uid);
+            } catch (error) {
+              console.error("Error creating default categories:", error);
+            }
           }
 
           setUser(userData);

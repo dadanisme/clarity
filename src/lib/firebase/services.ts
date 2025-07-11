@@ -94,6 +94,95 @@ export const deleteCategory = async (userId: string, categoryId: string) => {
   await deleteDoc(categoryRef);
 };
 
+export const createDefaultCategories = async (userId: string) => {
+  const defaultCategories = [
+    // Income categories
+    {
+      name: "Salary",
+      type: "income" as const,
+      color: "#22c55e",
+      icon: "dollar-sign",
+      isDefault: true,
+    },
+    {
+      name: "Freelance",
+      type: "income" as const,
+      color: "#06b6d4",
+      icon: "briefcase",
+      isDefault: true,
+    },
+    {
+      name: "Investment",
+      type: "income" as const,
+      color: "#8b5cf6",
+      icon: "trending-up",
+      isDefault: true,
+    },
+    {
+      name: "Other Income",
+      type: "income" as const,
+      color: "#84cc16",
+      icon: "plus-circle",
+      isDefault: true,
+    },
+    // Expense categories
+    {
+      name: "Food & Dining",
+      type: "expense" as const,
+      color: "#ef4444",
+      icon: "utensils",
+      isDefault: true,
+    },
+    {
+      name: "Transportation",
+      type: "expense" as const,
+      color: "#f97316",
+      icon: "car",
+      isDefault: true,
+    },
+    {
+      name: "Shopping",
+      type: "expense" as const,
+      color: "#eab308",
+      icon: "shopping-bag",
+      isDefault: true,
+    },
+    {
+      name: "Bills & Utilities",
+      type: "expense" as const,
+      color: "#3b82f6",
+      icon: "zap",
+      isDefault: true,
+    },
+    {
+      name: "Entertainment",
+      type: "expense" as const,
+      color: "#ec4899",
+      icon: "music",
+      isDefault: true,
+    },
+    {
+      name: "Healthcare",
+      type: "expense" as const,
+      color: "#6b7280",
+      icon: "heart",
+      isDefault: true,
+    },
+  ];
+
+  const categoriesRef = collection(db, "users", userId, "categories");
+
+  // Create all default categories
+  const promises = defaultCategories.map((category) => {
+    const categoryData: Omit<Category, "id" | "createdAt"> = {
+      ...category,
+    };
+    return addDoc(categoriesRef, { ...categoryData, createdAt: new Date() });
+  });
+
+  await Promise.all(promises);
+};
+
 // Transaction services
 export const getTransactions = async (
   userId: string,
