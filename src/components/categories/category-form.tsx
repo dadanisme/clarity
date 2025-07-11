@@ -14,9 +14,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useAuth } from "@/lib/providers/auth-provider";
-import { useCreateCategory, useUpdateCategory } from "@/hooks/use-categories";
-import { Plus, Edit } from "lucide-react";
+import {
+  useCreateCategory,
+  useUpdateCategory,
+  useDeleteCategory,
+} from "@/hooks/use-categories";
+import { Plus, Edit, Trash2 } from "lucide-react";
 import type { Category } from "@/types";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 
@@ -50,6 +65,7 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
   const { user } = useAuth();
   const createCategory = useCreateCategory();
   const updateCategory = useUpdateCategory();
+  const deleteCategory = useDeleteCategory();
 
   const {
     register,
@@ -101,6 +117,20 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
       reset();
     } catch (error) {
       console.error("Category save failed:", error);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (user?.id && category) {
+      try {
+        await deleteCategory.mutateAsync({
+          userId: user.id,
+          categoryId: category.id,
+        });
+        setOpen(false);
+      } catch (error) {
+        console.error("Delete failed:", error);
+      }
     }
   };
 
@@ -199,23 +229,62 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end space-x-2 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? mode === "create"
-                  ? "Adding..."
-                  : "Updating..."
-                : mode === "create"
-                ? "Add Category"
-                : "Update Category"}
-            </Button>
+          <div className="pt-4">
+            {mode === "edit" && !category?.isDefault && (
+              <div className="flex space-x-2">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="flex-1 text-destructive hover:text-destructive/80 border-destructive/20 hover:border-destructive/30"
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Category</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete &quot;
+                        {category?.name}&quot;? This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDelete}
+                        className="bg-destructive hover:bg-destructive/90"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex-1"
+                >
+                  {isSubmitting ? "Updating..." : "Update Category"}
+                </Button>
+              </div>
+            )}
+            {mode === "create" && (
+              <div className="flex justify-end">
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Adding..." : "Add Category"}
+                </Button>
+              </div>
+            )}
+            {mode === "edit" && category?.isDefault && (
+              <div className="flex justify-end">
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Updating..." : "Update Category"}
+                </Button>
+              </div>
+            )}
           </div>
         </form>
       </DialogContent>
