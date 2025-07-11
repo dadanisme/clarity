@@ -21,5 +21,5 @@ export function useThemeSync() {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [theme, user?.id, user?.settings?.theme, updateSettings]);
+  }, [theme, user?.id, user?.settings?.theme]);
 }
