@@ -17,22 +17,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/providers/auth-provider";
-import { useUpdateUserSettings } from "@/hooks/use-settings";
-import { useState } from "react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export function SettingsContent() {
   const { user } = useAuth();
-  const [theme, setTheme] = useState(user?.settings?.theme || "system");
-  const updateSettings = useUpdateUserSettings();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  const handleThemeChange = async (newTheme: "light" | "dark" | "system") => {
+  // Ensure component is mounted before accessing theme
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleThemeChange = (newTheme: "light" | "dark" | "system") => {
     setTheme(newTheme);
-    if (user?.id) {
-      await updateSettings.mutateAsync({
-        userId: user.id,
-        settings: { theme: newTheme },
-      });
-    }
   };
 
   return (
@@ -51,15 +50,17 @@ export function SettingsContent() {
         <CardContent className="space-y-4">
           <div>
             <Label htmlFor="name">Full Name</Label>
-            <p className="text-sm text-gray-600 mt-1">{user?.displayName}</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              {user?.displayName}
+            </p>
           </div>
           <div>
             <Label htmlFor="email">Email</Label>
-            <p className="text-sm text-gray-600 mt-1">{user?.email}</p>
+            <p className="text-sm text-muted-foreground mt-1">{user?.email}</p>
           </div>
           <div>
             <Label htmlFor="memberSince">Member Since</Label>
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               {user?.createdAt
                 ? new Date(user.createdAt).toLocaleDateString()
                 : "N/A"}
@@ -77,7 +78,10 @@ export function SettingsContent() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="theme">Theme</Label>
-            <Select value={theme} onValueChange={handleThemeChange}>
+            <Select
+              value={mounted ? theme : "system"}
+              onValueChange={handleThemeChange}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select theme" />
               </SelectTrigger>
@@ -87,7 +91,7 @@ export function SettingsContent() {
                 <SelectItem value="system">System</SelectItem>
               </SelectContent>
             </Select>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Choose your preferred color theme
             </p>
           </div>

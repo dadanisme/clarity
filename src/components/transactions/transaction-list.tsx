@@ -63,7 +63,7 @@ export function TransactionList() {
     return (
       <Card>
         <CardContent className="flex items-center justify-center py-8">
-          <div className="text-gray-500">Loading transactions...</div>
+          <div className="text-muted-foreground">Loading transactions...</div>
         </CardContent>
       </Card>
     );
@@ -85,7 +85,7 @@ export function TransactionList() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Search</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Search transactions..."
                   value={searchTerm}
@@ -147,7 +147,7 @@ export function TransactionList() {
         </CardHeader>
         <CardContent>
           {filteredTransactions.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               {searchTerm || typeFilter !== "all" || categoryFilter !== "all"
                 ? "No transactions match your filters."
                 : "No transactions yet. Add your first transaction to get started!"}

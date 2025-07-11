@@ -151,7 +151,7 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
               {...register("name", { required: "Name is required" })}
             />
             {errors.name && (
-              <p className="text-sm text-red-600">{errors.name.message}</p>
+              <p className="text-sm text-destructive">{errors.name.message}</p>
             )}
           </div>
 
@@ -171,7 +171,7 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
               />
             </div>
             {errors.type && (
-              <p className="text-sm text-red-600">{errors.type.message}</p>
+              <p className="text-sm text-destructive">{errors.type.message}</p>
             )}
           </div>
 
@@ -185,8 +185,8 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
                   type="button"
                   className={`w-8 h-8 rounded-full border-2 transition-all ${
                     watchedColor === color
-                      ? "border-gray-900 scale-110"
-                      : "border-gray-300 hover:border-gray-600"
+                      ? "border-foreground scale-110"
+                      : "border-border hover:border-foreground"
                   }`}
                   style={{ backgroundColor: color }}
                   onClick={() => setValue("color", color)}
@@ -194,7 +194,7 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
               ))}
             </div>
             {errors.color && (
-              <p className="text-sm text-red-600">{errors.color.message}</p>
+              <p className="text-sm text-destructive">{errors.color.message}</p>
             )}
           </div>
 

@@ -23,7 +23,7 @@ export function TransactionRow({
         trigger={<div className="block md:hidden absolute inset-0 z-10" />}
       />
       {/* Row content */}
-      <div className="flex items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
+      <div className="flex items-center justify-between p-4 border rounded-lg bg-card hover:bg-accent transition-colors">
         <div className="flex items-center space-x-4">
           <div
             className="w-3 h-3 rounded-full"
@@ -33,7 +33,7 @@ export function TransactionRow({
           />
           <div>
             <p className="font-medium">{transaction.description}</p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               {getCategoryName(transaction.categoryId)} •{" "}
               {format(transaction.date, "MMM dd, yyyy")}
             </p>
@@ -44,8 +44,8 @@ export function TransactionRow({
             <p
               className={`font-medium ${
                 transaction.type === "income"
-                  ? "text-green-600"
-                  : "text-red-600"
+                  ? "text-success"
+                  : "text-destructive"
               }`}
             >
               {formatTransactionAmount(transaction.amount, transaction.type)}

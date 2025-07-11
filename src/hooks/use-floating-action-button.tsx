@@ -28,7 +28,7 @@ export function useFloatingActionButton() {
           mode="create"
           trigger={
             <div className="w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 flex items-center justify-center">
-              <Tag className="w-6 h-6 text-white" />
+              <Tag className="w-6 h-6 text-primary-foreground" />
             </div>
           }
         />
@@ -43,7 +43,7 @@ export function useFloatingActionButton() {
         mode="create"
         trigger={
           <div className="w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-primary/90 flex items-center justify-center">
-            <Plus className="w-6 h-6 text-white" />
+            <Plus className="w-6 h-6 text-primary-foreground" />
           </div>
         }
       />

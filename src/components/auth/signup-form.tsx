@@ -56,7 +56,7 @@ export function SignUpForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
@@ -77,7 +77,7 @@ export function SignUpForm() {
                 {...register("displayName")}
               />
               {errors.displayName && (
-                <p className="text-sm text-red-600">
+                <p className="text-sm text-destructive">
                   {errors.displayName.message}
                 </p>
               )}
@@ -92,7 +92,9 @@ export function SignUpForm() {
                 {...register("email")}
               />
               {errors.email && (
-                <p className="text-sm text-red-600">{errors.email.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
@@ -105,7 +107,7 @@ export function SignUpForm() {
                 {...register("password")}
               />
               {errors.password && (
-                <p className="text-sm text-red-600">
+                <p className="text-sm text-destructive">
                   {errors.password.message}
                 </p>
               )}
@@ -120,14 +122,14 @@ export function SignUpForm() {
                 {...register("confirmPassword")}
               />
               {errors.confirmPassword && (
-                <p className="text-sm text-red-600">
+                <p className="text-sm text-destructive">
                   {errors.confirmPassword.message}
                 </p>
               )}
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 text-center">{error}</p>
+              <p className="text-sm text-destructive text-center">{error}</p>
             )}
 
             <Button type="submit" className="w-full" disabled={isSubmitting}>

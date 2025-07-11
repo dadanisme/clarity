@@ -47,13 +47,13 @@ export function TransactionGroup({
         <TransactionForm
           mode="create"
           trigger={
-            <div className="text-sm text-gray-500 font-medium cursor-pointer hover:text-gray-700 transition-colors">
+            <div className="text-sm text-muted-foreground font-medium cursor-pointer hover:text-foreground transition-colors">
               {getGroupTitle(groupKey)}
             </div>
           }
           defaultDate={new Date(groupKey)}
         />
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-muted-foreground">
           {groupTransactions.length} transaction
           {groupTransactions.length !== 1 ? "s" : ""}
         </div>

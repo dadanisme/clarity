@@ -193,7 +193,9 @@ export function TransactionForm({
               placeholder="0"
             />
             {errors.amount && (
-              <p className="text-sm text-red-600">{errors.amount.message}</p>
+              <p className="text-sm text-destructive">
+                {errors.amount.message}
+              </p>
             )}
           </div>
 
@@ -216,7 +218,9 @@ export function TransactionForm({
                 </SelectContent>
               </Select>
               {errors.type && (
-                <p className="text-sm text-red-600">{errors.type.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.type.message}
+                </p>
               )}
             </div>
 
@@ -244,7 +248,7 @@ export function TransactionForm({
                 </SelectContent>
               </Select>
               {errors.categoryId && (
-                <p className="text-sm text-red-600">
+                <p className="text-sm text-destructive">
                   {errors.categoryId.message}
                 </p>
               )}
@@ -260,7 +264,7 @@ export function TransactionForm({
               {...register("description")}
             />
             {errors.description && (
-              <p className="text-sm text-red-600">
+              <p className="text-sm text-destructive">
                 {errors.description.message}
               </p>
             )}
@@ -275,7 +279,7 @@ export function TransactionForm({
               placeholder="Select transaction date"
             />
             {errors.date && (
-              <p className="text-sm text-red-600">{errors.date.message}</p>
+              <p className="text-sm text-destructive">{errors.date.message}</p>
             )}
           </div>
 
@@ -288,7 +292,7 @@ export function TransactionForm({
                     <Button
                       type="button"
                       variant="outline"
-                      className="flex-1 text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
+                      className="flex-1 text-destructive hover:text-destructive/80 border-destructive/20 hover:border-destructive/30"
                     >
                       <Trash2 className="w-4 h-4 mr-2" />
                       Delete
@@ -307,7 +311,7 @@ export function TransactionForm({
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDelete}
-                        className="bg-red-600 hover:bg-red-700"
+                        className="bg-destructive hover:bg-destructive/90"
                       >
                         Delete
                       </AlertDialogAction>

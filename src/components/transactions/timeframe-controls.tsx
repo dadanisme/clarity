@@ -194,7 +194,7 @@ export function TimeframeControls({
         </Button>
 
         <Select value={getCurrentValue()} onValueChange={handleSelectChange}>
-          <SelectTrigger className="font-semibold text-lg border-none bg-transparent shadow-none hover:bg-transparent focus:ring-0 focus:ring-offset-0 p-0">
+          <SelectTrigger className="font-semibold text-lg border-none bg-transparent dark:bg-transparent shadow-none hover:bg-transparent dark:hover:bg-transparent focus:ring-0 focus:ring-offset-0 p-0">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

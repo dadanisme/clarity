@@ -50,7 +50,7 @@ export function CategoryList() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-gray-500">Loading categories...</div>
+        <div className="text-muted-foreground">Loading categories...</div>
       </div>
     );
   }
@@ -75,7 +75,7 @@ export function CategoryList() {
       {/* Categories List */}
       <div>
         {filteredCategories.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-muted-foreground">
             {typeFilter !== "all"
               ? "No categories match your filters."
               : "No categories yet. Add your first category to get started!"}
@@ -85,7 +85,7 @@ export function CategoryList() {
             {filteredCategories.map((category) => (
               <div
                 key={category.id}
-                className="flex items-center justify-between p-4 border rounded-lg bg-white"
+                className="flex items-center justify-between p-4 border rounded-lg bg-card"
               >
                 <div className="flex items-center space-x-3">
                   <div
@@ -94,7 +94,7 @@ export function CategoryList() {
                   />
                   <div>
                     <p className="font-medium">{category.name}</p>
-                    <p className="text-sm text-gray-500 capitalize">
+                    <p className="text-sm text-muted-foreground capitalize">
                       {category.type}
                       {category.isDefault && " • Default"}
                     </p>
@@ -115,7 +115,7 @@ export function CategoryList() {
                       <AlertDialogTrigger asChild>
                         <Button
                           variant="ghost"
-                          className="text-red-600 hover:text-red-700"
+                          className="text-destructive hover:text-destructive/80"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -132,7 +132,7 @@ export function CategoryList() {
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleDelete(category.id)}
-                            className="bg-red-600 hover:bg-red-700"
+                            className="bg-destructive hover:bg-destructive/90"
                           >
                             Delete
                           </AlertDialogAction>

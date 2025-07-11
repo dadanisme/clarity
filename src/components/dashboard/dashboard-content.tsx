@@ -85,10 +85,10 @@ export function DashboardContent() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Income</CardTitle>
-            <TrendingUp className="h-4 w-4 text-green-600" />
+            <TrendingUp className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
+            <div className="text-2xl font-bold text-success">
               {formatCurrency(income)}
             </div>
             <p className="text-xs text-muted-foreground">This month</p>
@@ -98,10 +98,10 @@ export function DashboardContent() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Expenses</CardTitle>
-            <TrendingDown className="h-4 w-4 text-red-600" />
+            <TrendingDown className="h-4 w-4 text-destructive" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-600">
+            <div className="text-2xl font-bold text-destructive">
               {formatCurrency(expenses)}
             </div>
             <p className="text-xs text-muted-foreground">This month</p>
@@ -129,11 +129,11 @@ export function DashboardContent() {
 
         <div>
           {transactionsLoading ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               Loading transactions...
             </div>
           ) : recentTransactions.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-muted-foreground">
               No transactions yet. Add your first transaction to get started!
             </div>
           ) : (
@@ -141,7 +141,7 @@ export function DashboardContent() {
               {recentTransactions.map((transaction) => (
                 <div
                   key={transaction.id}
-                  className="flex items-center justify-between p-4 border rounded-lg bg-white"
+                  className="flex items-center justify-between p-4 border rounded-lg bg-card"
                 >
                   <div className="flex items-center space-x-4">
                     <div
@@ -154,7 +154,7 @@ export function DashboardContent() {
                     />
                     <div>
                       <p className="font-medium">{transaction.description}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-muted-foreground">
                         {getCategoryName(transaction.categoryId)}
                       </p>
                     </div>
@@ -163,8 +163,8 @@ export function DashboardContent() {
                     <p
                       className={`font-medium ${
                         transaction.type === "income"
-                          ? "text-green-600"
-                          : "text-red-600"
+                          ? "text-success"
+                          : "text-destructive"
                       }`}
                     >
                       {formatTransactionAmount(
@@ -172,7 +172,7 @@ export function DashboardContent() {
                         transaction.type
                       )}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-muted-foreground">
                       {format(transaction.date, "MMM dd, yyyy")}
                     </p>
                   </div>

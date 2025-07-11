@@ -92,11 +92,11 @@ export function TransactionsContent() {
       {/* Transactions List */}
       <div>
         {isLoading ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-muted-foreground">
             Loading transactions...
           </div>
         ) : sortedGroups.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-muted-foreground">
             {getEmptyStateMessage()}
           </div>
         ) : (
