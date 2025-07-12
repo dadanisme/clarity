@@ -14,16 +14,25 @@ export function PWAInstaller() {
     useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
+  const [isEntering, setIsEntering] = useState(false);
   const [timeLeft, setTimeLeft] = useState(10);
 
   useEffect(() => {
+    console.log("PWAInstaller");
+
     const handler = (e: Event) => {
       // Store the event without preventing default immediately
       // This prevents the warning about preventDefault() without prompt()
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setShowInstallPrompt(true);
       setIsExiting(false);
+      setIsEntering(true);
       setTimeLeft(10);
+
+      // Remove entering state after animation completes
+      setTimeout(() => {
+        setIsEntering(false);
+      }, 300);
     };
 
     window.addEventListener("beforeinstallprompt", handler);
@@ -88,38 +97,42 @@ export function PWAInstaller() {
 
   return (
     <div
-      className={`fixed bottom-4 left-4 right-4 z-50 bg-card border rounded-lg p-4 shadow-lg max-w-sm mx-auto sm:max-w-none transition-all duration-300 ease-in-out ${
+      className={`fixed bottom-4 left-4 right-4 z-50 bg-card border rounded-lg p-4 shadow-lg max-w-sm mx-auto sm:max-w-none transition-all duration-300 ease-out ${
         isExiting
           ? "opacity-0 translate-y-2 pointer-events-none"
+          : isEntering
+          ? "opacity-0 translate-y-4"
           : "opacity-100 translate-y-0"
       }`}
     >
       {/* Progress Bar */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20 rounded-t-lg overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-0.5 bg-muted/20 rounded-t-lg overflow-hidden">
         <div
           className="h-full bg-primary transition-all duration-1000 ease-linear"
           style={{ width: `${progress}%` }}
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div className="flex items-start space-x-3">
-          <Download className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-          <div className="min-w-0 flex-1">
-            <p className="font-medium text-sm sm:text-base">Install Clarity</p>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Add to your home screen for quick access
-            </p>
+      <div className="flex items-start space-x-3">
+        <Download className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="font-medium text-sm sm:text-base">
+                Install Clarity
+              </p>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Add to your home screen for quick access
+              </p>
+            </div>
+            <Button
+              onClick={handleInstallClick}
+              size="default"
+              className="text-sm px-4 py-2 h-10 flex-shrink-0"
+            >
+              Install
+            </Button>
           </div>
-        </div>
-        <div className="flex items-center justify-end space-x-2 sm:flex-shrink-0">
-          <Button
-            onClick={handleInstallClick}
-            size="default"
-            className="text-sm px-4 py-2 h-10"
-          >
-            Install
-          </Button>
         </div>
       </div>
     </div>

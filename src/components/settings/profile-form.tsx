@@ -165,7 +165,11 @@ export function ProfileForm() {
       )}
 
       {/* Submit Button */}
-      <Button type="submit" disabled={isUpdating || isUploading}>
+      <Button
+        type="submit"
+        disabled={isUpdating || isUploading}
+        className="w-full sm:w-auto"
+      >
         {isUpdating ? "Updating..." : "Update Profile"}
       </Button>
     </form>

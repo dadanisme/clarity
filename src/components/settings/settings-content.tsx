@@ -20,6 +20,7 @@ import { useAuth } from "@/lib/providers/auth-provider";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { ProfileForm } from "./profile-form";
+import { PWAInstallButton } from "./pwa-install-button";
 
 export function SettingsContent() {
   const { user } = useAuth();
@@ -77,7 +78,7 @@ export function SettingsContent() {
       </Card>
 
       {/* Preferences */}
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
           <CardTitle>Preferences</CardTitle>
           <CardDescription>Customize your app experience</CardDescription>
@@ -100,6 +101,26 @@ export function SettingsContent() {
             </Select>
             <p className="text-sm text-muted-foreground">
               Choose your preferred color theme
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* App Installation */}
+      <Card>
+        <CardHeader>
+          <CardTitle>App Installation</CardTitle>
+          <CardDescription>
+            Install Clarity as a native app on your device
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Install App</Label>
+            <PWAInstallButton />
+            <p className="text-sm text-muted-foreground">
+              Install Clarity on your home screen for quick access and offline
+              use
             </p>
           </div>
         </CardContent>
