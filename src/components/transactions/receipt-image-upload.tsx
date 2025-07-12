@@ -41,7 +41,15 @@ export function ReceiptImageUpload({
   };
 
   const handleCameraCapture = () => {
-    fileInputRef.current?.click();
+    if (fileInputRef.current) {
+      // Temporarily add capture attribute for camera access
+      fileInputRef.current.setAttribute('capture', 'environment');
+      fileInputRef.current.click();
+      // Remove capture attribute after clicking
+      setTimeout(() => {
+        fileInputRef.current?.removeAttribute('capture');
+      }, 100);
+    }
   };
 
   const handleClearImage = () => {
@@ -59,14 +67,10 @@ export function ReceiptImageUpload({
           type="button"
           variant="outline"
           onClick={handleCameraCapture}
-          disabled
-          className="flex-1 relative"
+          className="flex-1"
         >
           <Camera className="w-4 h-4 mr-2" />
           Take Photo
-          <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-            Soon
-          </span>
         </Button>
         <Button
           type="button"
@@ -82,7 +86,6 @@ export function ReceiptImageUpload({
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         onChange={handleFileInputChange}
         className="hidden"
       />

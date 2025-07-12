@@ -272,7 +272,7 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".xlsx,.xls,.csv"
+                  accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv,.xlsx,.xls,.csv"
                   onChange={handleFileSelect}
                   className="hidden"
                 />
