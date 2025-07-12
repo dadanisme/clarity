@@ -40,17 +40,6 @@ export function ReceiptImageUpload({
     }
   };
 
-  const handleCameraCapture = () => {
-    if (fileInputRef.current) {
-      // Temporarily add capture attribute for camera access
-      fileInputRef.current.setAttribute('capture', 'environment');
-      fileInputRef.current.click();
-      // Remove capture attribute after clicking
-      setTimeout(() => {
-        fileInputRef.current?.removeAttribute('capture');
-      }, 100);
-    }
-  };
 
   const handleClearImage = () => {
     onImageClear();
@@ -59,28 +48,50 @@ export function ReceiptImageUpload({
     }
   };
 
+  const handleFileClear = () => {
+    handleClearImage();
+  };
+
   return (
     <div className="space-y-4">
       <Label>Receipt Image</Label>
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleCameraCapture}
-          className="flex-1"
-        >
-          <Camera className="w-4 h-4 mr-2" />
-          Take Photo
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => fileInputRef.current?.click()}
-          className="flex-1"
-        >
-          <Upload className="w-4 h-4 mr-2" />
-          Upload Image
-        </Button>
+      <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 transition-colors hover:border-muted-foreground/50">
+        {imagePreview ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Camera className="w-8 h-8 text-primary" />
+              <div>
+                <p className="font-medium">Receipt image selected</p>
+                <p className="text-sm text-muted-foreground">
+                  Image ready for processing
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleFileClear}
+            >
+              <XCircle className="w-4 h-4" />
+            </Button>
+          </div>
+        ) : (
+          <div className="text-center">
+            <Camera className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+            <div className="space-y-2">
+              <Button
+                variant="secondary"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Choose Image
+              </Button>
+              <p className="text-sm text-muted-foreground">
+                Supports JPG, PNG, and other image formats
+              </p>
+            </div>
+          </div>
+        )}
       </div>
       <input
         ref={fileInputRef}
@@ -97,15 +108,6 @@ export function ReceiptImageUpload({
             alt="Receipt preview"
             className="w-full max-h-64 object-contain rounded-lg border"
           />
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            className="absolute top-2 right-2"
-            onClick={handleClearImage}
-          >
-            <XCircle className="w-4 h-4" />
-          </Button>
         </div>
       )}
     </div>

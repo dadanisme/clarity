@@ -90,7 +90,7 @@ export function ReceiptParser({
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Parse Receipt</DialogTitle>
+          <DialogTitle>AI Scan</DialogTitle>
           <DialogDescription>
             Upload a receipt image and optionally specify what you ordered to
             automatically extract transaction details.
