@@ -104,11 +104,9 @@ export function TransactionsContent() {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="hidden md:flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <div className="hidden md:flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4 mb-6">
         <div className="flex gap-2">
           <ExcelImport onImportComplete={() => refetch()} />
-        </div>
-        <div className="flex gap-2">
           <ReceiptParser
             onReceiptParsed={handleReceiptParsed}
             userCategories={categories}
