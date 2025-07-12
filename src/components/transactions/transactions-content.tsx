@@ -12,7 +12,7 @@ import { createTransactionsFromReceipt } from "@/lib/utils/category-mapper";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionGroup } from "@/components/transactions/transaction-group";
 import { TimeframeControls } from "@/components/transactions/timeframe-controls";
-import { DummyDataButton } from "@/components/transactions/dummy-data-button";
+import { ExcelImport } from "@/components/transactions/excel-import";
 import { ReceiptParser } from "@/components/transactions/receipt-parser";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
@@ -20,7 +20,7 @@ import { TransactionSkeletonList } from "./transaction-skeleton-list";
 
 export function TransactionsContent() {
   const { user } = useAuth();
-  const { data: transactions = [], isLoading } = useTransactions(
+  const { data: transactions = [], isLoading, refetch } = useTransactions(
     user?.id || ""
   );
   const { data: categories = [] } = useCategories(user?.id || "");
@@ -105,7 +105,9 @@ export function TransactionsContent() {
     <div className="px-4 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="hidden md:flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        {process.env.NODE_ENV === "development" ? <DummyDataButton /> : <div />}
+        <div className="flex gap-2">
+          <ExcelImport onImportComplete={() => refetch()} />
+        </div>
         <div className="flex gap-2">
           <ReceiptParser
             onReceiptParsed={handleReceiptParsed}
