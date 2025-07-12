@@ -48,14 +48,34 @@ export function DashboardLayoutClient({
     { name: "Categories", href: PATHS.categories, icon: Tag },
   ];
 
+  const mobileNavigation = [
+    ...navigation,
+    { name: "Settings", href: PATHS.settings, icon: Settings },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center">
+            {/* Desktop Logo */}
+            <div className="hidden md:flex items-center">
+              <Link
+                href={PATHS.transactions}
+                className="flex items-center space-x-2 cursor-pointer"
+              >
+                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                  <Wallet className="w-5 h-5 text-primary-foreground" />
+                </div>
+                <span className="text-xl font-bold text-foreground">
+                  Clarity
+                </span>
+              </Link>
+            </div>
+
+            {/* Mobile Centered Logo */}
+            <div className="md:hidden flex-1 flex justify-center">
               <Link
                 href={PATHS.transactions}
                 className="flex items-center space-x-2 cursor-pointer"
@@ -91,8 +111,8 @@ export function DashboardLayoutClient({
               })}
             </nav>
 
-            {/* User Menu */}
-            <div className="flex items-center space-x-4">
+            {/* Desktop User Menu */}
+            <div className="hidden md:flex items-center space-x-4">
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -154,6 +174,11 @@ export function DashboardLayoutClient({
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
+
+            {/* Mobile Header Actions */}
+            <div className="md:hidden flex items-center space-x-2">
+              {/* Mobile header is now empty - removed theme toggle and user avatar */}
+            </div>
           </div>
         </div>
       </header>
@@ -193,14 +218,14 @@ export function DashboardLayoutClient({
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t z-50">
         <div className="flex justify-center space-x-6 px-6">
-          {navigation.map((item) => {
+          {mobileNavigation.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex flex-col items-center py-3 px-2 transition-colors ${
+                className={`flex flex-col items-center py-3 px-1 transition-colors ${
                   isActive
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
