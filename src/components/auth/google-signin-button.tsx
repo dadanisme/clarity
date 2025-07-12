@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { useState } from "react";
-import { Spinner } from "@/components/ui/loading";
 
 interface GoogleSignInButtonProps {
   variant?:
@@ -43,14 +42,14 @@ export function GoogleSignInButton({
       type="button"
       variant={variant}
       size={size}
-      className={`w-full bg-background text-foreground border border-input hover:bg-accent hover:text-accent-foreground ${className}`}
+      className={`w-full h-11 bg-background text-foreground border border-input hover:bg-accent hover:text-accent-foreground transition-all duration-200 shadow-sm hover:shadow-md ${className}`}
       onClick={handleGoogleSignIn}
       disabled={isLoading}
     >
       {isLoading ? (
         <div className="flex items-center gap-2">
-          <Spinner size="sm" />
-          Signing in...
+          <div className="w-4 h-4 border-2 border-foreground/30 border-t-foreground rounded-full animate-spin" />
+          Signing in with Google...
         </div>
       ) : (
         <div className="flex items-center gap-3">
