@@ -48,3 +48,8 @@ firestore-debug.log
 ui-debug.log
 
 prompts/
+
+# PWA artifacts
+/public/sw.js
+/public/workbox-*.js
+/public/workbox-*.js.map
