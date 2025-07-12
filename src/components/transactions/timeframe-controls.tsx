@@ -11,24 +11,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  useTimeframeStore,
+  type TimeframeType,
+} from "@/lib/stores/timeframe-store";
 
-interface TimeframeControlsProps {
-  timeframe: "daily" | "weekly" | "monthly";
-  currentPeriod: Date;
-  onTimeframeChange: (timeframe: "daily" | "weekly" | "monthly") => void;
-  onPrevious: () => void;
-  onNext: () => void;
-  onDateSelect: (date: Date) => void;
-}
-
-export function TimeframeControls({
-  timeframe,
-  currentPeriod,
-  onTimeframeChange,
-  onPrevious,
-  onNext,
-  onDateSelect,
-}: TimeframeControlsProps) {
+export function TimeframeControls() {
+  const {
+    timeframe,
+    currentPeriod,
+    setTimeframe,
+    setCurrentPeriod,
+    goToPrevious,
+    goToNext,
+  } = useTimeframeStore();
   const getSelectOptions = () => {
     const currentYear = new Date().getFullYear();
 
@@ -122,35 +118,8 @@ export function TimeframeControls({
   };
 
   const handleTimeframeChange = (value: string) => {
-    const newTimeframe = value as "daily" | "weekly" | "monthly";
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth();
-
-    // Reset to current period when switching timeframes
-    let newDate: Date;
-
-    switch (newTimeframe) {
-      case "daily":
-        // Reset to current month of current year
-        newDate = new Date(currentYear, currentMonth, 1);
-        break;
-      case "weekly":
-        // Reset to current quarter of current year
-        const currentQuarter = Math.floor(currentMonth / 3);
-        const quarterMonth = currentQuarter * 3;
-        newDate = new Date(currentYear, quarterMonth, 1);
-        break;
-      case "monthly":
-        // Reset to current year
-        newDate = new Date(currentYear, 0, 1);
-        break;
-      default:
-        newDate = new Date();
-    }
-
-    // Update both timeframe and current period
-    onTimeframeChange(newTimeframe);
-    onDateSelect(newDate);
+    const newTimeframe = value as TimeframeType;
+    setTimeframe(newTimeframe);
   };
 
   const handleSelectChange = (value: string) => {
@@ -175,7 +144,7 @@ export function TimeframeControls({
         newDate = new Date();
     }
 
-    onDateSelect(newDate);
+    setCurrentPeriod(newDate);
   };
 
   return (
@@ -185,7 +154,7 @@ export function TimeframeControls({
         <Button
           variant="outline"
           size="sm"
-          onClick={onPrevious}
+          onClick={goToPrevious}
           disabled={isPreviousDisabled()}
           className="flex items-center space-x-1"
         >
@@ -209,7 +178,7 @@ export function TimeframeControls({
         <Button
           variant="outline"
           size="sm"
-          onClick={onNext}
+          onClick={goToNext}
           disabled={isNextDisabled()}
           className="flex items-center space-x-1"
         >

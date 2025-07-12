@@ -67,15 +67,7 @@ export function TransactionsContent() {
       console.error("Failed to create transactions from receipt:", error);
     }
   };
-  const {
-    timeframe,
-    setTimeframe,
-    currentPeriod,
-    sortedGroups,
-    goToPrevious,
-    goToNext,
-    setCurrentPeriod,
-  } = useTransactionGroups(transactions);
+  const { timeframe, currentPeriod, sortedGroups } = useTransactionGroups(transactions);
 
   const getCategoryName = (categoryId: string) => {
     const category = categories.find((c) => c.id === categoryId);
@@ -87,9 +79,6 @@ export function TransactionsContent() {
     return category?.color || "#6b7280";
   };
 
-  const handleDateSelect = (date: Date) => {
-    setCurrentPeriod(date);
-  };
 
   const getEmptyStateMessage = () => {
     if (transactions.length === 0) {
@@ -136,14 +125,7 @@ export function TransactionsContent() {
 
       {/* Timeframe Control */}
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mb-6 py-2">
-        <TimeframeControls
-          timeframe={timeframe}
-          currentPeriod={currentPeriod}
-          onTimeframeChange={setTimeframe}
-          onPrevious={goToPrevious}
-          onNext={goToNext}
-          onDateSelect={handleDateSelect}
-        />
+        <TimeframeControls />
       </div>
 
       {/* Transactions List */}

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import {
   format,
   startOfWeek,
@@ -10,12 +10,18 @@ import {
   isWithinInterval,
 } from "date-fns";
 import { Transaction } from "@/types";
+import { useTimeframeStore } from "@/lib/stores/timeframe-store";
 
 export function useTransactionGroups(transactions: Transaction[]) {
-  const [timeframe, setTimeframe] = useState<"daily" | "weekly" | "monthly">(
-    "daily"
-  );
-  const [currentPeriod, setCurrentPeriod] = useState(new Date());
+  const {
+    timeframe,
+    currentPeriod,
+    setTimeframe,
+    setCurrentPeriod,
+    goToPrevious,
+    goToNext,
+    goToToday,
+  } = useTimeframeStore();
 
   // Filter transactions based on current period and timeframe
   const filteredTransactions = useMemo(() => {
@@ -80,42 +86,6 @@ export function useTransactionGroups(transactions: Transaction[]) {
     return new Date(b).getTime() - new Date(a).getTime();
   });
 
-  // Navigation functions
-  const goToPrevious = () => {
-    const newDate = new Date(currentPeriod);
-    switch (timeframe) {
-      case "daily":
-        newDate.setMonth(newDate.getMonth() - 1);
-        break;
-      case "weekly":
-        newDate.setMonth(newDate.getMonth() - 3); // Previous quarter
-        break;
-      case "monthly":
-        newDate.setFullYear(newDate.getFullYear() - 1);
-        break;
-    }
-    setCurrentPeriod(newDate);
-  };
-
-  const goToNext = () => {
-    const newDate = new Date(currentPeriod);
-    switch (timeframe) {
-      case "daily":
-        newDate.setMonth(newDate.getMonth() + 1);
-        break;
-      case "weekly":
-        newDate.setMonth(newDate.getMonth() + 3); // Next quarter
-        break;
-      case "monthly":
-        newDate.setFullYear(newDate.getFullYear() + 1);
-        break;
-    }
-    setCurrentPeriod(newDate);
-  };
-
-  const goToToday = () => {
-    setCurrentPeriod(new Date());
-  };
 
   return {
     timeframe,
