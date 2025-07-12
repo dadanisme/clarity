@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Check } from "lucide-react";
+import { Download, Check, Info } from "lucide-react";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -73,7 +73,8 @@ export function PWAInstallButton() {
   // Don't show button if PWA is not available
   if (!deferredPrompt) {
     return (
-      <div className="text-sm text-muted-foreground">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Info className="w-4 h-4" />
         Install not available on this device
       </div>
     );
