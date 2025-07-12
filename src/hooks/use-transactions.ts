@@ -6,11 +6,15 @@ import {
   deleteTransaction,
 } from "@/lib/firebase/services";
 import type { TransactionFormData } from "@/lib/validations";
+import { useTimeframeStore } from "@/lib/stores/timeframe-store";
 
 export function useTransactions(userId: string) {
+  const { getDateRange, timeframe, currentPeriod } = useTimeframeStore();
+  const { startDate, endDate } = getDateRange();
+  
   return useQuery({
-    queryKey: ["transactions", userId],
-    queryFn: () => getTransactions(userId),
+    queryKey: ["transactions", userId, timeframe, currentPeriod.getTime()],
+    queryFn: () => getTransactions(userId, { startDate, endDate }),
     enabled: !!userId,
   });
 }
@@ -27,7 +31,10 @@ export function useCreateTransaction() {
       data: TransactionFormData;
     }) => createTransaction(userId, data),
     onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ["transactions", userId] });
+      queryClient.invalidateQueries({ 
+        queryKey: ["transactions", userId],
+        type: "all"
+      });
     },
   });
 }
@@ -46,7 +53,10 @@ export function useUpdateTransaction() {
       data: Partial<TransactionFormData>;
     }) => updateTransaction(userId, transactionId, data),
     onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ["transactions", userId] });
+      queryClient.invalidateQueries({ 
+        queryKey: ["transactions", userId],
+        type: "all"
+      });
     },
   });
 }
@@ -63,7 +73,10 @@ export function useDeleteTransaction() {
       transactionId: string;
     }) => deleteTransaction(userId, transactionId),
     onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ["transactions", userId] });
+      queryClient.invalidateQueries({ 
+        queryKey: ["transactions", userId],
+        type: "all"
+      });
     },
   });
 }

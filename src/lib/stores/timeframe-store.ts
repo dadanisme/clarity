@@ -1,5 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import {
+  startOfMonth,
+  endOfMonth,
+  startOfQuarter,
+  endOfQuarter,
+  startOfYear,
+  endOfYear,
+} from "date-fns";
 
 export type TimeframeType = "daily" | "weekly" | "monthly";
 
@@ -12,6 +20,7 @@ interface TimeframeState {
   goToNext: () => void;
   goToToday: () => void;
   resetToCurrentPeriod: (newTimeframe: TimeframeType) => void;
+  getDateRange: () => { startDate: Date; endDate: Date };
 }
 
 export const useTimeframeStore = create<TimeframeState>()(
@@ -96,6 +105,36 @@ export const useTimeframeStore = create<TimeframeState>()(
         }
 
         set({ currentPeriod: newDate });
+      },
+      
+      getDateRange: () => {
+        const { timeframe, currentPeriod } = get();
+        
+        switch (timeframe) {
+          case "daily":
+            // For daily view, show data for the selected month
+            return {
+              startDate: startOfMonth(currentPeriod),
+              endDate: endOfMonth(currentPeriod),
+            };
+          case "weekly":
+            // For weekly view, show data for the selected quarter
+            return {
+              startDate: startOfQuarter(currentPeriod),
+              endDate: endOfQuarter(currentPeriod),
+            };
+          case "monthly":
+            // For monthly view, show data for the selected year
+            return {
+              startDate: startOfYear(currentPeriod),
+              endDate: endOfYear(currentPeriod),
+            };
+          default:
+            return {
+              startDate: new Date(),
+              endDate: new Date(),
+            };
+        }
       },
     }),
     {

@@ -231,10 +231,31 @@ export const createDefaultCategories = async (userId: string) => {
 // Transaction services
 export const getTransactions = async (
   userId: string,
-  limitCount = 50
+  options?: {
+    startDate?: Date;
+    endDate?: Date;
+    limitCount?: number;
+  }
 ): Promise<Transaction[]> => {
   const transactionsRef = collection(db, "users", userId, "transactions");
-  const q = query(transactionsRef, orderBy("date", "desc"), limit(limitCount));
+  const { startDate, endDate, limitCount = 1000 } = options || {};
+  
+  let q;
+  
+  if (startDate && endDate) {
+    // Query with date range
+    q = query(
+      transactionsRef,
+      where("date", ">=", startDate),
+      where("date", "<=", endDate),
+      orderBy("date", "desc"),
+      limit(limitCount)
+    );
+  } else {
+    // Default query without date filtering
+    q = query(transactionsRef, orderBy("date", "desc"), limit(limitCount));
+  }
+  
   const querySnapshot = await getDocs(q);
 
   return querySnapshot.docs.map((doc) => ({
