@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./config";
 
-import type { User, Category, Transaction } from "@/types";
+import type { User, Category, Transaction, UserRole } from "@/types";
 
 // User services
 export const createUser = async (
@@ -76,6 +76,19 @@ export const updateUser = async (
   );
 
   await updateDoc(userRef, { ...cleanUpdates, updatedAt: new Date() });
+};
+
+export const updateUserRole = async (
+  userId: string,
+  role: UserRole,
+  updatedBy: string
+) => {
+  const userRef = doc(db, "users", userId);
+  await updateDoc(userRef, { 
+    role, 
+    updatedAt: new Date(),
+    roleUpdatedBy: updatedBy 
+  });
 };
 
 // Image upload services - using base64 for now

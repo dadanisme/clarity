@@ -13,7 +13,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DataTable } from "@/components/ui/data-table";
 import { User, UserRole, FeatureFlag, FeatureSubscription } from "@/types";
-import { useGrantFeature, useRevokeFeature } from "@/hooks/use-features";
+import { useGrantFeature, useRevokeFeature, useUpdateUserRole } from "@/hooks/use-features";
 import { FEATURE_METADATA } from "@/lib/firebase/feature-service";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -47,6 +47,7 @@ export function UserTable({ users }: UserTableProps) {
   const queryClient = useQueryClient();
   const grantFeatureMutation = useGrantFeature();
   const revokeFeatureMutation = useRevokeFeature();
+  const updateUserRoleMutation = useUpdateUserRole();
 
   // Get user features when dialog is opened
   const { data: currentUserFeatures = [] } = useQuery({
@@ -152,6 +153,14 @@ export function UserTable({ users }: UserTableProps) {
     }
   };
 
+  const handleRoleChange = async (userId: string, newRole: UserRole) => {
+    try {
+      await updateUserRoleMutation.mutateAsync({ userId, role: newRole });
+      toast.success(`User role updated to ${newRole}`);
+    } catch (error) {
+      toast.error(`Failed to update role: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
 
   const columns: ColumnDef<UserWithFeatures>[] = [
     {
@@ -252,6 +261,12 @@ export function UserTable({ users }: UserTableProps) {
                 }}
               >
                 Manage Features
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleRoleChange(user.id, user.role === UserRole.ADMIN ? UserRole.USER : UserRole.ADMIN)}
+                disabled={updateUserRoleMutation.isPending}
+              >
+                {user.role === UserRole.ADMIN ? 'Demote to User' : 'Promote to Admin'}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
