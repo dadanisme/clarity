@@ -88,7 +88,7 @@ export function TransactionItem({
               className={`text-sm font-semibold ${
                 transaction.type === "income"
                   ? "text-green-600"
-                  : "text-primary"
+                  : "text-destructive"
               }`}
             >
               {transaction.type === "income" ? "+" : "-"}
