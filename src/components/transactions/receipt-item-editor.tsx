@@ -11,7 +11,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CheckCircle, XCircle } from "lucide-react";
-import { ReceiptItem, UserCategory } from "@/types/receipt";
+import { ReceiptItem } from "@/types/receipt";
+import { getCategoryColor } from "@/lib/utils/category-utils";
+import { useCategories } from "@/hooks/use-categories";
+import { useAuth } from "@/lib/providers/auth-provider";
 
 interface ReceiptItemEditorProps {
   index: number;
@@ -21,7 +24,6 @@ interface ReceiptItemEditorProps {
     amount: string;
     category: string;
   };
-  userCategories?: UserCategory[];
   onSave: () => void;
   onCancel: () => void;
   onValueChange: (field: string, value: string) => void;
@@ -30,11 +32,13 @@ interface ReceiptItemEditorProps {
 export function ReceiptItemEditor({
   index,
   editingValues,
-  userCategories,
   onSave,
   onCancel,
   onValueChange,
 }: ReceiptItemEditorProps) {
+  const { user } = useAuth();
+  const { data: userCategories = [] } = useCategories(user?.id || "");
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
@@ -74,6 +78,7 @@ export function ReceiptItemEditor({
             onChange={(e) => onValueChange("description", e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Item description"
+            className="text-xs"
           />
         </div>
 
@@ -91,6 +96,7 @@ export function ReceiptItemEditor({
               onChange={(e) => onValueChange("amount", e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="0.00"
+              className="text-xs"
             />
           </div>
 
@@ -102,16 +108,37 @@ export function ReceiptItemEditor({
               value={editingValues.category}
               onValueChange={(value) => onValueChange("category", value)}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full text-xs">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
                 {userCategories?.map((category) => (
                   <SelectItem key={category.id} value={category.name}>
-                    {category.name}
+                    <div className="flex items-center space-x-2">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      <span>{category.name}</span>
+                    </div>
                   </SelectItem>
                 ))}
-                <SelectItem value="Other">Other</SelectItem>
+                {!userCategories?.some((cat) => cat.name === "Other") && (
+                  <SelectItem value="Other">
+                    <div className="flex items-center space-x-2">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{
+                          backgroundColor: getCategoryColor(
+                            "Other",
+                            userCategories
+                          ),
+                        }}
+                      />
+                      <span>Other</span>
+                    </div>
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>

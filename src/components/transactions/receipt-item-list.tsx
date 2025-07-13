@@ -30,7 +30,6 @@ export function ReceiptItemList({
   parsedReceipt,
   editingItem,
   editingValues,
-  userCategories,
   onStartEditing,
   onSaveEdit,
   onCancelEdit,
@@ -60,7 +59,6 @@ export function ReceiptItemList({
                 index={index}
                 item={item}
                 editingValues={editingValues}
-                userCategories={userCategories}
                 onSave={onSaveEdit}
                 onCancel={onCancelEdit}
                 onValueChange={onValueChange}

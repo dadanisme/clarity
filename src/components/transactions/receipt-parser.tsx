@@ -150,7 +150,6 @@ export function ReceiptParser({
                 parsedReceipt={parsedReceipt}
                 editingItem={editingItem}
                 editingValues={editingValues}
-                userCategories={userCategories}
                 onStartEditing={startEditing}
                 onSaveEdit={saveEdit}
                 onCancelEdit={cancelEdit}
