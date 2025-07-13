@@ -186,7 +186,7 @@ function FeaturesDisplay({ userFeatures }: FeaturesDisplayProps) {
             <div
               key={featureId}
               className={`flex items-start space-x-3 p-3 rounded-lg border ${
-                isActive ? "bg-background" : "bg-muted/30"
+                isActive ? "bg-accent" : "bg-muted/30"
               }`}
             >
               <div className="flex-1 min-w-0">
@@ -197,7 +197,7 @@ function FeaturesDisplay({ userFeatures }: FeaturesDisplayProps) {
                 >
                   <div
                     className={`w-3 h-3 rounded-full flex-shrink-0 ${
-                      isActive ? "bg-green-500" : "bg-muted-foreground/40"
+                      isActive ? "bg-success" : "bg-destructive"
                     }`}
                   />
                   <span>{metadata.name}</span>
