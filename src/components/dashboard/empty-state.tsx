@@ -39,13 +39,15 @@ export function EmptyState({ isLoading, hasTransactions }: EmptyStateProps) {
             <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-background flex items-center justify-center">
               <DollarSign className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-xl font-semibold mb-3 text-primary">Start Your Financial Journey</h3>
+            <h3 className="text-xl font-semibold mb-3 text-primary">
+              Start Your Financial Journey
+            </h3>
             <p className="text-muted-foreground mb-6 leading-relaxed">
               Begin tracking your finances by adding your first transaction.
               Every great financial story starts with a single entry.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button 
+              <Button
                 onClick={() => router.push("/transactions")}
                 className="rounded-xl"
               >

@@ -11,7 +11,12 @@ interface SummaryCardsProps {
   previousExpenses: number;
 }
 
-export function SummaryCards({ balance, expenses, income, previousExpenses }: SummaryCardsProps) {
+export function SummaryCards({
+  balance,
+  expenses,
+  income,
+  previousExpenses,
+}: SummaryCardsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <Card className="rounded-2xl">
@@ -22,9 +27,11 @@ export function SummaryCards({ balance, expenses, income, previousExpenses }: Su
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className={`text-2xl font-bold ${
-            balance >= 0 ? 'text-green-600' : 'text-destructive'
-          }`}>
+          <div
+            className={`text-2xl font-bold ${
+              balance >= 0 ? "text-green-600" : "text-destructive"
+            }`}
+          >
             {formatCurrency(balance)}
           </div>
           <p className="text-xs text-muted-foreground">This month</p>
@@ -44,8 +51,14 @@ export function SummaryCards({ balance, expenses, income, previousExpenses }: Su
           </div>
           <p className="text-xs text-muted-foreground">
             {previousExpenses > 0 && (
-              <span className={expenses > previousExpenses ? 'text-destructive' : 'text-green-600'}>
-                {expenses > previousExpenses ? '+' : ''}
+              <span
+                className={
+                  expenses > previousExpenses
+                    ? "text-destructive"
+                    : "text-green-600"
+                }
+              >
+                {expenses > previousExpenses ? "+" : ""}
                 {formatCurrency(expenses - previousExpenses)} vs last month
               </span>
             )}

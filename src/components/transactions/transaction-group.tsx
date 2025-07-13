@@ -82,7 +82,9 @@ export function TransactionGroup({
               <TransactionForm
                 transaction={transaction}
                 mode="edit"
-                trigger={<div className="block md:hidden absolute inset-0 z-10" />}
+                trigger={
+                  <div className="block md:hidden absolute inset-0 z-10" />
+                }
               />
             }
           />

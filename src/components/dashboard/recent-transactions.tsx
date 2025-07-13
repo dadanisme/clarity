@@ -12,14 +12,15 @@ interface RecentTransactionsProps {
   categories: Category[];
 }
 
-export function RecentTransactions({ transactions, categories }: RecentTransactionsProps) {
+export function RecentTransactions({
+  transactions,
+  categories,
+}: RecentTransactionsProps) {
   const router = useRouter();
 
   const recentTransactions = transactions
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 5);
-
-
 
   if (recentTransactions.length === 0) return null;
 
@@ -34,10 +35,10 @@ export function RecentTransactions({ transactions, categories }: RecentTransacti
             Your latest financial activity
           </p>
         </div>
-        <Button 
-          variant="ghost" 
+        <Button
+          variant="ghost"
           size="sm"
-          onClick={() => router.push('/transactions')}
+          onClick={() => router.push("/transactions")}
           className="text-muted-foreground hover:text-primary"
         >
           View all

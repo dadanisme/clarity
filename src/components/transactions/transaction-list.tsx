@@ -52,8 +52,6 @@ export function TransactionList() {
     return matchesSearch && matchesType && matchesCategory;
   });
 
-
-
   if (isLoading) {
     return (
       <Card>
@@ -162,7 +160,11 @@ export function TransactionList() {
                       transaction={transaction}
                       mode="edit"
                       trigger={
-                        <Button variant="ghost" size="sm" className="hidden md:flex">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="hidden md:flex"
+                        >
                           <Edit className="w-4 h-4" />
                         </Button>
                       }
@@ -172,7 +174,9 @@ export function TransactionList() {
                     <TransactionForm
                       transaction={transaction}
                       mode="edit"
-                      trigger={<div className="block md:hidden absolute inset-0 z-10" />}
+                      trigger={
+                        <div className="block md:hidden absolute inset-0 z-10" />
+                      }
                     />
                   }
                 />

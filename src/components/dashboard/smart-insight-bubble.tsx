@@ -8,22 +8,29 @@ interface SmartInsightBubbleProps {
   previousExpenses: number;
 }
 
-export function SmartInsightBubble({ expenses, previousExpenses }: SmartInsightBubbleProps) {
+export function SmartInsightBubble({
+  expenses,
+  previousExpenses,
+}: SmartInsightBubbleProps) {
   const getSmartInsight = () => {
-    if (expenses === 0) return "Start tracking your expenses to see insights here.";
-    
+    if (expenses === 0)
+      return "Start tracking your expenses to see insights here.";
+
     if (previousExpenses === 0) {
       return "This is your first month of tracking. Keep it up!";
     }
-    
-    const changePercent = ((expenses - previousExpenses) / previousExpenses) * 100;
-    
+
+    const changePercent =
+      ((expenses - previousExpenses) / previousExpenses) * 100;
+
     if (Math.abs(changePercent) < 5) {
       return "Your spending is consistent with last month.";
     } else if (changePercent > 0) {
       return `You spent ${Math.round(changePercent)}% more than last month.`;
     } else {
-      return `Great! You spent ${Math.round(Math.abs(changePercent))}% less than last month.`;
+      return `Great! You spent ${Math.round(
+        Math.abs(changePercent)
+      )}% less than last month.`;
     }
   };
 
