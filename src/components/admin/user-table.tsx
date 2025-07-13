@@ -193,7 +193,6 @@ export function UserTable({ users }: UserTableProps) {
               >
                 Grant Feature
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
               <UserFeatureActions
                 userId={user.id}
                 userName={user.displayName}
@@ -331,6 +330,7 @@ function UserFeatureActions({
 
   return (
     <>
+      {activeFeatures.length > 0 && <DropdownMenuSeparator />}
       {activeFeatures.map((feature) => (
         <DropdownMenuItem
           key={feature.id}
