@@ -189,20 +189,18 @@ function FeaturesDisplay({ userFeatures }: FeaturesDisplayProps) {
                 isActive ? "bg-background" : "bg-muted/30"
               }`}
             >
-              <div className="flex-shrink-0 mt-2">
-                <div
-                  className={`w-3 h-3 rounded-full ${
-                    isActive ? "bg-green-500" : "bg-muted-foreground/40"
-                  }`}
-                />
-              </div>
               <div className="flex-1 min-w-0">
                 <div
-                  className={`font-medium text-sm ${
+                  className={`flex items-center space-x-2 font-medium text-sm ${
                     isActive ? "text-foreground" : "text-muted-foreground"
                   }`}
                 >
-                  {metadata.name}
+                  <div
+                    className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                      isActive ? "bg-green-500" : "bg-muted-foreground/40"
+                    }`}
+                  />
+                  <span>{metadata.name}</span>
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
                   {metadata.description}
