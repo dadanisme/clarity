@@ -22,9 +22,11 @@ import { TransactionSkeletonList } from "./transaction-skeleton-list";
 
 export function TransactionsContent() {
   const { user } = useAuth();
-  const { data: transactions = [], isLoading, refetch } = useTransactions(
-    user?.id || ""
-  );
+  const {
+    data: transactions = [],
+    isLoading,
+    refetch,
+  } = useTransactions(user?.id || "");
   const { data: categories = [] } = useCategories(user?.id || "");
   const createTransaction = useCreateTransaction();
 
@@ -69,18 +71,8 @@ export function TransactionsContent() {
       console.error("Failed to create transactions from receipt:", error);
     }
   };
-  const { timeframe, currentPeriod, sortedGroups } = useTransactionGroups(transactions);
-
-  const getCategoryName = (categoryId: string) => {
-    const category = categories.find((c) => c.id === categoryId);
-    return category?.name || "Unknown";
-  };
-
-  const getCategoryColor = (categoryId: string) => {
-    const category = categories.find((c) => c.id === categoryId);
-    return category?.color || "#6b7280";
-  };
-
+  const { timeframe, currentPeriod, sortedGroups } =
+    useTransactionGroups(transactions);
 
   const getEmptyStateMessage = () => {
     if (transactions.length === 0) {
@@ -150,8 +142,7 @@ export function TransactionsContent() {
                 groupKey={groupKey}
                 groupTransactions={groupTransactions}
                 timeframe={timeframe}
-                getCategoryName={getCategoryName}
-                getCategoryColor={getCategoryColor}
+                categories={categories}
               />
             ))}
           </div>

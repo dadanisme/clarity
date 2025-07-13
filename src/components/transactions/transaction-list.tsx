@@ -20,8 +20,10 @@ import {
 import { useAuth } from "@/lib/providers/auth-provider";
 import { useTransactions } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
-import { TransactionRow } from "./transaction-row";
-import { Search, Filter } from "lucide-react";
+import { TransactionItem } from "./transaction-item";
+import { TransactionForm } from "./transaction-form";
+import { Button } from "@/components/ui/button";
+import { Search, Filter, Edit } from "lucide-react";
 import { TransactionSkeletonList } from "./transaction-skeleton-list";
 
 export function TransactionList() {
@@ -50,15 +52,7 @@ export function TransactionList() {
     return matchesSearch && matchesType && matchesCategory;
   });
 
-  const getCategoryName = (categoryId: string) => {
-    const category = categories.find((c) => c.id === categoryId);
-    return category?.name || "Unknown";
-  };
 
-  const getCategoryColor = (categoryId: string) => {
-    const category = categories.find((c) => c.id === categoryId);
-    return category?.color || "#6b7280";
-  };
 
   if (isLoading) {
     return (
@@ -156,11 +150,31 @@ export function TransactionList() {
           ) : (
             <div className="space-y-4">
               {filteredTransactions.map((transaction) => (
-                <TransactionRow
+                <TransactionItem
                   key={transaction.id}
                   transaction={transaction}
-                  getCategoryName={getCategoryName}
-                  getCategoryColor={getCategoryColor}
+                  categories={categories}
+                  showCategory={true}
+                  showDate={true}
+                  showEditButton={true}
+                  editTrigger={
+                    <TransactionForm
+                      transaction={transaction}
+                      mode="edit"
+                      trigger={
+                        <Button variant="ghost" size="sm" className="hidden md:flex">
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      }
+                    />
+                  }
+                  mobileEditOverlay={
+                    <TransactionForm
+                      transaction={transaction}
+                      mode="edit"
+                      trigger={<div className="block md:hidden absolute inset-0 z-10" />}
+                    />
+                  }
                 />
               ))}
             </div>

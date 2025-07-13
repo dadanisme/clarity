@@ -2,23 +2,23 @@
 
 import { format, startOfWeek } from "date-fns";
 import { TransactionForm } from "@/components/transactions/transaction-form";
-import { TransactionRow } from "@/components/transactions/transaction-row";
-import { Transaction } from "@/types";
+import { TransactionItem } from "@/components/transactions/transaction-item";
+import { Button } from "@/components/ui/button";
+import { Edit } from "lucide-react";
+import { Transaction, Category } from "@/types";
 
 interface TransactionGroupProps {
   groupKey: string;
   groupTransactions: Transaction[];
   timeframe: "daily" | "weekly" | "monthly";
-  getCategoryName: (id: string) => string;
-  getCategoryColor: (id: string) => string;
+  categories: Category[];
 }
 
 export function TransactionGroup({
   groupKey,
   groupTransactions,
   timeframe,
-  getCategoryName,
-  getCategoryColor,
+  categories,
 }: TransactionGroupProps) {
   const getGroupTitle = (groupKey: string) => {
     const date = new Date(groupKey);
@@ -60,11 +60,31 @@ export function TransactionGroup({
       </div>
       <div className="space-y-1">
         {groupTransactions.map((transaction) => (
-          <TransactionRow
+          <TransactionItem
             key={transaction.id}
             transaction={transaction}
-            getCategoryName={getCategoryName}
-            getCategoryColor={getCategoryColor}
+            categories={categories}
+            showCategory={true}
+            showDate={false}
+            showEditButton={true}
+            editTrigger={
+              <TransactionForm
+                transaction={transaction}
+                mode="edit"
+                trigger={
+                  <Button variant="ghost" size="sm" className="hidden md:flex">
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                }
+              />
+            }
+            mobileEditOverlay={
+              <TransactionForm
+                transaction={transaction}
+                mode="edit"
+                trigger={<div className="block md:hidden absolute inset-0 z-10" />}
+              />
+            }
           />
         ))}
       </div>
