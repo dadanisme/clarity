@@ -1,9 +1,21 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
 import { useMemo } from "react";
+
+// Helper function to format currency in short format
+function formatCurrencyShort(amount: number): string {
+  if (amount >= 1000000) {
+    return `${(amount / 1000000).toFixed(1)}M`;
+  } else if (amount >= 1000) {
+    return `${(amount / 1000).toFixed(1)}K`;
+  } else {
+    return amount.toFixed(0);
+  }
+}
 
 interface DailySpending {
   date: Date;
@@ -41,10 +53,10 @@ export function SpendingTrendChart({ dailySpending }: SpendingTrendChartProps) {
           <div className="flex gap-2">
             {/* Y-axis labels */}
             <div className="flex flex-col justify-between h-32 text-xs text-muted-foreground w-12 text-right">
-              <span>{formatCurrency(chartMaxValue)}</span>
-              <span>{formatCurrency(chartMaxValue * 0.75)}</span>
-              <span>{formatCurrency(chartMaxValue * 0.5)}</span>
-              <span>{formatCurrency(chartMaxValue * 0.25)}</span>
+              <span>{formatCurrencyShort(chartMaxValue)}</span>
+              <span>{formatCurrencyShort(chartMaxValue * 0.75)}</span>
+              <span>{formatCurrencyShort(chartMaxValue * 0.5)}</span>
+              <span>{formatCurrencyShort(chartMaxValue * 0.25)}</span>
               <span>0</span>
             </div>
             {/* Chart bars */}
@@ -71,21 +83,27 @@ export function SpendingTrendChart({ dailySpending }: SpendingTrendChartProps) {
                 : dailySpending.slice(0, 15).map((day, index) => (
                     <div
                       key={index}
-                      className="flex flex-col items-center flex-1"
+                      className="flex justify-end flex-col items-center flex-1 h-full"
                     >
-                      <div
-                        className="w-full bg-primary/80 rounded-t transition-all duration-300 hover:bg-primary"
-                        style={{
-                          height: `${Math.max(
-                            (day.amount / chartMaxValue) * 100,
-                            2
-                          )}%`,
-                          minHeight: day.amount > 0 ? "4px" : "2px",
-                        }}
-                        title={`${format(day.date, "MMM d")}: ${formatCurrency(
-                          day.amount
-                        )}`}
-                      />
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div
+                            className="w-full h-full bg-primary/80 rounded-t transition-all duration-300 hover:bg-primary cursor-pointer"
+                            style={{
+                              height: `${Math.max(
+                                (day.amount / chartMaxValue) * 100,
+                                2
+                              )}%`,
+                            }}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="text-center">
+                            <div className="font-medium">{format(day.date, "MMM d, yyyy")}</div>
+                            <div className="text-sm">{formatCurrency(day.amount)}</div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
                       <span className="text-xs text-muted-foreground mt-1">
                         {format(day.date, "d")}
                       </span>
