@@ -61,7 +61,7 @@ export class FeatureService {
         status: FeatureSubscriptionStatus.ACTIVE,
         grantedAt: new Date(),
         grantedBy,
-        notes,
+        ...(notes && { notes }), // Only include notes if it's not undefined/empty
       };
 
       await setDoc(
@@ -142,15 +142,5 @@ export const FEATURE_METADATA = {
     name: "Excel Import",
     description: "Import transactions from Excel/CSV files",
     icon: "file-spreadsheet",
-  },
-  [FeatureFlag.ADVANCED_ANALYTICS]: {
-    name: "Advanced Analytics",
-    description: "Detailed charts and financial insights",
-    icon: "chart-bar",
-  },
-  [FeatureFlag.EXPORT_DATA]: {
-    name: "Data Export",
-    description: "Export your financial data to various formats",
-    icon: "download",
   },
 } as const;
