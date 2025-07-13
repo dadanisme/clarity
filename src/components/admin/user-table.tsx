@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Shield, User as UserIcon } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Shield, User as UserIcon, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,6 +11,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DataTable } from "@/components/ui/data-table";
 import { User, UserRole, FeatureFlag, FeatureSubscription } from "@/types";
@@ -26,16 +38,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery } from "@tanstack/react-query";
+import { cn } from "@/lib/utils";
 
 interface UserWithFeatures extends User {
   activeFeatures?: FeatureSubscription[];
@@ -48,35 +54,43 @@ interface UserTableProps {
 export function UserTable({ users }: UserTableProps) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isGrantDialogOpen, setIsGrantDialogOpen] = useState(false);
-  const [selectedFeature, setSelectedFeature] = useState<FeatureFlag | "">("");
+  const [selectedFeatures, setSelectedFeatures] = useState<FeatureFlag[]>([]);
   const [notes, setNotes] = useState("");
+  const [open, setOpen] = useState(false);
 
   const grantFeatureMutation = useGrantFeature();
   const revokeFeatureMutation = useRevokeFeature();
 
-  const handleGrantFeature = () => {
-    if (!selectedFeature || !selectedUser) return;
+  const handleGrantFeatures = async () => {
+    if (selectedFeatures.length === 0 || !selectedUser) return;
     
-    const featureName = FEATURE_METADATA[selectedFeature].name;
-    grantFeatureMutation.mutate(
-      {
-        userId: selectedUser.id,
-        feature: selectedFeature,
-        featureName,
-        notes: notes || undefined,
-      },
-      {
-        onSuccess: () => {
-          toast.success(`Granted ${featureName} to ${selectedUser.displayName}`);
-          setIsGrantDialogOpen(false);
-          setSelectedFeature("");
-          setNotes("");
-        },
-        onError: (error) => {
-          toast.error(`Failed to grant feature: ${error.message}`);
-        },
+    try {
+      // Grant features sequentially
+      for (const feature of selectedFeatures) {
+        const featureName = FEATURE_METADATA[feature].name;
+        await new Promise((resolve, reject) => {
+          grantFeatureMutation.mutate(
+            {
+              userId: selectedUser.id,
+              feature,
+              featureName,
+              notes: notes || undefined,
+            },
+            {
+              onSuccess: () => resolve(undefined),
+              onError: (error) => reject(error),
+            }
+          );
+        });
       }
-    );
+      
+      toast.success(`Granted ${selectedFeatures.length} feature(s) to ${selectedUser.displayName}`);
+      setIsGrantDialogOpen(false);
+      setSelectedFeatures([]);
+      setNotes("");
+    } catch (error) {
+      toast.error(`Failed to grant features: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   };
 
   const handleRevokeFeature = (userId: string, feature: FeatureFlag, userName: string) => {
@@ -225,24 +239,77 @@ export function UserTable({ users }: UserTableProps) {
           
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="feature">Feature</Label>
-              <Select value={selectedFeature} onValueChange={(value) => setSelectedFeature(value as FeatureFlag | "")}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a feature" />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(FEATURE_METADATA).map(([key, metadata]) => (
-                    <SelectItem key={key} value={key}>
-                      <div>
-                        <div className="font-medium">{metadata.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {metadata.description}
-                        </div>
-                      </div>
-                    </SelectItem>
+              <Label>Features</Label>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={open}
+                    className="w-full justify-between"
+                  >
+                    {selectedFeatures.length === 0
+                      ? "Select features..."
+                      : `${selectedFeatures.length} feature(s) selected`}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0">
+                  <Command>
+                    <CommandInput placeholder="Search features..." />
+                    <CommandEmpty>No features found.</CommandEmpty>
+                    <CommandGroup>
+                      {Object.entries(FEATURE_METADATA).map(([key, metadata]) => (
+                        <CommandItem
+                          key={key}
+                          value={key}
+                          onSelect={(currentValue) => {
+                            const feature = currentValue as FeatureFlag;
+                            setSelectedFeatures(prev =>
+                              prev.includes(feature)
+                                ? prev.filter(f => f !== feature)
+                                : [...prev, feature]
+                            );
+                          }}
+                        >
+                          <Check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              selectedFeatures.includes(key as FeatureFlag) ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          <div className="flex-1">
+                            <div className="font-medium">{metadata.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {metadata.description}
+                            </div>
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              
+              {/* Selected features display */}
+              {selectedFeatures.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {selectedFeatures.map((feature) => (
+                    <Badge
+                      key={feature}
+                      variant="secondary"
+                      className="flex items-center gap-1"
+                    >
+                      {FEATURE_METADATA[feature].name}
+                      <X
+                        className="h-3 w-3 cursor-pointer"
+                        onClick={() =>
+                          setSelectedFeatures(prev => prev.filter(f => f !== feature))
+                        }
+                      />
+                    </Badge>
                   ))}
-                </SelectContent>
-              </Select>
+                </div>
+              )}
             </div>
             
             <div className="space-y-2">
@@ -261,10 +328,10 @@ export function UserTable({ users }: UserTableProps) {
                 Cancel
               </Button>
               <Button
-                onClick={handleGrantFeature}
-                disabled={!selectedFeature}
+                onClick={handleGrantFeatures}
+                disabled={selectedFeatures.length === 0}
               >
-                Grant Feature
+                Grant {selectedFeatures.length > 0 ? `${selectedFeatures.length} ` : ''}Feature{selectedFeatures.length !== 1 ? 's' : ''}
               </Button>
             </div>
           </div>
