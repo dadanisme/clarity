@@ -12,12 +12,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/providers/auth-provider";
-import { Wallet, BarChart3, Settings, LogOut, Tag } from "lucide-react";
+import { Wallet, BarChart3, Settings, LogOut, Tag, Shield } from "lucide-react";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { useFloatingActionButton } from "@/hooks/use-floating-action-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useThemeSync } from "@/hooks/use-theme-sync";
 import { PATHS } from "@/lib/paths";
+import { UserRole } from "@/types";
 
 interface DashboardLayoutClientProps {
   children: React.ReactNode;
@@ -164,6 +165,15 @@ export function DashboardLayoutClient({
                     <Settings className="w-4 h-4" />
                     <span>Settings</span>
                   </DropdownMenuItem>
+                  {user?.role === UserRole.ADMIN && (
+                    <DropdownMenuItem
+                      onClick={() => router.push(PATHS.admin)}
+                      className="flex items-center space-x-2"
+                    >
+                      <Shield className="w-4 h-4" />
+                      <span>Admin Dashboard</span>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem
                     onClick={handleLogout}
                     className="flex items-center space-x-2 text-destructive"

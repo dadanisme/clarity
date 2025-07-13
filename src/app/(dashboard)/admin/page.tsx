@@ -1,4 +1,6 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { AuthGuard } from "@/components/auth/auth-guard";
 import { UserManagement } from "@/components/admin/user-management";
 
 export const metadata: Metadata = {
@@ -8,10 +10,10 @@ export const metadata: Metadata = {
 
 export default function AdminPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8">
+    <AuthGuard>
+      <DashboardLayout>
         <UserManagement />
-      </div>
-    </div>
+      </DashboardLayout>
+    </AuthGuard>
   );
 }
