@@ -19,9 +19,7 @@ import {
   useRevokeFeature,
   useManageUserFeatures,
 } from "@/hooks/use-features";
-import {
-  FEATURE_METADATA,
-} from "@/lib/firebase/feature-service";
+import { FEATURE_METADATA } from "@/lib/firebase/feature-service";
 import { FeatureSelection } from "./feature-selection";
 
 interface ManageFeaturesDialogProps {
@@ -50,7 +48,7 @@ export function ManageFeaturesDialog({
 
   // Update selectedFeatures when currentUserFeatures loads
   useEffect(() => {
-    if (open && user && currentUserFeatures.length >= 0) {
+    if (open && user && currentUserFeatures.length > 0) {
       const activeFeatureIds = currentUserFeatures
         .filter((f) => f.status === "active")
         .map((f) => f.id as FeatureFlag);
