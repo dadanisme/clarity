@@ -5,7 +5,7 @@ import { useFeatureGate } from "@/hooks/use-features";
 import { FeatureFlag } from "@/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Lock, Loader2 } from "lucide-react";
+import { Lock } from "lucide-react";
 import { FEATURE_METADATA } from "@/lib/firebase/feature-service";
 
 interface FeatureGateProps {
@@ -24,11 +24,7 @@ export function FeatureGate({
   const { hasAccess, isLoading } = useFeatureGate(feature);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-6 w-6 animate-spin" />
-      </div>
-    );
+    return null;
   }
 
   if (hasAccess) {
@@ -81,7 +77,7 @@ export function InlineFeatureGate({
   const { hasAccess, isLoading } = useFeatureGate(feature);
 
   if (isLoading) {
-    return <Loader2 className="h-4 w-4 animate-spin" />;
+    return null;
   }
 
   if (hasAccess) {
