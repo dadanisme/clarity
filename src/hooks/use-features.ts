@@ -2,7 +2,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { FeatureService } from "@/lib/firebase/feature-service";
 import { updateUserRole } from "@/lib/firebase/services";
-import { FeatureFlag, UserRole } from "@/types";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase/config";
+import { FeatureFlag, UserRole, User } from "@/types";
 
 // Hook to check if current user has a specific feature
 export function useFeatureAccess(feature: FeatureFlag) {
@@ -30,6 +32,52 @@ export function useUserFeatures() {
       return FeatureService.getUserFeatures(user.id);
     },
     enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+// Hook to get all features for a specific user (admin use)
+export function useUserFeaturesById(userId: string) {
+  return useQuery({
+    queryKey: ["user-features", userId],
+    queryFn: () => {
+      if (!userId) return [];
+      return FeatureService.getUserFeatures(userId);
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+// Hook to get user features for management dialog (with different cache key)
+export function useManageUserFeatures(userId: string, enabled: boolean = true) {
+  return useQuery({
+    queryKey: ["manage-user-features", userId],
+    queryFn: () => {
+      if (!userId) return [];
+      return FeatureService.getUserFeatures(userId);
+    },
+    enabled: !!userId && enabled,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+// Hook to get all users (admin only)
+export function useAdminUsers() {
+  const isAdmin = useIsAdmin();
+  
+  return useQuery({
+    queryKey: ["admin-users"],
+    queryFn: async () => {
+      const usersRef = collection(db, "users");
+      const snapshot = await getDocs(usersRef);
+      return snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate() || new Date(),
+      })) as User[];
+    },
+    enabled: isAdmin,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

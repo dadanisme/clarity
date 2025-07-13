@@ -1,11 +1,12 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase/config";
-import { User } from "@/types";
-import { useIsAdmin } from "@/hooks/use-features";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useIsAdmin, useAdminUsers } from "@/hooks/use-features";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { UserTable } from "./user-table";
 import { Shield } from "lucide-react";
 
@@ -13,19 +14,7 @@ export function UserManagement() {
   const isAdmin = useIsAdmin();
 
   // Fetch all users (admin only)
-  const { data: users = [], isLoading } = useQuery({
-    queryKey: ["admin-users"],
-    queryFn: async () => {
-      const usersRef = collection(db, "users");
-      const snapshot = await getDocs(usersRef);
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-      })) as User[];
-    },
-    enabled: isAdmin,
-  });
+  const { data: users = [], isLoading } = useAdminUsers();
 
   if (!isAdmin) {
     return (
@@ -62,7 +51,7 @@ export function UserManagement() {
         </div>
       </div>
 
-      <UserTable users={users} />
+      <UserTable />
     </div>
   );
 }
