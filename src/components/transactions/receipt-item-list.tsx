@@ -77,14 +77,14 @@ export function ReceiptItemList({
                   >
                     <div className="p-4 bg-card border rounded-lg">
                       <div className="mb-2">
-                        <p className="font-medium truncate">
+                        <p className="font-medium text-sm truncate">
                           {item.description}
                         </p>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
                           <div
-                            className="w-3 h-3 rounded-full flex-shrink-0"
+                            className="w-2 h-2 rounded-full flex-shrink-0"
                             style={{
                               backgroundColor: getCategoryColor(
                                 item.category,
@@ -92,12 +92,12 @@ export function ReceiptItemList({
                               ),
                             }}
                           />
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             {item.category}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-medium">
+                          <p className="font-medium text-sm">
                             {formatCurrency(item.amount)}
                           </p>
                           <div className="text-xs text-muted-foreground flex flex-col">
@@ -121,32 +121,46 @@ export function ReceiptItemList({
                 {/* Desktop Layout */}
                 <div className="hidden sm:flex items-center justify-between p-4 bg-card border rounded-lg">
                   <div className="flex items-center space-x-4">
-                    <div className="w-3 h-3 rounded-full bg-primary" />
                     <div>
                       <p className="font-medium">{item.description}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {item.category}
-                        {item.discount && (
-                          <span className="text-success ml-2">
-                            -{formatCurrency(item.discount)}
-                          </span>
-                        )}
-                      </p>
+                      <div className="flex items-center space-x-2">
+                        <div
+                          className="w-2 h-2 rounded-full flex-shrink-0"
+                          style={{
+                            backgroundColor: getCategoryColor(
+                              item.category,
+                              categories
+                            ),
+                          }}
+                        />
+                        <div className="text-xs text-muted-foreground flex items-center space-x-2">
+                          <p className="text-sm text-muted-foreground">
+                            {item.category}
+                            {item.discount && (
+                              <span className="text-success ml-2">
+                                -{formatCurrency(item.discount)}
+                              </span>
+                            )}
+                          </p>
+
+                          <div className="h-2 w-2 bg-accent rounded-full" />
+                          <div className="text-right mr-4">
+                            <p className="font-medium">
+                              {formatCurrency(item.amount)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {item.discount && (
+                                <span className="text-success">
+                                  -{formatCurrency(item.discount)}
+                                </span>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="text-right mr-4">
-                      <p className="font-medium">
-                        {formatCurrency(item.amount)}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {item.discount && (
-                          <span className="text-success">
-                            -{formatCurrency(item.discount)}
-                          </span>
-                        )}
-                      </p>
-                    </div>
                     <Button
                       variant="ghost"
                       size="sm"
