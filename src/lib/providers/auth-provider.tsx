@@ -19,7 +19,7 @@ import {
   uploadProfileImage as uploadProfileImageToStorage,
   deleteProfileImage,
 } from "@/lib/firebase/services";
-import type { User } from "@/types";
+import { User, UserRole, Theme } from "@/types";
 
 interface AuthContextType {
   user: User | null;
@@ -60,9 +60,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const newUserData = {
               displayName: firebaseUser.displayName || "User",
               email: firebaseUser.email || "",
+              role: UserRole.USER,
               profileImage: firebaseUser.photoURL || undefined,
               settings: {
-                theme: "system" as const,
+                theme: Theme.SYSTEM,
               },
             };
             userData = await createUser(firebaseUser.uid, newUserData);

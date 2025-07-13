@@ -14,6 +14,8 @@ import { TransactionGroup } from "@/components/transactions/transaction-group";
 import { TimeframeControls } from "@/components/transactions/timeframe-controls";
 import { ExcelImport } from "@/components/transactions/excel-import";
 import { ReceiptParser } from "@/components/transactions/receipt-parser";
+import { InlineFeatureGate } from "@/components/features/feature-gate";
+import { FeatureFlag } from "@/types";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
 import { TransactionSkeletonList } from "./transaction-skeleton-list";
@@ -106,11 +108,15 @@ export function TransactionsContent() {
       {/* Header */}
       <div className="hidden md:flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4 mb-6">
         <div className="flex gap-2">
-          <ExcelImport onImportComplete={() => refetch()} />
-          <ReceiptParser
-            onReceiptParsed={handleReceiptParsed}
-            userCategories={categories}
-          />
+          <InlineFeatureGate feature={FeatureFlag.EXCEL_IMPORT}>
+            <ExcelImport onImportComplete={() => refetch()} />
+          </InlineFeatureGate>
+          <InlineFeatureGate feature={FeatureFlag.AI_RECEIPT_SCANNING}>
+            <ReceiptParser
+              onReceiptParsed={handleReceiptParsed}
+              userCategories={categories}
+            />
+          </InlineFeatureGate>
           <TransactionForm
             mode="create"
             trigger={

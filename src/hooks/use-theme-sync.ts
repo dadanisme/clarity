@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { useUpdateUserSettings } from "./use-settings";
+import { Theme } from "@/types";
 
 export function useThemeSync() {
   const { theme } = useTheme();
@@ -16,7 +17,7 @@ export function useThemeSync() {
         userId: user.id,
         settings: {
           ...user.settings,
-          theme: theme as "light" | "dark" | "system",
+          theme: theme as Theme,
         },
       });
     }

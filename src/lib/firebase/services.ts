@@ -27,6 +27,7 @@ export const createUser = async (
   const user: Omit<User, "id"> = {
     displayName: userData.displayName,
     email: userData.email,
+    role: userData.role,
     settings: userData.settings,
     createdAt: new Date(),
   };
