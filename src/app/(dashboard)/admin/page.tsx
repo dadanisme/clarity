@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { UserManagement } from "@/components/admin/user-management";
+import { DesktopOnly } from "@/components/admin/desktop-only";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard | Clarity",
@@ -11,9 +12,11 @@ export const metadata: Metadata = {
 export default function AdminPage() {
   return (
     <AuthGuard>
-      <DashboardLayout>
-        <UserManagement />
-      </DashboardLayout>
+      <DesktopOnly>
+        <DashboardLayout>
+          <UserManagement />
+        </DashboardLayout>
+      </DesktopOnly>
     </AuthGuard>
   );
 }
