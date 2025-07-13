@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { TransactionItem } from "@/components/transactions/transaction-item";
@@ -25,12 +24,12 @@ export function RecentTransactions({
   if (recentTransactions.length === 0) return null;
 
   return (
-    <Card className="rounded-2xl">
-      <CardHeader className="flex flex-row items-center justify-between">
+    <div className="space-y-4">
+      <div className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-lg font-semibold text-primary">
+          <h3 className="text-lg font-semibold text-primary">
             Recent Transactions
-          </CardTitle>
+          </h3>
           <p className="text-sm text-muted-foreground">
             Your latest financial activity
           </p>
@@ -44,20 +43,18 @@ export function RecentTransactions({
           View all
           <ArrowRight className="w-4 h-4 ml-1" />
         </Button>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-1">
-          {recentTransactions.map((transaction) => (
-            <TransactionItem
-              key={transaction.id}
-              transaction={transaction}
-              categories={categories}
-              showCategory={true}
-              showDate={true}
-            />
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+      <div className="space-y-1">
+        {recentTransactions.map((transaction) => (
+          <TransactionItem
+            key={transaction.id}
+            transaction={transaction}
+            categories={categories}
+            showCategory={true}
+            showDate={true}
+          />
+        ))}
+      </div>
+    </div>
   );
 }
