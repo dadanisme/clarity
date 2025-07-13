@@ -6,6 +6,8 @@ import { TransactionForm } from "@/components/transactions/transaction-form";
 import { CategoryForm } from "@/components/categories/category-form";
 import { ReceiptParser } from "@/components/transactions/receipt-parser";
 import { ExcelImport } from "@/components/transactions/excel-import";
+import { InlineFeatureGate } from "@/components/features/feature-gate";
+import { FeatureFlag } from "@/types";
 import { useAuth } from "@/lib/providers/auth-provider";
 import { useCategories } from "@/hooks/use-categories";
 import { useTransactions } from "@/hooks/use-transactions";
@@ -51,29 +53,33 @@ export function useFloatingActionButton() {
       show: true,
       children: (
         <div className="flex flex-col space-y-3">
-          <ExcelImport
-            onImportComplete={() => refetchTransactions()}
-            trigger={
-              <div className="w-14 h-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center relative">
-                <FileSpreadsheet className="w-6 h-6 text-secondary-foreground" />
-                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
-                  New
-                </span>
-              </div>
-            }
-          />
-          <ReceiptParser
-            onReceiptParsed={() => {
-              // The receipt parser will handle the data internally
-              // User can manually create transactions from the parsed data
-            }}
-            userCategories={categories}
-            trigger={
-              <div className="w-14 h-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center">
-                <Camera className="w-6 h-6 text-secondary-foreground" />
-              </div>
-            }
-          />
+          <InlineFeatureGate feature={FeatureFlag.EXCEL_IMPORT}>
+            <ExcelImport
+              onImportComplete={() => refetchTransactions()}
+              trigger={
+                <div className="w-14 h-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center relative">
+                  <FileSpreadsheet className="w-6 h-6 text-secondary-foreground" />
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
+                    New
+                  </span>
+                </div>
+              }
+            />
+          </InlineFeatureGate>
+          <InlineFeatureGate feature={FeatureFlag.AI_RECEIPT_SCANNING}>
+            <ReceiptParser
+              onReceiptParsed={() => {
+                // The receipt parser will handle the data internally
+                // User can manually create transactions from the parsed data
+              }}
+              userCategories={categories}
+              trigger={
+                <div className="w-14 h-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center">
+                  <Camera className="w-6 h-6 text-secondary-foreground" />
+                </div>
+              }
+            />
+          </InlineFeatureGate>
           <TransactionForm
             mode="create"
             trigger={

@@ -1,11 +1,23 @@
+export enum UserRole {
+  USER = "user",
+  ADMIN = "admin"
+}
+
+export enum Theme {
+  LIGHT = "light",
+  DARK = "dark",
+  SYSTEM = "system"
+}
+
 export interface User {
   id: string;
   displayName: string;
   email: string;
+  role: UserRole;
   profileImage?: string;
   createdAt: Date;
   settings: {
-    theme: "light" | "dark" | "system";
+    theme: Theme;
   };
 }
 
@@ -46,4 +58,26 @@ export interface CategorySummary {
   category: Category;
   total: number;
   count: number;
+}
+
+export enum FeatureSubscriptionStatus {
+  ACTIVE = "active",
+  REVOKED = "revoked"
+}
+
+export enum FeatureFlag {
+  AI_RECEIPT_SCANNING = "ai_receipt_scanning",
+  EXCEL_IMPORT = "excel_import"
+}
+
+export interface FeatureSubscription {
+  id: string;
+  userId: string;
+  featureName: string;
+  status: FeatureSubscriptionStatus;
+  grantedAt: Date;
+  grantedBy: string;
+  revokedBy?: string;
+  revokedAt?: Date;
+  notes?: string;
 }

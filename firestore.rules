@@ -1,16 +1,84 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Helper function to validate user data structure
+    function isValidUserData() {
+      let requiredFields = ['displayName', 'email', 'role', 'settings'];
+      let validRoles = ['user', 'admin'];
+      
+      return request.resource.data.keys().hasAll(requiredFields) &&
+             request.resource.data.role in validRoles &&
+             request.resource.data.displayName is string &&
+             request.resource.data.email is string &&
+             request.resource.data.settings is map;
+    }
+
+    // Helper function to check if role change is allowed
+    function canChangeRole() {
+      // Only admins can change roles, and they can't change their own role
+      return isAdmin() && 
+             request.auth.uid != resource.id &&
+             request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role', 'updatedAt', 'roleUpdatedBy']);
+    }
+
+    // Helper function to check if user can update their own profile
+    function canUpdateOwnProfile() {
+      // Users can only update specific fields on their own profile (not role)
+      let allowedFields = ['displayName', 'profileImage', 'settings', 'updatedAt'];
+      return isOwner(resource.id) && 
+             request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowedFields);
+    }
+
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Users can read their own data, admins can read any user data
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Users can create their own account with valid data
+      allow create: if isOwner(userId) && isValidUserData();
+      
+      // Users can update their own profile (excluding role), admins can change roles
+      allow update: if (canUpdateOwnProfile() || canChangeRole()) && isValidUserData();
+      
+      // Only admins can delete users
+      allow delete: if isAdmin();
 
       match /categories/{categoryId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read, write: if isOwner(userId) || isAdmin();
       }
 
       match /transactions/{transactionId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read, write: if isOwner(userId) || isAdmin();
       }
+
+      match /subscriptions/{featureId} {
+        // Users can read their own subscriptions, admins can read/write any subscriptions
+        allow read: if isOwner(userId) || isAdmin();
+        allow create, update: if isAdmin() && isValidFeatureSubscription();
+        allow delete: if isAdmin();
+      }
+    }
+
+    // Helper function to validate feature subscription data
+    function isValidFeatureSubscription() {
+      let requiredFields = ['id', 'status', 'grantedAt', 'grantedBy'];
+      let validStatuses = ['active', 'inactive'];
+      
+      return request.resource.data.keys().hasAll(requiredFields) &&
+             request.resource.data.status in validStatuses &&
+             request.resource.data.id is string &&
+             request.resource.data.grantedBy is string &&
+             request.resource.data.grantedAt is timestamp;
     }
   }
 } 

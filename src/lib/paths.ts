@@ -7,4 +7,5 @@ export const PATHS = {
   overview: "/overview",
   categories: "/categories",
   settings: "/settings",
+  admin: "/admin",
 };

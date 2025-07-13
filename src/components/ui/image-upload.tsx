@@ -4,7 +4,6 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Upload, X } from "lucide-react";
-import { Spinner } from "@/components/ui/loading";
 
 interface ImageUploadProps {
   currentImageUrl?: string;
@@ -73,40 +72,18 @@ export function ImageUpload({
         </Avatar>
 
         <div className="flex flex-col space-y-2">
-          <div className="flex items-center space-x-2">
+          {currentImageUrl && (
             <Button
               type="button"
               variant="outline"
               size="sm"
-              onClick={handleClick}
+              onClick={onImageRemove}
               disabled={disabled || isUploading}
             >
-              {isUploading ? (
-                <>
-                  <Spinner size="sm" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Upload Image
-                </>
-              )}
+              <X className="h-4 w-4 mr-2" />
+              Remove
             </Button>
-
-            {currentImageUrl && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={onImageRemove}
-                disabled={disabled || isUploading}
-              >
-                <X className="h-4 w-4 mr-2" />
-                Remove
-              </Button>
-            )}
-          </div>
+          )}
 
           <p className="text-xs text-muted-foreground">
             JPG, PNG, GIF up to 5MB
