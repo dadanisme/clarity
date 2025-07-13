@@ -23,7 +23,7 @@ export function SummaryCards({ balance, expenses, income, previousExpenses }: Su
         </CardHeader>
         <CardContent>
           <div className={`text-2xl font-bold ${
-            balance >= 0 ? 'text-primary' : 'text-destructive'
+            balance >= 0 ? 'text-green-600' : 'text-destructive'
           }`}>
             {formatCurrency(balance)}
           </div>
@@ -39,7 +39,7 @@ export function SummaryCards({ balance, expenses, income, previousExpenses }: Su
           <TrendingDown className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-primary">
+          <div className="text-2xl font-bold text-destructive">
             {formatCurrency(expenses)}
           </div>
           <p className="text-xs text-muted-foreground">
@@ -61,7 +61,7 @@ export function SummaryCards({ balance, expenses, income, previousExpenses }: Su
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-primary">
+          <div className="text-2xl font-bold text-green-600">
             {formatCurrency(income)}
           </div>
           <p className="text-xs text-muted-foreground">Monthly income</p>
