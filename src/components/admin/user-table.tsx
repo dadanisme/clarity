@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 interface UserWithFeatures extends User {
@@ -43,7 +43,8 @@ export function UserTable({ users }: UserTableProps) {
   const [isManageFeaturesDialogOpen, setIsManageFeaturesDialogOpen] = useState(false);
   const [selectedFeatures, setSelectedFeatures] = useState<FeatureFlag[]>([]);
   const [notes, setNotes] = useState("");
-
+  
+  const queryClient = useQueryClient();
   const grantFeatureMutation = useGrantFeature();
   const revokeFeatureMutation = useRevokeFeature();
 
@@ -60,13 +61,22 @@ export function UserTable({ users }: UserTableProps) {
 
   // Update selectedFeatures when currentUserFeatures loads
   useEffect(() => {
-    if (currentUserFeatures.length > 0) {
+    if (isManageFeaturesDialogOpen && selectedUser) {
       const activeFeatureIds = currentUserFeatures
         .filter(f => f.status === "active")
         .map(f => f.id as FeatureFlag);
       setSelectedFeatures(activeFeatureIds);
     }
-  }, [currentUserFeatures]);
+  }, [currentUserFeatures, isManageFeaturesDialogOpen, selectedUser]);
+
+  // Reset state when dialog closes
+  useEffect(() => {
+    if (!isManageFeaturesDialogOpen) {
+      setSelectedFeatures([]);
+      setNotes("");
+      setSelectedUser(null);
+    }
+  }, [isManageFeaturesDialogOpen]);
 
   const handleSaveFeatures = async () => {
     if (!selectedUser) return;
@@ -125,6 +135,14 @@ export function UserTable({ users }: UserTableProps) {
       } else {
         toast.info("No changes made to features");
       }
+      
+      // Invalidate all relevant queries
+      await queryClient.invalidateQueries({
+        queryKey: ["user-features", selectedUser.id]
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["manage-user-features", selectedUser.id]
+      });
       
       setIsManageFeaturesDialogOpen(false);
       setSelectedFeatures([]);
@@ -230,8 +248,6 @@ export function UserTable({ users }: UserTableProps) {
               <DropdownMenuItem
                 onClick={() => {
                   setSelectedUser(user);
-                  setSelectedFeatures([]); // Reset features, will be populated by useEffect
-                  setNotes("");
                   setIsManageFeaturesDialogOpen(true);
                 }}
               >
