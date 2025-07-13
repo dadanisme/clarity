@@ -12,7 +12,6 @@ import {
 } from "date-fns";
 import { SummaryCards } from "./summary-cards";
 import { SpendingTrendChart } from "./spending-trend-chart";
-import { SmartInsightBubble } from "./smart-insight-bubble";
 import { RecentTransactions } from "./recent-transactions";
 import { EmptyState } from "./empty-state";
 
@@ -73,11 +72,6 @@ export function DashboardContent() {
       />
 
       <SpendingTrendChart dailySpending={dailySpending} />
-
-      <SmartInsightBubble
-        expenses={expenses}
-        previousExpenses={previousExpenses}
-      />
 
       <RecentTransactions transactions={transactions} categories={categories} />
 
