@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/lib/providers/auth-provider";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { ThemeProvider } from "@/lib/providers/theme-provider";
 import { Toaster } from "sonner";
@@ -54,10 +53,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <ThemeProvider>
           <QueryProvider>
-            <AuthProvider>
-              {children}
-              <Toaster />
-            </AuthProvider>
+            {children}
+            <Toaster />
           </QueryProvider>
         </ThemeProvider>
       </body>

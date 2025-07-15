@@ -7,6 +7,7 @@ import {
   updateDoc,
   deleteDoc,
   setDoc,
+  onSnapshot,
   query,
   where,
   orderBy,
@@ -56,6 +57,27 @@ export const getUser = async (userId: string): Promise<User | null> => {
   return null;
 };
 
+export const subscribeToUser = (
+  userId: string,
+  onUpdate: (user: User | null) => void
+) => {
+  const userRef = doc(db, "users", userId);
+
+  return onSnapshot(userRef, (doc) => {
+    if (doc.exists()) {
+      const data = doc.data();
+      const user: User = {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate() || new Date(),
+      } as User;
+      onUpdate(user);
+    } else {
+      onUpdate(null);
+    }
+  });
+};
+
 export const updateUserSettings = async (
   userId: string,
   settings: User["settings"]
@@ -84,10 +106,10 @@ export const updateUserRole = async (
   updatedBy: string
 ) => {
   const userRef = doc(db, "users", userId);
-  await updateDoc(userRef, { 
-    role, 
+  await updateDoc(userRef, {
+    role,
     updatedAt: new Date(),
-    roleUpdatedBy: updatedBy 
+    roleUpdatedBy: updatedBy,
   });
 };
 
@@ -253,9 +275,9 @@ export const getTransactions = async (
 ): Promise<Transaction[]> => {
   const transactionsRef = collection(db, "users", userId, "transactions");
   const { startDate, endDate, limitCount = 1000 } = options || {};
-  
+
   let q;
-  
+
   if (startDate && endDate) {
     // Query with date range
     q = query(
@@ -269,7 +291,7 @@ export const getTransactions = async (
     // Default query without date filtering
     q = query(transactionsRef, orderBy("date", "desc"), limit(limitCount));
   }
-  
+
   const querySnapshot = await getDocs(q);
 
   return querySnapshot.docs.map((doc) => ({
