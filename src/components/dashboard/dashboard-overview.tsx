@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
-import { useTransactions } from "@/hooks/use-transactions";
+import { useOverviewData } from "@/hooks/use-overview-data";
 import { useCategories } from "@/hooks/use-categories";
 import { useTimeframeStore } from "@/lib/stores/timeframe-store";
 import { TimeframeControls } from "@/components/transactions/timeframe-controls";
@@ -13,13 +13,16 @@ import { EmptyState } from "./empty-state";
 
 export function DashboardOverview() {
   const { user } = useAuth();
-  const { data: transactions = [], isLoading: transactionsLoading } =
-    useTransactions(user?.id || "");
+  const { 
+    currentPeriodTransactions, 
+    previousPeriodTransactions,
+    isLoading: transactionsLoading 
+  } = useOverviewData(user?.id || "");
   const { data: categories = [] } = useCategories(user?.id || "");
   const { timeframe } = useTimeframeStore();
 
   // Filter to expense transactions only for spending analysis
-  const expenseTransactions = transactions.filter(t => t.type === "expense");
+  const expenseTransactions = currentPeriodTransactions.filter(t => t.type === "expense");
 
   const renderContent = () => {
     if (transactionsLoading) {
@@ -43,7 +46,7 @@ export function DashboardOverview() {
       return (
         <EmptyState
           isLoading={transactionsLoading}
-          hasTransactions={transactions.length > 0}
+          hasTransactions={currentPeriodTransactions.length > 0}
         />
       );
     }
@@ -52,7 +55,8 @@ export function DashboardOverview() {
       <div className="space-y-8">
         {/* Summary Cards */}
         <OverviewSummaryCards
-          transactions={expenseTransactions}
+          currentPeriodTransactions={currentPeriodTransactions}
+          previousPeriodTransactions={previousPeriodTransactions}
           timeframe={timeframe}
         />
 
