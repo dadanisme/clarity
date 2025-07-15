@@ -7,8 +7,6 @@ import { useTimeframeStore } from "@/lib/stores/timeframe-store";
 import { TimeframeControls } from "@/components/transactions/timeframe-controls";
 import { OverviewSummaryCards } from "./overview/overview-summary-cards";
 import { CategoryAnalysis } from "./overview/category-analysis";
-import { SpendingTrends } from "./overview/spending-trends";
-import { TransactionInsights } from "./overview/transaction-insights";
 import { EmptyState } from "./empty-state";
 
 export function DashboardOverview() {
@@ -28,15 +26,12 @@ export function DashboardOverview() {
     if (transactionsLoading) {
       return (
         <div className="animate-pulse space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-            {Array.from({ length: 4 }).map((_, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {Array.from({ length: 2 }).map((_, i) => (
               <div key={i} className="h-32 bg-muted rounded-2xl"></div>
             ))}
           </div>
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            <div className="h-96 bg-muted rounded-2xl"></div>
-            <div className="h-96 bg-muted rounded-2xl"></div>
-          </div>
+          <div className="h-96 bg-muted rounded-2xl"></div>
           <div className="h-64 bg-muted rounded-2xl"></div>
         </div>
       );
@@ -60,23 +55,12 @@ export function DashboardOverview() {
           timeframe={timeframe}
         />
 
-        {/* Category Analysis & Spending Trends */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-          <CategoryAnalysis
-            transactions={expenseTransactions}
-            categories={categories}
-          />
-          <SpendingTrends
-            transactions={expenseTransactions}
-            timeframe={timeframe}
-          />
-        </div>
-
-        {/* Transaction Insights */}
-        <TransactionInsights
+        {/* Category Analysis */}
+        <CategoryAnalysis
           transactions={expenseTransactions}
           categories={categories}
         />
+
       </div>
     );
   };
