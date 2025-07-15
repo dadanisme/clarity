@@ -1,6 +1,6 @@
 "use client";
 
-import { useIsAdmin, useAdminUsers } from "@/hooks/use-features";
+import { useIsAdmin, useAdminUsers } from "@/hooks/use-users-management";
 import {
   Card,
   CardDescription,

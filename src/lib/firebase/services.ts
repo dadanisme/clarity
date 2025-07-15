@@ -2,12 +2,9 @@ import {
   collection,
   doc,
   getDocs,
-  getDoc,
   addDoc,
   updateDoc,
   deleteDoc,
-  setDoc,
-  onSnapshot,
   query,
   where,
   orderBy,
@@ -15,103 +12,16 @@ import {
 } from "firebase/firestore";
 import { db } from "./config";
 
-import type { User, Category, Transaction, UserRole } from "@/types";
+import type { Category, Transaction } from "@/types";
+import { UserService } from "./user-service";
 
-// User services
-export const createUser = async (
-  userId: string,
-  userData: Omit<User, "id" | "createdAt">
-) => {
-  const userRef = doc(db, "users", userId);
-
-  // Create user object, excluding undefined profileImage
-  const user: Omit<User, "id"> = {
-    displayName: userData.displayName,
-    email: userData.email,
-    role: userData.role,
-    settings: userData.settings,
-    createdAt: new Date(),
-  };
-
-  // Only add profileImage if it's not undefined
-  if (userData.profileImage !== undefined) {
-    (user as User).profileImage = userData.profileImage;
-  }
-
-  await setDoc(userRef, user);
-  return { id: userId, ...user };
-};
-
-export const getUser = async (userId: string): Promise<User | null> => {
-  const userRef = doc(db, "users", userId);
-  const userSnap = await getDoc(userRef);
-
-  if (userSnap.exists()) {
-    const data = userSnap.data();
-    return {
-      id: userSnap.id,
-      ...data,
-      createdAt: data.createdAt?.toDate() || new Date(),
-    } as User;
-  }
-  return null;
-};
-
-export const subscribeToUser = (
-  userId: string,
-  onUpdate: (user: User | null) => void
-) => {
-  const userRef = doc(db, "users", userId);
-
-  return onSnapshot(userRef, (doc) => {
-    if (doc.exists()) {
-      const data = doc.data();
-      const user: User = {
-        id: doc.id,
-        ...data,
-        createdAt: data.createdAt?.toDate() || new Date(),
-      } as User;
-      onUpdate(user);
-    } else {
-      onUpdate(null);
-    }
-  });
-};
-
-export const updateUserSettings = async (
-  userId: string,
-  settings: User["settings"]
-) => {
-  const userRef = doc(db, "users", userId);
-  await updateDoc(userRef, { settings });
-};
-
-export const updateUser = async (
-  userId: string,
-  updates: Partial<Pick<User, "displayName" | "profileImage">>
-) => {
-  const userRef = doc(db, "users", userId);
-
-  // Filter out undefined values as Firestore doesn't support them
-  const cleanUpdates = Object.fromEntries(
-    Object.entries(updates).filter(([, value]) => value !== undefined)
-  );
-
-  await updateDoc(userRef, { ...cleanUpdates, updatedAt: new Date() });
-};
-
-export const updateUserRole = async (
-  userId: string,
-  role: UserRole,
-  updatedBy: string
-) => {
-  const userRef = doc(db, "users", userId);
-  await updateDoc(userRef, {
-    role,
-    updatedAt: new Date(),
-    roleUpdatedBy: updatedBy,
-  });
-};
+// Re-export user services from UserService for backwards compatibility
+export const createUser = UserService.createUser;
+export const getUser = UserService.getUser;
+export const subscribeToUser = UserService.subscribeToUser;
+export const updateUser = UserService.updateUser;
+export const updateUserSettings = UserService.updateUserSettings;
+export const updateUserRole = UserService.updateUserRole;
 
 // Image upload services - using base64 for now
 export const uploadProfileImage = async (

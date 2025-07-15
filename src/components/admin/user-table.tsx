@@ -4,7 +4,7 @@ import { useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { toast } from "sonner";
 import { User, UserRole } from "@/types";
-import { useUpdateUserRole, useAdminUsers } from "@/hooks/use-features";
+import { useUpdateUserRole, useAdminUsers } from "@/hooks/use-users-management";
 import { ManageFeaturesDialog } from "./manage-features-dialog";
 import { createUserTableColumns } from "./user-table-columns";
 

@@ -1,12 +1,8 @@
 import { useAuth } from "@/hooks/use-auth";
 import { FeatureFlag, UserRole, FeatureSubscription } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase/config";
-import { User } from "@/types";
 import { FeatureService } from "@/lib/firebase/feature-service";
 import { useEffect, useRef } from "react";
-import { updateUserRole } from "@/lib/firebase/services";
 
 // React Query hook with real-time updates for feature access
 export function useFeatureAccess(feature: FeatureFlag) {
@@ -118,26 +114,6 @@ export function useFeatureGate(feature: FeatureFlag) {
   };
 }
 
-// Hook to get all users (admin only) - keeping TanStack Query for complex admin queries
-export function useAdminUsers() {
-  const { user } = useAuth();
-  const isAdmin = user?.role === UserRole.ADMIN;
-
-  return useQuery({
-    queryKey: ["admin-users"],
-    queryFn: async () => {
-      const usersRef = collection(db, "users");
-      const snapshot = await getDocs(usersRef);
-      return snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-      })) as User[];
-    },
-    enabled: isAdmin,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-  });
-}
 
 // Admin feature management hooks using service directly
 export function useGrantFeature() {
@@ -223,36 +199,6 @@ export function useDeleteFeature() {
   });
 }
 
-// Hook to update user role (admin only)
-export function useUpdateUserRole() {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-
-  return useMutation({
-    mutationFn: async ({
-      userId,
-      role,
-    }: {
-      userId: string;
-      role: UserRole;
-    }) => {
-      if (!user?.id || user.role !== UserRole.ADMIN) {
-        throw new Error("Unauthorized: Admin access required");
-      }
-
-      return updateUserRole(userId, role, user.id);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-    },
-  });
-}
-
-// Utility hook to check if current user is admin
-export function useIsAdmin() {
-  const { user } = useAuth();
-  return user?.role === UserRole.ADMIN;
-}
 
 // For backwards compatibility - features that aren't converted yet
 export function useUserFeaturesById(userId: string) {
