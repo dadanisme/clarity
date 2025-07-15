@@ -14,7 +14,6 @@ interface CategorySpending {
   categoryId: string;
   name: string;
   color: string;
-  icon: string;
   amount: number;
   percentage: number;
   transactionCount: number;
@@ -43,7 +42,6 @@ export function CategoryAnalysis({ transactions, categories }: CategoryAnalysisP
           categoryId,
           name: category?.name || "Unknown",
           color: category?.color || "#6B7280",
-          icon: category?.icon || "🏷️",
           amount,
           percentage: totalSpent > 0 ? (amount / totalSpent) * 100 : 0,
           transactionCount: count
@@ -87,7 +85,6 @@ export function CategoryAnalysis({ transactions, categories }: CategoryAnalysisP
                   <div key={category.categoryId} className="space-y-2">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm">{category.icon}</span>
                         <span className="text-sm font-medium">{category.name}</span>
                       </div>
                       <div className="text-right">
@@ -144,18 +141,18 @@ export function CategoryAnalysis({ transactions, categories }: CategoryAnalysisP
             </div>
           ) : (
             <div className="space-y-3">
-              {topCategories.map((category, index) => (
+              {topCategories.map((category) => (
                 <div
                   key={category.categoryId}
                   className="flex items-center justify-between p-3 rounded-lg bg-muted/30"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold">
-                      {index + 1}
-                    </div>
+                    <div 
+                      className="w-3 h-3 flex-shrink-0"
+                      style={{ backgroundColor: category.color }}
+                    />
                     <div>
                       <div className="flex items-center gap-2">
-                        <span>{category.icon}</span>
                         <span className="font-medium">{category.name}</span>
                       </div>
                       <div className="text-sm text-muted-foreground">

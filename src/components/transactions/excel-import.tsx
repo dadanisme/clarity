@@ -121,7 +121,6 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
           name: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
           type: categoryType,
           color,
-          icon: "circle",
           isDefault: false,
         });
         

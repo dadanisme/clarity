@@ -12,7 +12,6 @@ export const categorySchema = z.object({
   name: z.string().min(1, "Name is required").max(50, "Name too long"),
   type: z.enum(["income", "expense"]),
   color: z.string().min(1, "Color is required"),
-  icon: z.string().min(1, "Icon is required"),
   isDefault: z.boolean().default(false),
 });
 

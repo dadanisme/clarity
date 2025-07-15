@@ -97,7 +97,6 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
           userId: user.id,
           data: {
             ...data,
-            icon: "tag",
             isDefault: false,
           },
         });
@@ -107,7 +106,6 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
           categoryId: category.id,
           data: {
             ...data,
-            icon: category.icon,
             isDefault: category.isDefault,
           },
         });

@@ -47,7 +47,7 @@ export function TransactionInsights({ transactions, categories }: TransactionIns
 
   const getCategoryName = (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId);
-    return category ? `${category.icon} ${category.name}` : "Unknown";
+    return category ? category.name : "Unknown";
   };
 
   return (
