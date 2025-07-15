@@ -32,3 +32,22 @@ export function formatTransactionAmount(
   const sign = type === "income" ? "+" : "-";
   return `${sign}${formatCurrency(amount)}`;
 }
+
+/**
+ * Format number as Indonesian Rupiah (IDR) with abbreviated notation
+ * @param amount - The amount to format
+ * @returns Formatted string with K/M abbreviation and Rupiah symbol
+ */
+export function formatCurrencyShort(amount: number): string {
+  const absAmount = Math.abs(amount);
+  
+  if (absAmount >= 1000000) {
+    const millions = amount / 1000000;
+    return `Rp${millions.toFixed(1)}M`;
+  } else if (absAmount >= 1000) {
+    const thousands = amount / 1000;
+    return `Rp${thousands.toFixed(1)}K`;
+  } else {
+    return formatCurrency(amount);
+  }
+}
