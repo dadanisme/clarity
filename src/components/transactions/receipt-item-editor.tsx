@@ -14,7 +14,7 @@ import { CheckCircle, XCircle } from "lucide-react";
 import { ReceiptItem } from "@/types/receipt";
 import { getCategoryColor } from "@/lib/utils/category-utils";
 import { useCategories } from "@/hooks/use-categories";
-import { useAuth } from "@/lib/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 
 interface ReceiptItemEditorProps {
   index: number;

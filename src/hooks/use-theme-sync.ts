@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useTheme } from "next-themes";
-import { useAuth } from "@/lib/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { useUpdateUserSettings } from "./use-settings";
 import { Theme } from "@/types";
 

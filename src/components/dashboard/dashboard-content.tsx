@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/lib/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { useTransactions } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import {

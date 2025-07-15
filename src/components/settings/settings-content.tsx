@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from "@/lib/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { ProfileForm } from "./profile-form";

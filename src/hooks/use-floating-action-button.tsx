@@ -8,7 +8,7 @@ import { ReceiptParser } from "@/components/transactions/receipt-parser";
 import { ExcelImport } from "@/components/transactions/excel-import";
 import { InlineFeatureGate } from "@/components/features/feature-gate";
 import { FeatureFlag } from "@/types";
-import { useAuth } from "@/lib/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { useCategories } from "@/hooks/use-categories";
 import { useTransactions } from "@/hooks/use-transactions";
 import { PATHS } from "@/lib/paths";

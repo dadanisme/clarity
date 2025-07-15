@@ -8,7 +8,7 @@ import { Edit3, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { getCategoryColor } from "@/lib/utils/category-utils";
 import { useCategories } from "@/hooks/use-categories";
-import { useAuth } from "@/lib/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 
 interface ReceiptItemListProps {
   parsedReceipt: ParsedReceipt;

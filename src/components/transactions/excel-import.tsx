@@ -13,7 +13,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Loader2, CheckCircle, FileSpreadsheet, Upload, X, Eye } from "lucide-react";
-import { useAuth } from "@/lib/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { useCategories } from "@/hooks/use-categories";
 import { createMultipleTransactions, createCategory } from "@/lib/firebase/services";
 import { parseExcelFile } from "@/lib/utils/excel-parser";

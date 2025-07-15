@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/lib/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { Wallet, BarChart3, Settings, LogOut, Tag, Shield } from "lucide-react";
 import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { useFloatingActionButton } from "@/hooks/use-floating-action-button";

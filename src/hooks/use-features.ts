@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "@/lib/providers/auth-provider";
+import { useAuth } from "@/hooks/use-auth";
 import { FeatureService } from "@/lib/firebase/feature-service";
 import { updateUserRole } from "@/lib/firebase/services";
 import { collection, getDocs } from "firebase/firestore";
