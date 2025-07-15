@@ -52,6 +52,7 @@ export function CurrencyInput({
     <Input
       {...props}
       type="text"
+      inputMode="numeric"
       value={displayValue}
       onChange={handleChange}
       placeholder={placeholder}
