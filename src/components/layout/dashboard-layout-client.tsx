@@ -235,7 +235,7 @@ export function DashboardLayoutClient({
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex flex-col items-center py-3 px-1 transition-colors ${
+                className={`flex flex-col items-center pt-3 pb-6 px-1 transition-colors ${
                   isActive
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
