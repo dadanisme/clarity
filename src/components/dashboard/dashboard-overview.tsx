@@ -58,6 +58,7 @@ export function DashboardOverview() {
         {/* Category Analysis */}
         <CategoryAnalysis
           transactions={expenseTransactions}
+          previousPeriodTransactions={previousPeriodTransactions.filter(t => t.type === "expense")}
           categories={categories}
         />
 

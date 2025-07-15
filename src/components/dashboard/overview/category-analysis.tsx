@@ -4,10 +4,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
 import { useMemo } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import type { Transaction, Category } from "@/types";
 
 interface CategoryAnalysisProps {
   transactions: Transaction[];
+  previousPeriodTransactions: Transaction[];
   categories: Category[];
 }
 
@@ -18,14 +20,18 @@ interface CategorySpending {
   amount: number;
   percentage: number;
   transactionCount: number;
+  previousAmount: number;
+  percentageChange: number;
+  hasData: boolean;
 }
 
 export function CategoryAnalysis({
   transactions,
+  previousPeriodTransactions,
   categories,
 }: CategoryAnalysisProps) {
   const categorySpending = useMemo(() => {
-    // Group transactions by category
+    // Group current period transactions by category
     const categoryMap = new Map<string, { amount: number; count: number }>();
 
     transactions.forEach((transaction) => {
@@ -39,12 +45,33 @@ export function CategoryAnalysis({
       });
     });
 
+    // Group previous period transactions by category
+    const prevCategoryMap = new Map<string, { amount: number; count: number }>();
+
+    previousPeriodTransactions.forEach((transaction) => {
+      const existing = prevCategoryMap.get(transaction.categoryId) || {
+        amount: 0,
+        count: 0,
+      };
+      prevCategoryMap.set(transaction.categoryId, {
+        amount: existing.amount + transaction.amount,
+        count: existing.count + 1,
+      });
+    });
+
     const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
 
-    // Convert to CategorySpending array
+    // Convert to CategorySpending array with previous period comparison
     const allCategories: CategorySpending[] = Array.from(categoryMap.entries())
       .map(([categoryId, { amount, count }]) => {
         const category = categories.find((c) => c.id === categoryId);
+        const prevData = prevCategoryMap.get(categoryId) || { amount: 0, count: 0 };
+        
+        const hasData = prevData.amount > 0;
+        const percentageChange = hasData
+          ? ((amount - prevData.amount) / prevData.amount) * 100
+          : 0;
+
         return {
           categoryId,
           name: category?.name || "Unknown",
@@ -52,6 +79,9 @@ export function CategoryAnalysis({
           amount,
           percentage: totalSpent > 0 ? (amount / totalSpent) * 100 : 0,
           transactionCount: count,
+          previousAmount: prevData.amount,
+          percentageChange,
+          hasData,
         };
       })
       .sort((a, b) => b.amount - a.amount);
@@ -87,6 +117,15 @@ export function CategoryAnalysis({
           (sum, cat) => sum + cat.transactionCount,
           0
         );
+        const othersPreviousAmount = othersCategories.reduce(
+          (sum, cat) => sum + cat.previousAmount,
+          0
+        );
+
+        const othersHasData = othersPreviousAmount > 0;
+        const othersPercentageChange = othersHasData
+          ? ((othersAmount - othersPreviousAmount) / othersPreviousAmount) * 100
+          : 0;
 
         const othersCategory: CategorySpending = {
           categoryId: "others",
@@ -95,6 +134,9 @@ export function CategoryAnalysis({
           amount: othersAmount,
           percentage: totalSpent > 0 ? (othersAmount / totalSpent) * 100 : 0,
           transactionCount: othersCount,
+          previousAmount: othersPreviousAmount,
+          percentageChange: othersPercentageChange,
+          hasData: othersHasData,
         };
 
         return [...keepIndividual, othersCategory].sort(
@@ -104,7 +146,7 @@ export function CategoryAnalysis({
     }
 
     return allCategories;
-  }, [transactions, categories]);
+  }, [transactions, previousPeriodTransactions, categories]);
 
   const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
 
@@ -123,9 +165,30 @@ export function CategoryAnalysis({
       });
     });
 
+    // Group previous period transactions by category
+    const prevCategoryMap = new Map<string, { amount: number; count: number }>();
+
+    previousPeriodTransactions.forEach((transaction) => {
+      const existing = prevCategoryMap.get(transaction.categoryId) || {
+        amount: 0,
+        count: 0,
+      };
+      prevCategoryMap.set(transaction.categoryId, {
+        amount: existing.amount + transaction.amount,
+        count: existing.count + 1,
+      });
+    });
+
     return Array.from(categoryMap.entries())
       .map(([categoryId, { amount, count }]) => {
         const category = categories.find((c) => c.id === categoryId);
+        const prevData = prevCategoryMap.get(categoryId) || { amount: 0, count: 0 };
+        
+        const hasData = prevData.amount > 0;
+        const percentageChange = hasData
+          ? ((amount - prevData.amount) / prevData.amount) * 100
+          : 0;
+
         return {
           categoryId,
           name: category?.name || "Unknown",
@@ -133,11 +196,41 @@ export function CategoryAnalysis({
           amount,
           percentage: totalSpent > 0 ? (amount / totalSpent) * 100 : 0,
           transactionCount: count,
+          previousAmount: prevData.amount,
+          percentageChange,
+          hasData,
         };
       })
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 5);
-  }, [transactions, categories, totalSpent]);
+  }, [transactions, previousPeriodTransactions, categories, totalSpent]);
+
+  // Helper component to render comparison
+  const ComparisonIndicator = ({ category }: { category: CategorySpending }) => {
+    if (!category.hasData) return null;
+
+    const isPositive = category.percentageChange > 0;
+    const isNegative = category.percentageChange < 0;
+    
+    // For expenses, decrease is good (green), increase is bad (red)
+    const isGood = isNegative;
+
+    return (
+      <div
+        className={`text-xs flex items-center gap-1 ${
+          isGood
+            ? "text-primary"
+            : !isGood && (isPositive || isNegative)
+            ? "text-destructive"
+            : "text-muted-foreground"
+        }`}
+      >
+        {isPositive && <TrendingUp className="w-3 h-3" />}
+        {isNegative && <TrendingDown className="w-3 h-3" />}
+        {Math.abs(category.percentageChange).toFixed(1)}%
+      </div>
+    );
+  };
 
   // Custom tooltip for pie chart
   const CustomTooltip = ({
@@ -158,6 +251,11 @@ export function CategoryAnalysis({
           <div className="text-xs text-muted-foreground">
             {data.percentage.toFixed(1)}% of total
           </div>
+          {data.hasData && (
+            <div className="text-xs mt-1">
+              <ComparisonIndicator category={data} />
+            </div>
+          )}
         </div>
       );
     }
@@ -233,8 +331,11 @@ export function CategoryAnalysis({
                             {index + 1}
                           </div>
                           <div>
-                            <div className="font-medium text-sm">
-                              {category.name}
+                            <div className="flex items-center gap-2">
+                              <div className="font-medium text-sm">
+                                {category.name}
+                              </div>
+                              <ComparisonIndicator category={category} />
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {category.transactionCount} transaction
