@@ -5,6 +5,7 @@ import {
   getDocs,
   setDoc,
   deleteDoc,
+  onSnapshot,
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "./config";
@@ -39,11 +40,56 @@ export class FeatureService {
       return snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
+        grantedAt: doc.data().grantedAt?.toDate() || new Date(),
+        revokedAt: doc.data().revokedAt?.toDate() || undefined,
       })) as FeatureSubscription[];
     } catch (error) {
       console.error(`Error getting features for user ${userId}:`, error);
       return [];
     }
+  }
+
+  // Subscribe to real-time user features
+  static subscribeToUserFeatures(
+    userId: string,
+    onUpdate: (features: FeatureSubscription[]) => void
+  ) {
+    const subscriptionsRef = collection(db, "users", userId, "subscriptions");
+    
+    return onSnapshot(subscriptionsRef, (snapshot) => {
+      const features = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        grantedAt: doc.data().grantedAt?.toDate() || new Date(),
+        revokedAt: doc.data().revokedAt?.toDate() || undefined,
+      })) as FeatureSubscription[];
+      
+      onUpdate(features);
+    }, (error) => {
+      console.error(`Error subscribing to features for user ${userId}:`, error);
+      onUpdate([]);
+    });
+  }
+
+  // Subscribe to a specific feature for a user
+  static subscribeToFeature(
+    userId: string,
+    feature: FeatureFlag,
+    onUpdate: (hasAccess: boolean) => void
+  ) {
+    const featureRef = doc(db, "users", userId, "subscriptions", feature);
+    
+    return onSnapshot(featureRef, (doc) => {
+      if (doc.exists()) {
+        const subscription = doc.data() as FeatureSubscription;
+        onUpdate(subscription.status === FeatureSubscriptionStatus.ACTIVE);
+      } else {
+        onUpdate(false);
+      }
+    }, (error) => {
+      console.error(`Error subscribing to feature ${feature} for user ${userId}:`, error);
+      onUpdate(false);
+    });
   }
 
   // Grant a feature to a user (admin only)
