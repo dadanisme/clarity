@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useOverviewData } from "@/hooks/use-overview-data";
 import { useCategories } from "@/hooks/use-categories";
 import { useTimeframeStore } from "@/lib/stores/timeframe-store";
-import { TimeframeControls } from "@/components/transactions/timeframe-controls";
+import { OverviewTimeframeControls } from "./overview/overview-timeframe-controls";
 import { OverviewSummaryCards } from "./overview/overview-summary-cards";
 import { CategoryAnalysis } from "./overview/category-analysis";
 import { EmptyState } from "./empty-state";
@@ -75,7 +75,7 @@ export function DashboardOverview() {
             Analyze your spending patterns and trends
           </p>
         </div>
-        <TimeframeControls />
+        <OverviewTimeframeControls />
       </div>
 
       {/* Content that shows skeleton/empty state/data */}
