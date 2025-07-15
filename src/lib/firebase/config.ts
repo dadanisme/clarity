@@ -40,7 +40,11 @@ export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
 
 // Connect to emulators in development
-if (process.env.NODE_ENV === "development" && typeof window !== "undefined") {
+if (
+  process.env.NODE_ENV === "development" &&
+  typeof window !== "undefined" &&
+  process.env.NEXT_PUBLIC_USE_EMULATOR === "true"
+) {
   // Only connect to emulators if they're running (check if we're in browser)
   try {
     connectAuthEmulator(auth, "http://localhost:9099");
