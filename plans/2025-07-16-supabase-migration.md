@@ -41,27 +41,53 @@ users/{userId}
 
 ## Migration Strategy
 
-### Phase 1: Database Schema Design (3 days)
-Convert Firestore's nested document structure to PostgreSQL relational tables.
+### Incremental Migration Approach
+This migration follows a **zero-downtime, module-by-module approach** to ensure the application remains fully functional throughout the process. Each module is migrated independently while maintaining compatibility with existing Firebase modules.
 
-### Phase 2: Authentication Migration (2 days)
-Migrate from Firebase Auth to Supabase Auth.
+### Phase 1: Foundation Setup (3 days)
+- Set up Supabase project and database schema
+- Configure authentication and security policies
+- Create migration utilities and abstraction layers
 
-### Phase 3: Security Implementation (3 days)
-Convert Firebase Security Rules to Supabase Row Level Security (RLS) policies.
+### Phase 2: User Authentication (2 days)
+- Migrate authentication system first (foundation for all other modules)
+- Implement user migration and mapping
+- Ensure seamless login/signup experience
 
-### Phase 4: Real-time Subscriptions (2 days)
-Replace Firebase onSnapshot with Supabase real-time subscriptions.
+### Phase 3: Incremental Module Migration (8 days)
+**Day 1-2: Categories Module**
+- Migrate categories service to Supabase
+- Update categories hooks and components
+- Test categories functionality while other modules remain on Firebase
 
-### Phase 5: Code Migration (5 days)
-Update all services, hooks, and components to use Supabase. Base64 image handling remains unchanged.
+**Day 3-4: Transactions Module**
+- Migrate transactions service to Supabase
+- Update transaction hooks and components
+- Ensure overview dashboard continues working with new transaction data
 
-### Phase 6: Testing & Validation (2-3 days)
-Comprehensive testing of all features and edge cases.
+**Day 5-6: Feature Subscriptions Module**
+- Migrate feature flagging system to Supabase
+- Update admin interface and feature gates
+- Test feature access controls
+
+**Day 7-8: Real-time Subscriptions**
+- Replace Firebase onSnapshot with Supabase real-time
+- Update all real-time listeners module by module
+- Ensure smooth data synchronization
+
+### Phase 4: Firebase Cleanup (1 day)
+- Remove Firebase dependencies
+- Clean up unused code and configurations
+- Final testing and validation
+
+### Phase 5: Testing & Validation (2-3 days)
+- Comprehensive end-to-end testing
+- Performance validation
+- User acceptance testing
 
 ## Detailed Migration Plan
 
-### 1. Database Schema Design
+### 1. Foundation Setup & Database Schema Design
 
 #### Tables Structure
 
@@ -258,7 +284,112 @@ CREATE POLICY "Admins can manage all subscriptions" ON feature_subscriptions
   FOR ALL USING (EXISTS (SELECT 1 FROM users WHERE firebase_uid = auth.uid()::text AND role = 'admin'));
 ```
 
-### 4. Real-time Subscriptions Migration
+### 4. Service Abstraction Layer
+
+Create an abstraction layer to allow gradual migration without breaking existing functionality:
+
+```typescript
+// lib/database/database-adapter.ts
+export interface DatabaseAdapter {
+  getCategories(userId: string): Promise<Category[]>
+  createCategory(userId: string, data: any): Promise<Category>
+  updateCategory(categoryId: string, data: any): Promise<Category>
+  deleteCategory(categoryId: string): Promise<void>
+  
+  getTransactions(userId: string, options?: any): Promise<Transaction[]>
+  createTransaction(userId: string, data: any): Promise<Transaction>
+  updateTransaction(transactionId: string, data: any): Promise<Transaction>
+  deleteTransaction(transactionId: string): Promise<void>
+  
+  subscribeToCategories(userId: string, callback: (data: any) => void): () => void
+  subscribeToTransactions(userId: string, callback: (data: any) => void): () => void
+}
+
+// lib/database/firebase-adapter.ts
+export class FirebaseAdapter implements DatabaseAdapter {
+  // Current Firebase implementations
+}
+
+// lib/database/supabase-adapter.ts  
+export class SupabaseAdapter implements DatabaseAdapter {
+  // New Supabase implementations
+}
+
+// lib/database/index.ts
+import { FirebaseAdapter } from './firebase-adapter'
+import { SupabaseAdapter } from './supabase-adapter'
+
+// Feature flags for gradual migration
+const USE_SUPABASE_CATEGORIES = process.env.NEXT_PUBLIC_USE_SUPABASE_CATEGORIES === 'true'
+const USE_SUPABASE_TRANSACTIONS = process.env.NEXT_PUBLIC_USE_SUPABASE_TRANSACTIONS === 'true'
+const USE_SUPABASE_FEATURES = process.env.NEXT_PUBLIC_USE_SUPABASE_FEATURES === 'true'
+
+export const categoriesAdapter = USE_SUPABASE_CATEGORIES ? new SupabaseAdapter() : new FirebaseAdapter()
+export const transactionsAdapter = USE_SUPABASE_TRANSACTIONS ? new SupabaseAdapter() : new FirebaseAdapter()
+export const featuresAdapter = USE_SUPABASE_FEATURES ? new SupabaseAdapter() : new FirebaseAdapter()
+```
+
+### 5. Incremental Module Migration
+
+#### Categories Module Migration
+
+```typescript
+// hooks/use-categories.ts (Updated to use adapter)
+import { categoriesAdapter } from '@/lib/database'
+
+export function useCategories() {
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
+
+  const categoriesQuery = useQuery({
+    queryKey: ['categories', user?.id],
+    queryFn: () => categoriesAdapter.getCategories(user!.id),
+    enabled: !!user
+  })
+
+  const createCategoryMutation = useMutation({
+    mutationFn: (categoryData: any) => categoriesAdapter.createCategory(user!.id, categoryData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories', user?.id] })
+    }
+  })
+
+  return {
+    categories: categoriesQuery.data || [],
+    loading: categoriesQuery.isLoading,
+    createCategory: createCategoryMutation.mutate
+  }
+}
+```
+
+#### Transactions Module Migration
+
+```typescript
+// hooks/use-transactions.ts (Updated to use adapter)
+import { transactionsAdapter } from '@/lib/database'
+
+export function useTransactions() {
+  const { user } = useAuth()
+  const queryClient = useQueryClient()
+
+  const transactionsQuery = useQuery({
+    queryKey: ['transactions', user?.id],
+    queryFn: () => transactionsAdapter.getTransactions(user!.id),
+    enabled: !!user
+  })
+
+  // Overview dashboard will continue to work seamlessly
+  // because it uses the same hook interface
+  
+  return {
+    transactions: transactionsQuery.data || [],
+    loading: transactionsQuery.isLoading,
+    createTransaction: (data: any) => transactionsAdapter.createTransaction(user!.id, data)
+  }
+}
+```
+
+### 6. Real-time Subscriptions Migration
 
 Replace Firebase onSnapshot with Supabase real-time subscriptions:
 
@@ -563,9 +694,69 @@ export function useCategories() {
 }
 ```
 
-### 8. Environment Variables
+### 7. Migration Environment Variables
 
-Update environment variables for Supabase:
+Add environment variables for gradual migration control:
+
+```env
+# .env.local
+# Supabase configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# Firebase configuration (keep during migration)
+NEXT_PUBLIC_FIREBASE_API_KEY=your_firebase_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_firebase_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_firebase_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_firebase_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_firebase_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_firebase_app_id
+
+# Migration control flags
+NEXT_PUBLIC_USE_SUPABASE_CATEGORIES=false
+NEXT_PUBLIC_USE_SUPABASE_TRANSACTIONS=false
+NEXT_PUBLIC_USE_SUPABASE_FEATURES=false
+
+# AI service (unchanged)
+GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
+```
+
+### 8. Migration Process Steps
+
+#### Step 1: Categories Migration
+1. Set `NEXT_PUBLIC_USE_SUPABASE_CATEGORIES=true`
+2. Test categories functionality
+3. Verify overview dashboard still works (uses transactions from Firebase)
+4. Confirm admin features remain functional
+
+#### Step 2: Transactions Migration  
+1. Set `NEXT_PUBLIC_USE_SUPABASE_TRANSACTIONS=true`
+2. Test transactions functionality
+3. **Critical:** Verify overview dashboard works with new transaction data
+4. Ensure receipt parsing continues to work
+5. Test Excel import functionality
+
+#### Step 3: Features Migration
+1. Set `NEXT_PUBLIC_USE_SUPABASE_FEATURES=true`
+2. Test admin interface
+3. Verify feature gates work correctly
+4. Test user role management
+
+#### Step 4: Firebase Cleanup
+1. Remove Firebase dependencies from package.json
+2. Delete Firebase configuration
+3. Clean up unused Firebase code
+4. Remove migration environment variables
+
+### 9. Rollback Strategy
+
+If issues arise during migration, rollback is simple:
+1. Set the problematic module flag back to `false`
+2. Application immediately uses Firebase for that module
+3. Other migrated modules continue using Supabase
+4. No data loss or downtime
+
+### 10. Environment Variables (Final State)
 
 ```env
 # .env.local
@@ -593,7 +784,7 @@ Remove Firebase dependencies:
 npm uninstall firebase
 ```
 
-### 10. Development Environment
+### 11. Development Environment
 
 #### Local Development Setup
 
@@ -604,12 +795,29 @@ npm install -g supabase
 # Initialize Supabase in project
 supabase init
 
-# Start local Supabase
+# Start local Supabase (runs alongside Firebase emulators)
 supabase start
 
 # Apply migrations
 supabase db push
 ```
+
+#### Dual Database Development
+
+During migration, you'll run both Firebase and Supabase locally:
+
+```bash
+# Terminal 1: Start Firebase emulators
+npm run emulators
+
+# Terminal 2: Start Supabase
+supabase start
+
+# Terminal 3: Start Next.js development server
+npm run dev
+```
+
+Your application will use both databases simultaneously based on the feature flags.
 
 #### Database Migrations
 
@@ -636,12 +844,27 @@ supabase db push
 - [ ] Test data migration on staging
 - [ ] Validate data integrity
 
-### Code Migration
-- [ ] Update authentication service
-- [ ] Migrate database services
-- [ ] Update hooks and components
-- [ ] Replace real-time listeners
-- [ ] Update feature service
+### Incremental Code Migration
+- [ ] Create database abstraction layer
+- [ ] Implement Firebase and Supabase adapters
+- [ ] **Categories Module:**
+  - [ ] Migrate categories service
+  - [ ] Update categories hooks
+  - [ ] Test categories functionality
+  - [ ] Verify overview dashboard still works
+- [ ] **Transactions Module:**
+  - [ ] Migrate transactions service
+  - [ ] Update transaction hooks
+  - [ ] Test transactions functionality
+  - [ ] Verify overview dashboard with new data
+- [ ] **Features Module:**
+  - [ ] Migrate feature service
+  - [ ] Update admin interface
+  - [ ] Test feature gates
+- [ ] **Real-time Subscriptions:**
+  - [ ] Replace Firebase onSnapshot
+  - [ ] Implement Supabase real-time
+  - [ ] Test live data updates
 
 ### Testing
 - [ ] Unit tests for all services
@@ -660,14 +883,17 @@ supabase db push
 ## Risks and Mitigation
 
 ### Technical Risks
-1. **Data Loss During Migration**
-   - Mitigation: Complete backup before migration, staged rollout
+1. **Module Incompatibility During Migration**
+   - Mitigation: Database abstraction layer, feature flag rollback
 
-2. **Authentication Conflicts**
+2. **Data Synchronization Issues**
+   - Mitigation: Thorough testing between modules, data validation
+
+3. **Performance Degradation**
+   - Mitigation: Proper indexing, query optimization, monitoring
+
+4. **Authentication Conflicts**
    - Mitigation: User mapping strategy, gradual migration
-
-3. **Performance Issues**
-   - Mitigation: Proper indexing, query optimization
 
 4. **Real-time Subscription Failures**
    - Mitigation: Fallback to polling, comprehensive testing
@@ -692,13 +918,15 @@ supabase db push
 
 | Phase | Duration | Description |
 |-------|----------|-------------|
-| Phase 1 | 3 days | Database schema design and setup |
+| Phase 1 | 3 days | Foundation setup and database schema |
 | Phase 2 | 2 days | Authentication migration |
-| Phase 3 | 3 days | Security policies implementation |
-| Phase 4 | 2 days | Real-time subscriptions |
-| Phase 5 | 5 days | Code migration and refactoring |
-| Phase 6 | 2-3 days | Testing and validation |
-| **Total** | **17-18 days** | **Complete migration** |
+| Phase 3 | 2 days | Categories module migration |
+| Phase 4 | 2 days | Transactions module migration |
+| Phase 5 | 2 days | Features module migration |
+| Phase 6 | 2 days | Real-time subscriptions migration |
+| Phase 7 | 1 day | Firebase cleanup |
+| Phase 8 | 2-3 days | Final testing and validation |
+| **Total** | **16-17 days** | **Complete incremental migration** |
 
 ## Post-Migration Tasks
 
@@ -728,12 +956,14 @@ This migration plan provides a comprehensive roadmap for transitioning from Fire
 
 **Image Handling Note:** The current base64 image storage approach will continue to work seamlessly with Supabase. No changes required for profile images or receipt processing. This can optionally be upgraded to Supabase Storage in the future if persistent file storage is desired.
 
-The key benefits of this migration include:
-- Better TypeScript support
-- More powerful querying capabilities
-- Cost-effective pricing
-- Improved developer experience
-- Better long-term maintainability
-- Simplified architecture (no Cloud Storage complexity)
+**Migration Benefits:**
+- **Zero-downtime migration:** Each module migrates independently
+- **Instant rollback capability:** Feature flags allow immediate revert to Firebase
+- **Reduced risk:** Gradual migration with continuous validation
+- **Better TypeScript support:** Auto-generated types from Supabase
+- **More powerful querying:** SQL-based queries and joins
+- **Cost-effective pricing:** More transparent and scalable pricing model
+- **Improved developer experience:** Better tooling and documentation
+- **Simplified architecture:** No Cloud Storage complexity
 
-With careful execution of this plan, the migration should be completed successfully within the estimated timeline while maintaining high code quality and user experience standards.
+With this incremental approach, the migration minimizes risks while maintaining full application functionality throughout the process. The abstraction layer ensures smooth transitions and easy rollback if needed.

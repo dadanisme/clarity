@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { CurrencyInput } from "@/components/ui/currency-input";
 import {
   Select,
@@ -258,7 +258,7 @@ export function TransactionForm({
           {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description">Description (Optional)</Label>
-            <Textarea
+            <Input
               id="description"
               placeholder="Enter transaction description (optional)"
               {...register("description")}
