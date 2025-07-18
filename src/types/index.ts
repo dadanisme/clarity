@@ -11,38 +11,41 @@ export enum Theme {
 
 export interface User {
   id: string;
-  displayName: string;
+  display_name: string;
   email: string;
   role: UserRole;
-  profileImage?: string;
-  createdAt: Date;
-  settings: {
-    theme: Theme;
-  };
+  profile_image?: string;
+  theme: Theme;
+  created_at: string;
+  updated_at: string;
+  role_updated_by?: string;
 }
 
 export interface Category {
   id: string;
+  user_id: string;
   name: string;
   type: "income" | "expense";
   color: string;
-  createdAt: Date;
-  isDefault: boolean;
+  is_default: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Transaction {
   id: string;
+  user_id: string;
+  category_id: string;
   amount: number;
   type: "income" | "expense";
-  categoryId: string;
   description?: string;
-  date: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  date: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface TransactionWithCategory extends Transaction {
-  category: Category;
+  categories: Category;
 }
 
 export interface MonthlySummary {
@@ -71,12 +74,13 @@ export enum FeatureFlag {
 
 export interface FeatureSubscription {
   id: string;
-  userId: string;
-  featureName: string;
+  user_id: string;
+  feature_flag: FeatureFlag;
+  feature_name: string;
   status: FeatureSubscriptionStatus;
-  grantedAt: Date;
-  grantedBy: string;
-  revokedBy?: string;
-  revokedAt?: Date;
+  granted_at: string;
+  granted_by: string;
+  revoked_by?: string;
+  revoked_at?: string;
   notes?: string;
 }

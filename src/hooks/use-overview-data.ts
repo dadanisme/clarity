@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTransactions } from "@/lib/firebase/services";
+import { TransactionsService } from "@/lib/supabase/transactions-service";
 import { useTimeframeStore } from "@/lib/stores/timeframe-store";
 import { subMonths, subQuarters, subYears } from "date-fns";
 import { 
@@ -67,14 +67,14 @@ export function useOverviewData(userId: string) {
   // Fetch current period data
   const currentPeriodQuery = useQuery({
     queryKey: ["overview-current", userId, timeframe, currentPeriod.getTime()],
-    queryFn: () => getTransactions(userId, currentRange),
+    queryFn: () => TransactionsService.getTransactions(userId, currentRange),
     enabled: !!userId,
   });
 
   // Fetch previous period data
   const previousPeriodQuery = useQuery({
     queryKey: ["overview-previous", userId, timeframe, currentPeriod.getTime()],
-    queryFn: () => getTransactions(userId, previousRange),
+    queryFn: () => TransactionsService.getTransactions(userId, previousRange),
     enabled: !!userId,
   });
 

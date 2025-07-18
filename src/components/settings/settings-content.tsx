@@ -24,7 +24,7 @@ import { PWAInstallButton } from "./pwa-install-button";
 import { LogOut, User, Mail, Calendar, Zap } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { useUserFeatures } from "@/hooks/use-features";
-import { FEATURE_METADATA } from "@/lib/firebase/feature-service";
+import { FEATURE_METADATA } from "@/lib/supabase/feature-service";
 import { FeatureSubscription } from "@/types";
 import { formatDate } from "@/lib/utils/date-utils";
 
@@ -74,16 +74,16 @@ export function SettingsContent() {
         </CardHeader>
         <CardContent>
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-2">{user?.displayName}</h3>
+            <h3 className="text-lg font-semibold mb-2">{user?.display_name}</h3>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground mb-1">
               <Mail className="w-4 h-4" />
               <span>{user?.email}</span>
             </div>
-            {user?.createdAt && (
+            {user?.created_at && (
               <div className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Calendar className="w-4 h-4" />
                 <span>
-                  Member since {new Date(user.createdAt).toLocaleDateString()}
+                  Member since {new Date(user.created_at).toLocaleDateString()}
                 </span>
               </div>
             )}
@@ -205,9 +205,9 @@ function FeaturesDisplay({ userFeatures }: FeaturesDisplayProps) {
                 <div className="text-sm text-muted-foreground mt-1">
                   {metadata.description}
                 </div>
-                {isActive && userFeature?.grantedAt && (
+                {isActive && userFeature?.granted_at && (
                   <div className="text-xs text-muted-foreground mt-1">
-                    Granted on {formatDate(userFeature.grantedAt)}
+                    Granted on {formatDate(userFeature.granted_at)}
                   </div>
                 )}
                 {!isActive && (

@@ -1,10 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  getTransactions,
-  createTransaction,
-  updateTransaction,
-  deleteTransaction,
-} from "@/lib/firebase/services";
+import { TransactionsService } from "@/lib/supabase";
 import type { TransactionFormData } from "@/lib/validations";
 import { useTimeframeStore } from "@/lib/stores/timeframe-store";
 
@@ -14,7 +9,7 @@ export function useTransactions(userId: string) {
   
   return useQuery({
     queryKey: ["transactions", userId, timeframe, currentPeriod.getTime()],
-    queryFn: () => getTransactions(userId, { startDate, endDate }),
+    queryFn: () => TransactionsService.getTransactions(userId, { startDate, endDate }),
     enabled: !!userId,
   });
 }
@@ -29,7 +24,7 @@ export function useCreateTransaction() {
     }: {
       userId: string;
       data: TransactionFormData;
-    }) => createTransaction(userId, data),
+    }) => TransactionsService.createTransaction(userId, data),
     onSuccess: (_, { userId }) => {
       queryClient.invalidateQueries({ 
         queryKey: ["transactions", userId],
@@ -51,7 +46,7 @@ export function useUpdateTransaction() {
       userId: string;
       transactionId: string;
       data: Partial<TransactionFormData>;
-    }) => updateTransaction(userId, transactionId, data),
+    }) => TransactionsService.updateTransaction(transactionId, data),
     onSuccess: (_, { userId }) => {
       queryClient.invalidateQueries({ 
         queryKey: ["transactions", userId],
@@ -71,7 +66,7 @@ export function useDeleteTransaction() {
     }: {
       userId: string;
       transactionId: string;
-    }) => deleteTransaction(userId, transactionId),
+    }) => TransactionsService.deleteTransaction(transactionId),
     onSuccess: (_, { userId }) => {
       queryClient.invalidateQueries({ 
         queryKey: ["transactions", userId],

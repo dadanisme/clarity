@@ -1,16 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  getCategories,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-} from "@/lib/firebase/services";
+import { CategoriesService } from "@/lib/supabase";
 import type { CategoryFormData } from "@/lib/validations";
 
 export function useCategories(userId: string) {
   return useQuery({
     queryKey: ["categories", userId],
-    queryFn: () => getCategories(userId),
+    queryFn: () => CategoriesService.getCategories(userId),
     enabled: !!userId,
   });
 }
@@ -25,7 +20,7 @@ export function useCreateCategory() {
     }: {
       userId: string;
       data: CategoryFormData;
-    }) => createCategory(userId, data),
+    }) => CategoriesService.createCategory(userId, data),
     onSuccess: (_, { userId }) => {
       queryClient.invalidateQueries({ queryKey: ["categories", userId] });
     },
@@ -44,7 +39,7 @@ export function useUpdateCategory() {
       userId: string;
       categoryId: string;
       data: Partial<CategoryFormData>;
-    }) => updateCategory(userId, categoryId, data),
+    }) => CategoriesService.updateCategory(categoryId, data),
     onSuccess: (_, { userId }) => {
       queryClient.invalidateQueries({ queryKey: ["categories", userId] });
     },
@@ -61,7 +56,7 @@ export function useDeleteCategory() {
     }: {
       userId: string;
       categoryId: string;
-    }) => deleteCategory(userId, categoryId),
+    }) => CategoriesService.deleteCategory(categoryId),
     onSuccess: (_, { userId }) => {
       queryClient.invalidateQueries({ queryKey: ["categories", userId] });
     },

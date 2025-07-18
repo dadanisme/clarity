@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateUserSettings } from "@/lib/firebase/services";
+import { UserService } from "@/lib/supabase";
 import type { User } from "@/types";
 
 export function useUpdateUserSettings() {
@@ -11,8 +11,8 @@ export function useUpdateUserSettings() {
       settings,
     }: {
       userId: string;
-      settings: User["settings"];
-    }) => updateUserSettings(userId, settings),
+      settings: { theme: User["theme"] };
+    }) => UserService.updateUser(userId, settings),
     onSuccess: (_, { userId }) => {
       queryClient.invalidateQueries({ queryKey: ["user", userId] });
     },

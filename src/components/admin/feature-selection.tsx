@@ -2,7 +2,7 @@
 
 import { Label } from "@/components/ui/label";
 import { FeatureFlag } from "@/types";
-import { FEATURE_METADATA } from "@/lib/firebase/feature-service";
+import { FEATURE_METADATA } from "@/lib/supabase/feature-service";
 
 interface FeatureSelectionProps {
   selectedFeatures: FeatureFlag[];
