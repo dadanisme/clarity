@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -102,7 +102,6 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
         });
       } else if (mode === "edit" && user?.id && category) {
         await updateCategory.mutateAsync({
-          userId: user.id,
           category_id: category.id,
           data: {
             ...data,
@@ -122,7 +121,6 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
     if (user?.id && category) {
       try {
         await deleteCategory.mutateAsync({
-          userId: user.id,
           category_id: category.id,
         });
         setOpen(false);
@@ -138,6 +136,15 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
       reset();
     }
   };
+
+  // Reset when category changes
+  useEffect(() => {
+    reset({
+      name: category?.name || "",
+      type: (category?.type || "expense") as "income" | "expense",
+      color: category?.color || "#3b82f6",
+    });
+  }, [category, reset]);
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

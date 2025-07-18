@@ -21,8 +21,8 @@ export function useCreateCategory() {
       userId: string;
       data: CategoryFormData;
     }) => CategoriesService.createCategory(userId, data),
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ["categories", userId] });
+    onSuccess: ({ user_id }) => {
+      queryClient.invalidateQueries({ queryKey: ["categories", user_id] });
     },
   });
 }
@@ -38,8 +38,8 @@ export function useUpdateCategory() {
       category_id: string;
       data: Partial<CategoryFormData>;
     }) => CategoriesService.updateCategory(category_id, data),
-    onSuccess: (_, { category_id }) => {
-      queryClient.invalidateQueries({ queryKey: ["categories", category_id] });
+    onSuccess: ({ user_id }) => {
+      queryClient.invalidateQueries({ queryKey: ["categories", user_id] });
     },
   });
 }
@@ -50,8 +50,8 @@ export function useDeleteCategory() {
   return useMutation({
     mutationFn: ({ category_id }: { category_id: string }) =>
       CategoriesService.deleteCategory(category_id),
-    onSuccess: (_, { category_id }) => {
-      queryClient.invalidateQueries({ queryKey: ["categories", category_id] });
+    onSuccess: ({ user_id }) => {
+      queryClient.invalidateQueries({ queryKey: ["categories", user_id] });
     },
   });
 }

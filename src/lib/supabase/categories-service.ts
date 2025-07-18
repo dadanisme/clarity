@@ -1,103 +1,122 @@
-import { supabase } from './config'
-import { Category } from '@/types'
+import { supabase } from "./config";
+import { Category } from "@/types";
 
 export class CategoriesService {
   static async getCategories(userId: string): Promise<Category[]> {
     const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .from("categories")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
 
-    if (error) throw error
-    return data || []
+    if (error) throw error;
+    return data || [];
   }
 
   static async createCategory(
     userId: string,
     categoryData: {
-      name: string
-      type: 'income' | 'expense'
-      color: string
-      is_default: boolean
+      name: string;
+      type: "income" | "expense";
+      color: string;
+      is_default: boolean;
     }
   ): Promise<Category> {
     const { data, error } = await supabase
-      .from('categories')
-      .insert([{ 
-        name: categoryData.name,
-        type: categoryData.type,
-        color: categoryData.color,
-        is_default: categoryData.is_default,
-        user_id: userId 
-      }])
+      .from("categories")
+      .insert([
+        {
+          name: categoryData.name,
+          type: categoryData.type,
+          color: categoryData.color,
+          is_default: categoryData.is_default,
+          user_id: userId,
+        },
+      ])
       .select()
-      .single()
+      .single();
 
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   }
 
   static async updateCategory(
     category_id: string,
-    updates: Partial<Omit<Category, 'id' | 'user_id' | 'created_at' | 'updated_at'>>
+    updates: Partial<
+      Omit<Category, "id" | "user_id" | "created_at" | "updated_at">
+    >
   ): Promise<Category> {
     const { data, error } = await supabase
-      .from('categories')
+      .from("categories")
       .update(updates)
-      .eq('id', category_id)
+      .eq("id", category_id)
       .select()
-      .single()
+      .single();
 
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   }
 
-  static async deleteCategory(category_id: string): Promise<void> {
-    const { error } = await supabase
-      .from('categories')
-      .delete()
-      .eq('id', category_id)
+  static async deleteCategory(
+    category_id: string
+  ): Promise<{ user_id: string }> {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("user_id")
+      .eq("id", category_id)
+      .single();
 
-    if (error) throw error
+    if (error) throw error;
+
+    const { error: deleteError } = await supabase
+      .from("categories")
+      .delete()
+      .eq("id", category_id);
+
+    if (deleteError) throw deleteError;
+
+    return { user_id: data.user_id }; // for invalidating the query
   }
 
   static async getCategoryById(category_id: string): Promise<Category | null> {
     const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('id', category_id)
-      .single()
+      .from("categories")
+      .select("*")
+      .eq("id", category_id)
+      .single();
 
     if (error) {
-      if (error.code === 'PGRST116') return null // No rows returned
-      throw error
+      if (error.code === "PGRST116") return null; // No rows returned
+      throw error;
     }
-    return data
+    return data;
   }
 
-  static async getCategoriesByType(userId: string, type: 'income' | 'expense'): Promise<Category[]> {
+  static async getCategoriesByType(
+    userId: string,
+    type: "income" | "expense"
+  ): Promise<Category[]> {
     const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('type', type)
-      .order('created_at', { ascending: false })
+      .from("categories")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("type", type)
+      .order("created_at", { ascending: false });
 
-    if (error) throw error
-    return data || []
+    if (error) throw error;
+    return data || [];
   }
 
   static async getDefaultCategories(userId: string): Promise<Category[]> {
     const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('is_default', true)
-      .order('created_at', { ascending: false })
+      .from("categories")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("is_default", true)
+      .order("created_at", { ascending: false });
 
-    if (error) throw error
-    return data || []
+    if (error) throw error;
+    return data || [];
   }
 
   static subscribeToCategories(
@@ -105,22 +124,22 @@ export class CategoriesService {
     callback: (categories: Category[]) => void
   ) {
     return supabase
-      .channel('categories')
+      .channel("categories")
       .on(
-        'postgres_changes',
+        "postgres_changes",
         {
-          event: '*',
-          schema: 'public',
-          table: 'categories',
-          filter: `user_id=eq.${userId}`
+          event: "*",
+          schema: "public",
+          table: "categories",
+          filter: `user_id=eq.${userId}`,
         },
         async () => {
-          const categories = await this.getCategories(userId)
-          callback(categories)
+          const categories = await this.getCategories(userId);
+          callback(categories);
         }
       )
-      .subscribe()
+      .subscribe();
   }
 }
 
-export default CategoriesService
+export default CategoriesService;
