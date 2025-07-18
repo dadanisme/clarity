@@ -127,13 +127,25 @@ export class TransactionsService {
     return data;
   }
 
-  static async deleteTransaction(transactionId: string): Promise<void> {
-    const { error } = await supabase
+  static async deleteTransaction(
+    transactionId: string
+  ): Promise<{ user_id: string }> {
+    const { data, error } = await supabase
+      .from("transactions")
+      .select("user_id")
+      .eq("id", transactionId)
+      .single();
+
+    if (error) throw error;
+
+    const { error: deleteError } = await supabase
       .from("transactions")
       .delete()
       .eq("id", transactionId);
 
-    if (error) throw error;
+    if (deleteError) throw error;
+
+    return { user_id: data.user_id };
   }
 
   static async getTransactionById(

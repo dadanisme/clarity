@@ -50,9 +50,9 @@ export function useUpdateTransaction() {
         ...data,
         date: data.date ? data.date.toISOString() : undefined,
       }),
-    onSuccess: (_, { transactionId }) => {
+    onSuccess: ({ user_id }) => {
       queryClient.invalidateQueries({
-        queryKey: ["transactions", transactionId],
+        queryKey: ["transactions", user_id],
         type: "all",
       });
     },
@@ -65,9 +65,9 @@ export function useDeleteTransaction() {
   return useMutation({
     mutationFn: ({ transactionId }: { transactionId: string }) =>
       TransactionsService.deleteTransaction(transactionId),
-    onSuccess: (_, { transactionId }) => {
+    onSuccess: ({ user_id }) => {
       queryClient.invalidateQueries({
-        queryKey: ["transactions", transactionId],
+        queryKey: ["transactions", user_id],
         type: "all",
       });
     },
