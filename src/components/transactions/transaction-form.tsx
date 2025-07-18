@@ -109,7 +109,6 @@ export function TransactionForm({
         });
       } else if (mode === "edit" && user?.id && transaction) {
         await updateTransaction.mutateAsync({
-          userId: user.id,
           transactionId: transaction.id,
           data,
         });
@@ -126,7 +125,6 @@ export function TransactionForm({
     if (user?.id && transaction) {
       try {
         await deleteTransaction.mutateAsync({
-          userId: user.id,
           transactionId: transaction.id,
         });
         setOpen(false);
