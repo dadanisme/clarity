@@ -133,12 +133,12 @@ export function useGrantFeature() {
     mutationFn: async ({
       userId,
       feature,
-      featureName,
+      feature_name,
       notes,
     }: {
       userId: string;
       feature: FeatureFlag;
-      featureName: string;
+      feature_name: string;
       notes?: string;
     }) => {
       if (!user?.id || user.role !== UserRole.ADMIN) {
@@ -149,7 +149,7 @@ export function useGrantFeature() {
         userId,
         feature,
         user.id,
-        featureName,
+        feature_name,
         notes
       );
     },

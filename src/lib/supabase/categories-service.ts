@@ -19,7 +19,7 @@ export class CategoriesService {
       name: string
       type: 'income' | 'expense'
       color: string
-      isDefault: boolean
+      is_default: boolean
     }
   ): Promise<Category> {
     const { data, error } = await supabase
@@ -28,7 +28,7 @@ export class CategoriesService {
         name: categoryData.name,
         type: categoryData.type,
         color: categoryData.color,
-        is_default: categoryData.isDefault,
+        is_default: categoryData.is_default,
         user_id: userId 
       }])
       .select()
@@ -39,13 +39,13 @@ export class CategoriesService {
   }
 
   static async updateCategory(
-    categoryId: string,
+    category_id: string,
     updates: Partial<Omit<Category, 'id' | 'user_id' | 'created_at' | 'updated_at'>>
   ): Promise<Category> {
     const { data, error } = await supabase
       .from('categories')
       .update(updates)
-      .eq('id', categoryId)
+      .eq('id', category_id)
       .select()
       .single()
 
@@ -53,20 +53,20 @@ export class CategoriesService {
     return data
   }
 
-  static async deleteCategory(categoryId: string): Promise<void> {
+  static async deleteCategory(category_id: string): Promise<void> {
     const { error } = await supabase
       .from('categories')
       .delete()
-      .eq('id', categoryId)
+      .eq('id', category_id)
 
     if (error) throw error
   }
 
-  static async getCategoryById(categoryId: string): Promise<Category | null> {
+  static async getCategoryById(category_id: string): Promise<Category | null> {
     const { data, error } = await supabase
       .from('categories')
       .select('*')
-      .eq('id', categoryId)
+      .eq('id', category_id)
       .single()
 
     if (error) {

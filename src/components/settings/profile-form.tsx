@@ -11,7 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { ImageUpload } from "@/components/ui/image-upload";
 
 const profileSchema = z.object({
-  displayName: z.string().min(2, "Name must be at least 2 characters"),
+  display_name: z.string().min(2, "Name must be at least 2 characters"),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -33,7 +33,7 @@ export function ProfileForm() {
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      displayName: user?.displayName || "",
+      display_name: user?.display_name || "",
     },
   });
 
@@ -42,7 +42,7 @@ export function ProfileForm() {
       setIsUpdating(true);
       setMessage(null);
 
-      await updateProfile({ displayName: data.displayName });
+      await updateProfile({ display_name: data.display_name });
 
       setMessage({
         type: "success",
@@ -112,8 +112,8 @@ export function ProfileForm() {
       <div className="space-y-4">
         <Label>Profile Picture</Label>
         <ImageUpload
-          currentImageUrl={user?.profileImage}
-          displayName={user?.displayName || "User"}
+          currentImageUrl={user?.profile_image || undefined}
+          displayName={user?.display_name || "User"}
           onImageSelect={handleImageSelect}
           onImageRemove={handleImageRemove}
           isUploading={isUploading}
@@ -123,15 +123,15 @@ export function ProfileForm() {
 
       {/* Display Name Section */}
       <div className="space-y-2">
-        <Label htmlFor="displayName">Display Name</Label>
+        <Label htmlFor="display_name">Display Name</Label>
         <Input
-          id="displayName"
+          id="display_name"
           placeholder="Enter your display name"
-          {...register("displayName")}
+          {...register("display_name")}
         />
-        {errors.displayName && (
+        {errors.display_name && (
           <p className="text-sm text-destructive">
-            {errors.displayName.message}
+            {errors.display_name.message}
           </p>
         )}
       </div>

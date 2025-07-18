@@ -78,7 +78,7 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
     defaultValues: category
       ? {
           name: category.name,
-          type: category.type,
+          type: category.type as "income" | "expense",
           color: category.color,
         }
       : {
@@ -97,16 +97,16 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
           userId: user.id,
           data: {
             ...data,
-            isDefault: false,
+            is_default: false,
           },
         });
       } else if (mode === "edit" && user?.id && category) {
         await updateCategory.mutateAsync({
           userId: user.id,
-          categoryId: category.id,
+          category_id: category.id,
           data: {
             ...data,
-            isDefault: category.isDefault,
+            is_default: category.is_default || false,
           },
         });
       }
@@ -123,7 +123,7 @@ export function CategoryForm({ category, mode, trigger }: CategoryFormProps) {
       try {
         await deleteCategory.mutateAsync({
           userId: user.id,
-          categoryId: category.id,
+          category_id: category.id,
         });
         setOpen(false);
       } catch (error) {

@@ -81,15 +81,15 @@ export function TransactionForm({
     defaultValues: transaction
       ? {
           amount: transaction.amount,
-          type: transaction.type,
-          categoryId: transaction.categoryId,
+          type: transaction.type as "income" | "expense",
+          category_id: transaction.category_id,
           description: transaction.description || "",
-          date: transaction.date,
+          date: new Date(transaction.date),
         }
       : {
           amount: 0,
           type: "expense",
-          categoryId: "",
+          category_id: "",
           description: "",
           date: defaultDate || new Date(),
         },
@@ -144,10 +144,10 @@ export function TransactionForm({
       // Reset form with transaction data when opening in edit mode
       reset({
         amount: transaction.amount,
-        type: transaction.type,
-        categoryId: transaction.categoryId,
+        type: transaction.type as "income" | "expense",
+        category_id: transaction.category_id,
         description: transaction.description || "",
-        date: transaction.date,
+        date: new Date(transaction.date),
       });
     }
   };
@@ -225,10 +225,10 @@ export function TransactionForm({
             </div>
 
             <div className="space-y-2 flex-1">
-              <Label htmlFor="categoryId">Category</Label>
+              <Label htmlFor="category_id">Category</Label>
               <Select
-                value={watch("categoryId")}
-                onValueChange={(value) => setValue("categoryId", value)}
+                value={watch("category_id")}
+                onValueChange={(value) => setValue("category_id", value)}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select category" />
@@ -247,9 +247,9 @@ export function TransactionForm({
                   ))}
                 </SelectContent>
               </Select>
-              {errors.categoryId && (
+              {errors.category_id && (
                 <p className="text-sm text-destructive">
-                  {errors.categoryId.message}
+                  {errors.category_id.message}
                 </p>
               )}
             </div>

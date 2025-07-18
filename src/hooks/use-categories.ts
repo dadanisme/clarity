@@ -32,16 +32,14 @@ export function useUpdateCategory() {
 
   return useMutation({
     mutationFn: ({
-      userId,
-      categoryId,
+      category_id,
       data,
     }: {
-      userId: string;
-      categoryId: string;
+      category_id: string;
       data: Partial<CategoryFormData>;
-    }) => CategoriesService.updateCategory(categoryId, data),
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ["categories", userId] });
+    }) => CategoriesService.updateCategory(category_id, data),
+    onSuccess: (_, { category_id }) => {
+      queryClient.invalidateQueries({ queryKey: ["categories", category_id] });
     },
   });
 }
@@ -50,15 +48,10 @@ export function useDeleteCategory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      userId,
-      categoryId,
-    }: {
-      userId: string;
-      categoryId: string;
-    }) => CategoriesService.deleteCategory(categoryId),
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ["categories", userId] });
+    mutationFn: ({ category_id }: { category_id: string }) =>
+      CategoriesService.deleteCategory(category_id),
+    onSuccess: (_, { category_id }) => {
+      queryClient.invalidateQueries({ queryKey: ["categories", category_id] });
     },
   });
 }

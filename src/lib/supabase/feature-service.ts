@@ -52,7 +52,7 @@ export class FeatureService {
     userId: string,
     feature: FeatureFlag,
     grantedBy: string,
-    featureName: string,
+    feature_name: string,
     notes?: string
   ): Promise<FeatureSubscription> {
     const { data, error } = await supabase
@@ -60,7 +60,7 @@ export class FeatureService {
       .upsert([{
         user_id: userId,
         feature_flag: feature,
-        feature_name: featureName,
+        feature_name: feature_name,
         status: 'active',
         granted_by: grantedBy,
         granted_at: new Date().toISOString(),

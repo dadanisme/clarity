@@ -16,7 +16,7 @@ export function TopCategoriesList({ categories }: TopCategoriesListProps) {
         <div className="space-y-3">
           {categories.map((category, index) => (
             <div
-              key={category.categoryId}
+              key={category.category_id}
               className="flex items-center justify-between p-3 rounded-lg bg-muted/30 border border-border"
             >
               <div className="flex items-center gap-3">

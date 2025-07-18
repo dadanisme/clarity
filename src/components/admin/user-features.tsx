@@ -20,7 +20,7 @@ export function UserFeatures({ userId }: UserFeaturesProps) {
     <div className="flex flex-wrap gap-1">
       {activeFeatures.slice(0, 2).map((feature) => (
         <Badge key={feature.id} variant="outline" className="text-xs">
-          {feature.featureName}
+          {feature.feature_name}
         </Badge>
       ))}
       {activeFeatures.length > 2 && (

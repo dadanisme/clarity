@@ -47,7 +47,7 @@ export function TransactionList() {
         .includes(searchTerm.toLowerCase()) ?? false;
     const matchesType = typeFilter === "all" || transaction.type === typeFilter;
     const matchesCategory =
-      categoryFilter === "all" || transaction.categoryId === categoryFilter;
+      categoryFilter === "all" || transaction.category_id === categoryFilter;
 
     return matchesSearch && matchesType && matchesCategory;
   });

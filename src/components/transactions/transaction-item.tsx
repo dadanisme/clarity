@@ -30,13 +30,13 @@ export function TransactionItem({
   editTrigger,
   mobileEditOverlay,
 }: TransactionItemProps) {
-  const getCategoryName = (categoryId: string) => {
-    const category = categories.find((c) => c.id === categoryId);
+  const getCategoryName = (category_id: string) => {
+    const category = categories.find((c) => c.id === category_id);
     return category?.name || "Unknown";
   };
 
-  const getCategoryColor = (categoryId: string) => {
-    const category = categories.find((c) => c.id === categoryId);
+  const getCategoryColor = (category_id: string) => {
+    const category = categories.find((c) => c.id === category_id);
     return category?.color || "#6b7280";
   };
 
@@ -55,7 +55,7 @@ export function TransactionItem({
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-primary truncate">
               {transaction.description ||
-                getCategoryName(transaction.categoryId)}
+                getCategoryName(transaction.category_id)}
             </p>
             {(showDate || showCategory) && (
               <div className="flex items-center space-x-2 text-xs text-muted-foreground">
@@ -71,11 +71,11 @@ export function TransactionItem({
                       className="w-1.5 h-1.5 rounded-full"
                       style={{
                         backgroundColor: getCategoryColor(
-                          transaction.categoryId
+                          transaction.category_id
                         ),
                       }}
                     />
-                    <span>{getCategoryName(transaction.categoryId)}</span>
+                    <span>{getCategoryName(transaction.category_id)}</span>
                   </div>
                 )}
               </div>

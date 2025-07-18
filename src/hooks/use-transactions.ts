@@ -6,10 +6,11 @@ import { useTimeframeStore } from "@/lib/stores/timeframe-store";
 export function useTransactions(userId: string) {
   const { getDateRange, timeframe, currentPeriod } = useTimeframeStore();
   const { startDate, endDate } = getDateRange();
-  
+
   return useQuery({
     queryKey: ["transactions", userId, timeframe, currentPeriod.getTime()],
-    queryFn: () => TransactionsService.getTransactions(userId, { startDate, endDate }),
+    queryFn: () =>
+      TransactionsService.getTransactions(userId, { startDate, endDate }),
     enabled: !!userId,
   });
 }
@@ -26,9 +27,9 @@ export function useCreateTransaction() {
       data: TransactionFormData;
     }) => TransactionsService.createTransaction(userId, data),
     onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ 
+      queryClient.invalidateQueries({
         queryKey: ["transactions", userId],
-        type: "all"
+        type: "all",
       });
     },
   });
@@ -39,18 +40,20 @@ export function useUpdateTransaction() {
 
   return useMutation({
     mutationFn: ({
-      userId,
       transactionId,
       data,
     }: {
-      userId: string;
       transactionId: string;
       data: Partial<TransactionFormData>;
-    }) => TransactionsService.updateTransaction(transactionId, data),
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ 
-        queryKey: ["transactions", userId],
-        type: "all"
+    }) =>
+      TransactionsService.updateTransaction(transactionId, {
+        ...data,
+        date: data.date ? data.date.toISOString() : undefined,
+      }),
+    onSuccess: (_, { transactionId }) => {
+      queryClient.invalidateQueries({
+        queryKey: ["transactions", transactionId],
+        type: "all",
       });
     },
   });
@@ -60,17 +63,12 @@ export function useDeleteTransaction() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      userId,
-      transactionId,
-    }: {
-      userId: string;
-      transactionId: string;
-    }) => TransactionsService.deleteTransaction(transactionId),
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ 
-        queryKey: ["transactions", userId],
-        type: "all"
+    mutationFn: ({ transactionId }: { transactionId: string }) =>
+      TransactionsService.deleteTransaction(transactionId),
+    onSuccess: (_, { transactionId }) => {
+      queryClient.invalidateQueries({
+        queryKey: ["transactions", transactionId],
+        type: "all",
       });
     },
   });

@@ -31,13 +31,13 @@ export function createUserTableColumns({
 }: UserTableColumnsProps): ColumnDef<User>[] {
   return [
     {
-      accessorKey: "displayName",
+      accessorKey: "display_name",
       header: "Name",
       cell: ({ row }) => {
         const user = row.original;
         return (
           <div>
-            <div className="font-medium">{user.displayName}</div>
+            <div className="font-medium">{user.display_name}</div>
             <div className="text-sm text-muted-foreground">{user.email}</div>
           </div>
         );
@@ -73,13 +73,13 @@ export function createUserTableColumns({
       },
     },
     {
-      accessorKey: "createdAt",
+      accessorKey: "created_at",
       header: "Created",
       cell: ({ row }) => {
         const user = row.original;
         return (
           <div className="text-sm">
-            {user.createdAt ? formatDate(user.createdAt) : "N/A"}
+            {user.created_at ? formatDate(user.created_at) : "N/A"}
           </div>
         );
       },

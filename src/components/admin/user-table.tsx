@@ -47,7 +47,7 @@ export function UserTable() {
       <DataTable
         columns={columns}
         data={users}
-        searchKey="displayName"
+        searchKey="display_name"
         searchPlaceholder="Search users..."
       />
 

@@ -99,7 +99,7 @@ export function ManageFeaturesDialog({
             {
               userId: user.id,
               feature,
-              featureName,
+              feature_name: featureName,
               notes: notes || undefined,
             },
             {
