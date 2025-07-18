@@ -14,12 +14,7 @@ export class TransactionsService {
   ): Promise<Transaction[]> {
     let query = supabase
       .from("transactions")
-      .select(
-        `
-        *,
-        categories (*)
-      `
-      )
+      .select(`*`) // we don't need to populate categories here
       .eq("user_id", userId)
       .order("date", { ascending: false });
 
