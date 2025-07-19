@@ -1,10 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { format, startOfWeek } from "date-fns";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionItem } from "@/components/transactions/transaction-item";
 import { Button } from "@/components/ui/button";
-import { Edit } from "lucide-react";
+import { Edit, ChevronDown, ChevronUp } from "lucide-react";
 import { Transaction, Category } from "@/types";
 import { formatCurrency, formatCurrencyShort } from "@/lib/utils";
 
@@ -21,6 +22,8 @@ export function TransactionGroup({
   timeframe,
   categories,
 }: TransactionGroupProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
   const getGroupTitle = (groupKey: string) => {
     const date = new Date(groupKey);
 
@@ -55,6 +58,14 @@ export function TransactionGroup({
   };
 
   const { income, expenses } = calculateTotals();
+  
+  // Determine which transactions to show
+  const MAX_VISIBLE_ITEMS = 5;
+  const hasMoreItems = groupTransactions.length > MAX_VISIBLE_ITEMS;
+  const visibleTransactions = isExpanded 
+    ? groupTransactions 
+    : groupTransactions.slice(0, MAX_VISIBLE_ITEMS);
+  const remainingCount = groupTransactions.length - MAX_VISIBLE_ITEMS;
 
   return (
     <div className="space-y-2">
@@ -86,7 +97,7 @@ export function TransactionGroup({
         </div>
       </div>
       <div className="space-y-1">
-        {groupTransactions.map((transaction) => (
+        {visibleTransactions.map((transaction) => (
           <TransactionItem
             key={transaction.id}
             transaction={transaction}
@@ -116,6 +127,29 @@ export function TransactionGroup({
             }
           />
         ))}
+        
+        {hasMoreItems && (
+          <div className="pt-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="w-full text-sm text-muted-foreground hover:text-foreground"
+            >
+              {isExpanded ? (
+                <>
+                  <ChevronUp className="w-4 h-4 mr-2" />
+                  Show less
+                </>
+              ) : (
+                <>
+                  <ChevronDown className="w-4 h-4 mr-2" />
+                  Show {remainingCount} more
+                </>
+              )}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
