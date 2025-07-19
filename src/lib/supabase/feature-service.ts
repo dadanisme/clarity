@@ -11,6 +11,10 @@ export const FEATURE_METADATA = {
     name: "Excel Import",
     description: "Import transactions from Excel files",
   },
+  [FeatureFlag.EXCEL_EXPORT]: {
+    name: "Excel Export",
+    description: "Export transactions to Excel/CSV files",
+  },
 } as const;
 
 export class FeatureService {

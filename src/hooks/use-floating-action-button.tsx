@@ -1,11 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Plus, Tag, Camera, FileSpreadsheet } from "lucide-react";
+import { Plus, Tag, Camera, FileSpreadsheet, Download } from "lucide-react";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { CategoryForm } from "@/components/categories/category-form";
 import { ReceiptParser } from "@/components/transactions/receipt-parser";
 import { ExcelImport } from "@/components/transactions/excel-import";
+import { ExcelExport } from "@/components/transactions/excel-export";
 import { InlineFeatureGate } from "@/components/features/feature-gate";
 import { FeatureFlag } from "@/types";
 import { useAuth } from "@/hooks/use-auth";
@@ -47,21 +48,30 @@ export function useFloatingActionButton() {
     };
   }
 
-  // For transactions page, show transaction form, receipt parser, and excel import
+  // For transactions page, show transaction form, receipt parser, excel import, and excel export
   if (pathname === "/transactions") {
     return {
       show: true,
       children: (
         <div className="flex flex-col space-y-3">
+          <InlineFeatureGate feature={FeatureFlag.EXCEL_EXPORT}>
+            <ExcelExport
+              trigger={
+                <div className="w-14 h-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center relative">
+                  <Download className="w-6 h-6 text-secondary-foreground" />
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
+                    New
+                  </span>
+                </div>
+              }
+            />
+          </InlineFeatureGate>
           <InlineFeatureGate feature={FeatureFlag.EXCEL_IMPORT}>
             <ExcelImport
               onImportComplete={() => refetchTransactions()}
               trigger={
-                <div className="w-14 h-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center relative">
+                <div className="w-14 h-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center">
                   <FileSpreadsheet className="w-6 h-6 text-secondary-foreground" />
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
-                    New
-                  </span>
                 </div>
               }
             />
