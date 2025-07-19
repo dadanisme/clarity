@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { toast } from "sonner";
-import { User, UserRole } from "@/types";
+import { UserRole, UserWithFeatures } from "@/types";
 import { useUpdateUserRole, useAdminUsers } from "@/hooks/use-users-management";
 import { ManageFeaturesDialog } from "./manage-features-dialog";
 import { createUserTableColumns } from "./user-table-columns";
 
 export function UserTable() {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserWithFeatures | null>(
+    null
+  );
   const [isManageFeaturesDialogOpen, setIsManageFeaturesDialogOpen] =
     useState(false);
 
@@ -31,7 +33,7 @@ export function UserTable() {
   };
 
   const columns = createUserTableColumns({
-    onManageFeatures: (user: User) => {
+    onManageFeatures: (user: UserWithFeatures) => {
       setSelectedUser(user);
       setIsManageFeaturesDialogOpen(true);
     },

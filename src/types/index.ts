@@ -13,6 +13,10 @@ export type TransactionWithCategory = Transaction & {
   categories: Category;
 };
 
+export type UserWithFeatures = User & {
+  feature_subscriptions: FeatureSubscription[];
+};
+
 // Enums for better type safety
 export enum UserRole {
   USER = "user",

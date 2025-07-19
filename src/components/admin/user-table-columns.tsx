@@ -16,19 +16,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MoreHorizontal } from "lucide-react";
-import { User, UserRole } from "@/types";
+import { UserRole, UserWithFeatures } from "@/types";
 import { UserFeatures } from "./user-features";
 import { formatDate } from "@/lib/utils/date-utils";
 
 interface UserTableColumnsProps {
-  onManageFeatures: (user: User) => void;
+  onManageFeatures: (user: UserWithFeatures) => void;
   onRoleChange: (userId: string, newRole: UserRole) => void;
 }
 
 export function createUserTableColumns({
   onManageFeatures,
   onRoleChange,
-}: UserTableColumnsProps): ColumnDef<User>[] {
+}: UserTableColumnsProps): ColumnDef<UserWithFeatures>[] {
   return [
     {
       accessorKey: "display_name",
@@ -69,7 +69,7 @@ export function createUserTableColumns({
       header: "Active Features",
       cell: ({ row }) => {
         const user = row.original;
-        return <UserFeatures userId={user.id} />;
+        return <UserFeatures userFeatures={user.feature_subscriptions} />;
       },
     },
     {
