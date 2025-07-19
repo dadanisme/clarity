@@ -269,48 +269,6 @@ export class FeatureService {
     if (error) throw error;
     return data || [];
   }
-
-  static subscribeToUserFeatures(
-    userId: string,
-    callback: (features: FeatureSubscription[]) => void
-  ) {
-    return supabase
-      .channel("user-features")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "feature_subscriptions",
-          filter: `user_id=eq.${userId}`,
-        },
-        async () => {
-          const features = await this.getUserFeatures(userId);
-          callback(features);
-        }
-      )
-      .subscribe();
-  }
-
-  static subscribeToAllFeatures(
-    callback: (features: FeatureSubscription[]) => void
-  ) {
-    return supabase
-      .channel("all-features")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "feature_subscriptions",
-        },
-        async () => {
-          const features = await this.getAllActiveFeatures();
-          callback(features);
-        }
-      )
-      .subscribe();
-  }
 }
 
 export default FeatureService;

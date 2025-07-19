@@ -1,15 +1,13 @@
-import { create } from 'zustand';
-import { User as SupabaseUser } from '@supabase/supabase-js';
-import { 
-  AuthService, 
-  UserService, 
-  CategoriesService, 
-  RealtimeService,
-  supabase 
-} from '@/lib/supabase';
-import { User, UserRole, Theme } from '@/types';
-import { RealtimeChannel } from '@supabase/supabase-js';
-import { PATHS } from '@/lib/paths';
+import { create } from "zustand";
+import { User as SupabaseUser } from "@supabase/supabase-js";
+import {
+  AuthService,
+  UserService,
+  CategoriesService,
+  supabase,
+} from "@/lib/supabase";
+import { User, UserRole, Theme } from "@/types";
+import { PATHS } from "@/lib/paths";
 
 interface AuthState {
   user: User | null;
@@ -21,8 +19,14 @@ interface AuthState {
 interface AuthActions {
   signIn: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  signUp: (email: string, password: string, displayName: string) => Promise<void>;
-  updateProfile: (updates: Partial<Pick<User, "display_name" | "profile_image">>) => Promise<void>;
+  signUp: (
+    email: string,
+    password: string,
+    displayName: string
+  ) => Promise<void>;
+  updateProfile: (
+    updates: Partial<Pick<User, "display_name" | "profile_image">>
+  ) => Promise<void>;
   uploadProfileImage: (file: File) => Promise<void>;
   removeProfileImage: () => Promise<void>;
   logout: () => Promise<void>;
@@ -32,8 +36,6 @@ interface AuthActions {
 type AuthStore = AuthState & AuthActions;
 
 export const useAuthStore = create<AuthStore>((set, get) => {
-  let userSubscription: RealtimeChannel | null = null;
-  
   return {
     // State
     user: null,
@@ -48,17 +50,21 @@ export const useAuthStore = create<AuthStore>((set, get) => {
 
     signInWithGoogle: async () => {
       const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
+        provider: "google",
         options: {
-          redirectTo: `${window.location.origin}${PATHS.authCallback}`
-        }
+          redirectTo: `${window.location.origin}${PATHS.authCallback}`,
+        },
       });
       if (error) throw error;
     },
 
     signUp: async (email: string, password: string, displayName: string) => {
-      const { user: newSupabaseUser } = await AuthService.signUp(email, password, displayName);
-      
+      const { user: newSupabaseUser } = await AuthService.signUp(
+        email,
+        password,
+        displayName
+      );
+
       if (newSupabaseUser) {
         // Create user record in our database
         await UserService.createUser({
@@ -71,9 +77,11 @@ export const useAuthStore = create<AuthStore>((set, get) => {
       }
     },
 
-    updateProfile: async (updates: Partial<Pick<User, "display_name" | "profile_image">>) => {
+    updateProfile: async (
+      updates: Partial<Pick<User, "display_name" | "profile_image">>
+    ) => {
       const { supabaseUser } = get();
-      
+
       if (!supabaseUser) {
         throw new Error("No user logged in");
       }
@@ -86,7 +94,7 @@ export const useAuthStore = create<AuthStore>((set, get) => {
 
     uploadProfileImage: async (file: File) => {
       const { supabaseUser } = get();
-      
+
       if (!supabaseUser) {
         throw new Error("No user logged in");
       }
@@ -106,7 +114,7 @@ export const useAuthStore = create<AuthStore>((set, get) => {
 
     removeProfileImage: async () => {
       const { supabaseUser } = get();
-      
+
       if (!supabaseUser) {
         throw new Error("No user logged in");
       }
@@ -124,14 +132,10 @@ export const useAuthStore = create<AuthStore>((set, get) => {
 
       set({ initialized: true });
 
-      const { data: { subscription } } = AuthService.onAuthStateChange(async (supabaseUser) => {
+      const {
+        data: { subscription },
+      } = AuthService.onAuthStateChange(async (supabaseUser) => {
         set({ supabaseUser });
-
-        // Clean up previous user subscription
-        if (userSubscription) {
-          RealtimeService.unsubscribe(userSubscription);
-          userSubscription = null;
-        }
 
         if (supabaseUser) {
           try {
@@ -142,9 +146,11 @@ export const useAuthStore = create<AuthStore>((set, get) => {
               const newUserData = {
                 id: supabaseUser.id,
                 email: supabaseUser.email!,
-                display_name: supabaseUser.user_metadata?.display_name || "User",
+                display_name:
+                  supabaseUser.user_metadata?.display_name || "User",
                 role: UserRole.USER,
-                profile_image: supabaseUser.user_metadata?.avatar_url || undefined,
+                profile_image:
+                  supabaseUser.user_metadata?.avatar_url || undefined,
                 theme: Theme.SYSTEM,
               };
               userData = await UserService.createUser(newUserData);
@@ -157,14 +163,7 @@ export const useAuthStore = create<AuthStore>((set, get) => {
               }
             }
 
-            // Set up real-time listener for user data
-            userSubscription = RealtimeService.subscribeToUserData(supabaseUser.id, async () => {
-              const updatedUser = await UserService.getUser(supabaseUser.id);
-              set({ user: updatedUser, loading: false });
-            });
-
             set({ user: userData, loading: false });
-
           } catch (error) {
             console.error("Error fetching user data:", error);
             set({ loading: false });
@@ -174,12 +173,8 @@ export const useAuthStore = create<AuthStore>((set, get) => {
         }
       });
 
-      // Return cleanup function
       return () => {
         subscription.unsubscribe();
-        if (userSubscription) {
-          RealtimeService.unsubscribe(userSubscription);
-        }
       };
     },
   };
@@ -188,18 +183,78 @@ export const useAuthStore = create<AuthStore>((set, get) => {
 // Create default categories for new users
 async function createDefaultCategories(userId: string) {
   const defaultCategories = [
-    { name: "Food & Dining", type: "expense" as const, color: "#FF6B6B", is_default: true },
-    { name: "Transportation", type: "expense" as const, color: "#4ECDC4", is_default: true },
-    { name: "Shopping", type: "expense" as const, color: "#45B7D1", is_default: true },
-    { name: "Entertainment", type: "expense" as const, color: "#FFA07A", is_default: true },
-    { name: "Bills & Utilities", type: "expense" as const, color: "#98D8C8", is_default: true },
-    { name: "Healthcare", type: "expense" as const, color: "#F7DC6F", is_default: true },
-    { name: "Education", type: "expense" as const, color: "#BB8FCE", is_default: true },
-    { name: "Travel", type: "expense" as const, color: "#85C1E9", is_default: true },
-    { name: "Salary", type: "income" as const, color: "#58D68D", is_default: true },
-    { name: "Business", type: "income" as const, color: "#52C41A", is_default: true },
-    { name: "Investment", type: "income" as const, color: "#73D13D", is_default: true },
-    { name: "Other Income", type: "income" as const, color: "#95F985", is_default: true },
+    {
+      name: "Food & Dining",
+      type: "expense" as const,
+      color: "#FF6B6B",
+      is_default: true,
+    },
+    {
+      name: "Transportation",
+      type: "expense" as const,
+      color: "#4ECDC4",
+      is_default: true,
+    },
+    {
+      name: "Shopping",
+      type: "expense" as const,
+      color: "#45B7D1",
+      is_default: true,
+    },
+    {
+      name: "Entertainment",
+      type: "expense" as const,
+      color: "#FFA07A",
+      is_default: true,
+    },
+    {
+      name: "Bills & Utilities",
+      type: "expense" as const,
+      color: "#98D8C8",
+      is_default: true,
+    },
+    {
+      name: "Healthcare",
+      type: "expense" as const,
+      color: "#F7DC6F",
+      is_default: true,
+    },
+    {
+      name: "Education",
+      type: "expense" as const,
+      color: "#BB8FCE",
+      is_default: true,
+    },
+    {
+      name: "Travel",
+      type: "expense" as const,
+      color: "#85C1E9",
+      is_default: true,
+    },
+    {
+      name: "Salary",
+      type: "income" as const,
+      color: "#58D68D",
+      is_default: true,
+    },
+    {
+      name: "Business",
+      type: "income" as const,
+      color: "#52C41A",
+      is_default: true,
+    },
+    {
+      name: "Investment",
+      type: "income" as const,
+      color: "#73D13D",
+      is_default: true,
+    },
+    {
+      name: "Other Income",
+      type: "income" as const,
+      color: "#95F985",
+      is_default: true,
+    },
   ];
 
   for (const category of defaultCategories) {
@@ -212,6 +267,6 @@ async function createDefaultCategories(userId: string) {
 }
 
 // Initialize auth on module load (client-side only)
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   useAuthStore.getState().initializeAuth();
 }
