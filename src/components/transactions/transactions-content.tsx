@@ -12,8 +12,7 @@ import { createTransactionsFromReceipt } from "@/lib/utils/category-mapper";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionGroup } from "@/components/transactions/transaction-group";
 import { TimeframeControls } from "@/components/transactions/timeframe-controls";
-import { ExcelImport } from "@/components/transactions/excel-import";
-import { ExcelExport } from "@/components/transactions/excel-export";
+import { ActionsDropdown } from "@/components/transactions/actions-dropdown";
 import { ReceiptParser } from "@/components/transactions/receipt-parser";
 import { InlineFeatureGate } from "@/components/features/feature-gate";
 import { FeatureFlag } from "@/types";
@@ -101,18 +100,18 @@ export function TransactionsContent() {
       {/* Header */}
       <div className="hidden md:flex flex-col sm:flex-row justify-end items-start sm:items-center gap-4 mb-6">
         <div className="flex gap-2">
-          <InlineFeatureGate feature={FeatureFlag.EXCEL_EXPORT}>
-            <ExcelExport />
-          </InlineFeatureGate>
-          <InlineFeatureGate feature={FeatureFlag.EXCEL_IMPORT}>
-            <ExcelImport onImportComplete={() => refetch()} />
-          </InlineFeatureGate>
+          {/* Excel Features Dropdown */}
+          <ActionsDropdown onImportComplete={() => refetch()} />
+
+          {/* AI Receipt Scanner - Always visible */}
           <InlineFeatureGate feature={FeatureFlag.AI_RECEIPT_SCANNING}>
             <ReceiptParser
               onReceiptParsed={handleReceiptParsed}
               userCategories={categories}
             />
           </InlineFeatureGate>
+
+          {/* Add Transaction - Primary action */}
           <TransactionForm
             mode="create"
             trigger={
