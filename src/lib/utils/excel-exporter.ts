@@ -23,7 +23,7 @@ export function exportTransactionsToExcel(
 
   // Transform transactions to export format
   const exportData: ExportTransaction[] = transactions.map(transaction => {
-    const category = categoryMap.get(transaction.categoryId);
+    const category = categoryMap.get(transaction.category_id);
     
     return {
       Period: format(new Date(transaction.date), "dd/MM/yyyy"),
@@ -79,7 +79,7 @@ export function exportTransactionsToCSV(
 
   // Transform transactions to export format
   const exportData: ExportTransaction[] = transactions.map(transaction => {
-    const category = categoryMap.get(transaction.categoryId);
+    const category = categoryMap.get(transaction.category_id);
     
     return {
       Period: format(new Date(transaction.date), "dd/MM/yyyy"),

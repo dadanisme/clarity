@@ -129,7 +129,7 @@ export function ExcelExport({ trigger }: ExcelExportProps) {
           {/* Format Selection */}
           <div className="space-y-3">
             <Label className="text-base font-medium">Export Format</Label>
-            <RadioGroup value={exportFormat} onValueChange={(value) => setExportFormat(value as ExportFormat)}>
+            <RadioGroup value={exportFormat} onValueChange={(value: string) => setExportFormat(value as ExportFormat)}>
               <div className="flex items-center space-x-2 border rounded-lg p-3 hover:bg-muted/50 transition-colors">
                 <RadioGroupItem value="excel" id="excel" />
                 <Label htmlFor="excel" className="flex items-center space-x-3 cursor-pointer flex-1">
