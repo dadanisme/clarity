@@ -8,14 +8,14 @@ import {
 } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { useTransactionGroups } from "@/hooks/use-transaction-groups";
-import { createTransactionsFromReceipt } from "@/lib/utils/category-mapper";
+import { createTransactionsFromReceipt } from "@clarity/shared/utils/category-mapper";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionGroup } from "@/components/transactions/transaction-group";
 import { TimeframeControls } from "@/components/transactions/timeframe-controls";
 import { ActionsDropdown } from "@/components/transactions/actions-dropdown";
 import { ReceiptParser } from "@/components/transactions/receipt-parser";
 import { InlineFeatureGate } from "@/components/features/feature-gate";
-import { FeatureFlag } from "@/types";
+import { FeatureFlag } from "@clarity/types";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
 import { TransactionSkeletonList } from "./transaction-skeleton-list";

@@ -1,4 +1,4 @@
-import type { Transaction, Category } from "@/types";
+import type { Transaction, Category } from "@clarity/types";
 
 export interface CategoryAnalysisProps {
   transactions: Transaction[];

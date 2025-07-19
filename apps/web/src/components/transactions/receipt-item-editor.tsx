@@ -11,8 +11,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CheckCircle, XCircle } from "lucide-react";
-import { ReceiptItem } from "@/types/receipt";
-import { getCategoryColor } from "@/lib/utils/category-utils";
+import { ReceiptItem } from "@clarity/types/receipt";
+import { getCategoryColor } from "@clarity/shared/utils/category-utils";
 import { useCategories } from "@/hooks/use-categories";
 import { useAuth } from "@/hooks/use-auth";
 

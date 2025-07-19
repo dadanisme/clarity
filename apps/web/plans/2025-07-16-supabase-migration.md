@@ -2,7 +2,7 @@
 
 **Date:** July 16, 2025  
 **Status:** Draft  
-**Estimated Timeline:** 2-3 weeks  
+**Estimated Timeline:** 2-3 weeks
 
 ## Executive Summary
 
@@ -11,6 +11,7 @@ This document outlines the comprehensive migration plan from Firebase to Supabas
 ## Current Firebase Architecture
 
 ### Services Used
+
 - **Firebase Auth:** Email/password authentication with Google provider
 - **Firestore:** NoSQL database with nested subcollections
 - **Security Rules:** Role-based access control
@@ -18,11 +19,13 @@ This document outlines the comprehensive migration plan from Firebase to Supabas
 - **Emulator Suite:** Local development environment
 
 ### Image Handling
+
 - **Base64 encoding:** Profile images and receipts stored as base64 strings
 - **No persistent storage:** Images processed in-memory for AI parsing
 - **No Cloud Storage:** Currently not using Firebase Storage or any file storage service
 
 ### Data Structure
+
 ```
 users/{userId}
 ├── categories/{categoryId}
@@ -31,6 +34,7 @@ users/{userId}
 ```
 
 ### Key Features
+
 - User management with roles (User/Admin)
 - Complex feature flagging system
 - Real-time data synchronization
@@ -42,45 +46,55 @@ users/{userId}
 ## Migration Strategy
 
 ### Incremental Migration Approach
+
 This migration follows a **zero-downtime, module-by-module approach** to ensure the application remains fully functional throughout the process. Each module is migrated independently while maintaining compatibility with existing Firebase modules.
 
 ### Phase 1: Foundation Setup (3 days)
+
 - Set up Supabase project and database schema
 - Configure authentication and security policies
 - Create migration utilities and abstraction layers
 
 ### Phase 2: User Authentication (2 days)
+
 - Migrate authentication system first (foundation for all other modules)
 - Implement user migration and mapping
 - Ensure seamless login/signup experience
 
 ### Phase 3: Incremental Module Migration (8 days)
+
 **Day 1-2: Categories Module**
+
 - Migrate categories service to Supabase
 - Update categories hooks and components
 - Test categories functionality while other modules remain on Firebase
 
 **Day 3-4: Transactions Module**
+
 - Migrate transactions service to Supabase
 - Update transaction hooks and components
 - Ensure overview dashboard continues working with new transaction data
 
 **Day 5-6: Feature Subscriptions Module**
+
 - Migrate feature flagging system to Supabase
 - Update admin interface and feature gates
 - Test feature access controls
 
 **Day 7-8: Real-time Subscriptions**
+
 - Replace Firebase onSnapshot with Supabase real-time
 - Update all real-time listeners module by module
 - Ensure smooth data synchronization
 
 ### Phase 4: Firebase Cleanup (1 day)
+
 - Remove Firebase dependencies
 - Clean up unused code and configurations
 - Final testing and validation
 
 ### Phase 5: Testing & Validation (2-3 days)
+
 - Comprehensive end-to-end testing
 - Performance validation
 - User acceptance testing
@@ -178,12 +192,12 @@ CREATE INDEX idx_feature_subscriptions_status ON feature_subscriptions(status);
 
 ```typescript
 // lib/supabase/config.ts
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 ```
 
 #### User Migration Strategy
@@ -195,17 +209,17 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 ```typescript
 // lib/supabase/auth-service.ts
-import { supabase } from './config'
+import { supabase } from "./config";
 
 export class AuthService {
   static async signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
-      password
-    })
-    
-    if (error) throw error
-    return data
+      password,
+    });
+
+    if (error) throw error;
+    return data;
   }
 
   static async signUp(email: string, password: string, displayName: string) {
@@ -214,29 +228,31 @@ export class AuthService {
       password,
       options: {
         data: {
-          display_name: displayName
-        }
-      }
-    })
-    
-    if (error) throw error
-    return data
+          display_name: displayName,
+        },
+      },
+    });
+
+    if (error) throw error;
+    return data;
   }
 
   static async signOut() {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   }
 
   static async getCurrentUser() {
-    const { data: { user } } = await supabase.auth.getUser()
-    return user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user;
   }
 
   static onAuthStateChange(callback: (user: any) => void) {
     return supabase.auth.onAuthStateChange((event, session) => {
-      callback(session?.user || null)
-    })
+      callback(session?.user || null);
+    });
   }
 }
 ```
@@ -254,7 +270,7 @@ ALTER TABLE feature_subscriptions ENABLE ROW LEVEL SECURITY;
 
 -- Users policies
 CREATE POLICY "Users can read own data" ON users
-  FOR SELECT USING (auth.uid()::text = firebase_uid OR 
+  FOR SELECT USING (auth.uid()::text = firebase_uid OR
                    EXISTS (SELECT 1 FROM users WHERE firebase_uid = auth.uid()::text AND role = 'admin'));
 
 CREATE POLICY "Users can create own account" ON users
@@ -291,18 +307,24 @@ Create an abstraction layer to allow gradual migration without breaking existing
 ```typescript
 // lib/database/database-adapter.ts
 export interface DatabaseAdapter {
-  getCategories(userId: string): Promise<Category[]>
-  createCategory(userId: string, data: any): Promise<Category>
-  updateCategory(categoryId: string, data: any): Promise<Category>
-  deleteCategory(categoryId: string): Promise<void>
-  
-  getTransactions(userId: string, options?: any): Promise<Transaction[]>
-  createTransaction(userId: string, data: any): Promise<Transaction>
-  updateTransaction(transactionId: string, data: any): Promise<Transaction>
-  deleteTransaction(transactionId: string): Promise<void>
-  
-  subscribeToCategories(userId: string, callback: (data: any) => void): () => void
-  subscribeToTransactions(userId: string, callback: (data: any) => void): () => void
+  getCategories(userId: string): Promise<Category[]>;
+  createCategory(userId: string, data: any): Promise<Category>;
+  updateCategory(categoryId: string, data: any): Promise<Category>;
+  deleteCategory(categoryId: string): Promise<void>;
+
+  getTransactions(userId: string, options?: any): Promise<Transaction[]>;
+  createTransaction(userId: string, data: any): Promise<Transaction>;
+  updateTransaction(transactionId: string, data: any): Promise<Transaction>;
+  deleteTransaction(transactionId: string): Promise<void>;
+
+  subscribeToCategories(
+    userId: string,
+    callback: (data: any) => void
+  ): () => void;
+  subscribeToTransactions(
+    userId: string,
+    callback: (data: any) => void
+  ): () => void;
 }
 
 // lib/database/firebase-adapter.ts
@@ -310,23 +332,32 @@ export class FirebaseAdapter implements DatabaseAdapter {
   // Current Firebase implementations
 }
 
-// lib/database/supabase-adapter.ts  
+// lib/database/supabase-adapter.ts
 export class SupabaseAdapter implements DatabaseAdapter {
   // New Supabase implementations
 }
 
 // lib/database/index.ts
-import { FirebaseAdapter } from './firebase-adapter'
-import { SupabaseAdapter } from './supabase-adapter'
+import { FirebaseAdapter } from "./firebase-adapter";
+import { SupabaseAdapter } from "./supabase-adapter";
 
 // Feature flags for gradual migration
-const USE_SUPABASE_CATEGORIES = process.env.NEXT_PUBLIC_USE_SUPABASE_CATEGORIES === 'true'
-const USE_SUPABASE_TRANSACTIONS = process.env.NEXT_PUBLIC_USE_SUPABASE_TRANSACTIONS === 'true'
-const USE_SUPABASE_FEATURES = process.env.NEXT_PUBLIC_USE_SUPABASE_FEATURES === 'true'
+const USE_SUPABASE_CATEGORIES =
+  process.env.NEXT_PUBLIC_USE_SUPABASE_CATEGORIES === "true";
+const USE_SUPABASE_TRANSACTIONS =
+  process.env.NEXT_PUBLIC_USE_SUPABASE_TRANSACTIONS === "true";
+const USE_SUPABASE_FEATURES =
+  process.env.NEXT_PUBLIC_USE_SUPABASE_FEATURES === "true";
 
-export const categoriesAdapter = USE_SUPABASE_CATEGORIES ? new SupabaseAdapter() : new FirebaseAdapter()
-export const transactionsAdapter = USE_SUPABASE_TRANSACTIONS ? new SupabaseAdapter() : new FirebaseAdapter()
-export const featuresAdapter = USE_SUPABASE_FEATURES ? new SupabaseAdapter() : new FirebaseAdapter()
+export const categoriesAdapter = USE_SUPABASE_CATEGORIES
+  ? new SupabaseAdapter()
+  : new FirebaseAdapter();
+export const transactionsAdapter = USE_SUPABASE_TRANSACTIONS
+  ? new SupabaseAdapter()
+  : new FirebaseAdapter();
+export const featuresAdapter = USE_SUPABASE_FEATURES
+  ? new SupabaseAdapter()
+  : new FirebaseAdapter();
 ```
 
 ### 5. Incremental Module Migration
@@ -335,30 +366,31 @@ export const featuresAdapter = USE_SUPABASE_FEATURES ? new SupabaseAdapter() : n
 
 ```typescript
 // hooks/use-categories.ts (Updated to use adapter)
-import { categoriesAdapter } from '@/lib/database'
+import { categoriesAdapter } from "@clarity/shared/database";
 
 export function useCategories() {
-  const { user } = useAuth()
-  const queryClient = useQueryClient()
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const categoriesQuery = useQuery({
-    queryKey: ['categories', user?.id],
+    queryKey: ["categories", user?.id],
     queryFn: () => categoriesAdapter.getCategories(user!.id),
-    enabled: !!user
-  })
+    enabled: !!user,
+  });
 
   const createCategoryMutation = useMutation({
-    mutationFn: (categoryData: any) => categoriesAdapter.createCategory(user!.id, categoryData),
+    mutationFn: (categoryData: any) =>
+      categoriesAdapter.createCategory(user!.id, categoryData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories', user?.id] })
-    }
-  })
+      queryClient.invalidateQueries({ queryKey: ["categories", user?.id] });
+    },
+  });
 
   return {
     categories: categoriesQuery.data || [],
     loading: categoriesQuery.isLoading,
-    createCategory: createCategoryMutation.mutate
-  }
+    createCategory: createCategoryMutation.mutate,
+  };
 }
 ```
 
@@ -366,26 +398,27 @@ export function useCategories() {
 
 ```typescript
 // hooks/use-transactions.ts (Updated to use adapter)
-import { transactionsAdapter } from '@/lib/database'
+import { transactionsAdapter } from "@clarity/shared/database";
 
 export function useTransactions() {
-  const { user } = useAuth()
-  const queryClient = useQueryClient()
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const transactionsQuery = useQuery({
-    queryKey: ['transactions', user?.id],
+    queryKey: ["transactions", user?.id],
     queryFn: () => transactionsAdapter.getTransactions(user!.id),
-    enabled: !!user
-  })
+    enabled: !!user,
+  });
 
   // Overview dashboard will continue to work seamlessly
   // because it uses the same hook interface
-  
+
   return {
     transactions: transactionsQuery.data || [],
     loading: transactionsQuery.isLoading,
-    createTransaction: (data: any) => transactionsAdapter.createTransaction(user!.id, data)
-  }
+    createTransaction: (data: any) =>
+      transactionsAdapter.createTransaction(user!.id, data),
+  };
 }
 ```
 
@@ -395,35 +428,41 @@ Replace Firebase onSnapshot with Supabase real-time subscriptions:
 
 ```typescript
 // lib/supabase/realtime-service.ts
-import { supabase } from './config'
+import { supabase } from "./config";
 
 export class RealtimeService {
   static subscribeToUserData(userId: string, callback: (data: any) => void) {
     return supabase
-      .from('users')
-      .on('UPDATE', { filter: `id=eq.${userId}` }, callback)
-      .subscribe()
+      .from("users")
+      .on("UPDATE", { filter: `id=eq.${userId}` }, callback)
+      .subscribe();
   }
 
   static subscribeToCategories(userId: string, callback: (data: any) => void) {
     return supabase
-      .from('categories')
-      .on('*', { filter: `user_id=eq.${userId}` }, callback)
-      .subscribe()
+      .from("categories")
+      .on("*", { filter: `user_id=eq.${userId}` }, callback)
+      .subscribe();
   }
 
-  static subscribeToTransactions(userId: string, callback: (data: any) => void) {
+  static subscribeToTransactions(
+    userId: string,
+    callback: (data: any) => void
+  ) {
     return supabase
-      .from('transactions')
-      .on('*', { filter: `user_id=eq.${userId}` }, callback)
-      .subscribe()
+      .from("transactions")
+      .on("*", { filter: `user_id=eq.${userId}` }, callback)
+      .subscribe();
   }
 
-  static subscribeToFeatureSubscriptions(userId: string, callback: (data: any) => void) {
+  static subscribeToFeatureSubscriptions(
+    userId: string,
+    callback: (data: any) => void
+  ) {
     return supabase
-      .from('feature_subscriptions')
-      .on('*', { filter: `user_id=eq.${userId}` }, callback)
-      .subscribe()
+      .from("feature_subscriptions")
+      .on("*", { filter: `user_id=eq.${userId}` }, callback)
+      .subscribe();
   }
 }
 ```
@@ -434,51 +473,54 @@ export class RealtimeService {
 
 ```typescript
 // lib/supabase/categories-service.ts
-import { supabase } from './config'
-import { Category } from '@/types'
+import { supabase } from "./config";
+import { Category } from "@clarity/types";
 
 export class CategoriesService {
   static async getCategories(userId: string): Promise<Category[]> {
     const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .from("categories")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
 
-    if (error) throw error
-    return data || []
+    if (error) throw error;
+    return data || [];
   }
 
-  static async createCategory(userId: string, categoryData: Omit<Category, 'id' | 'created_at' | 'updated_at'>) {
+  static async createCategory(
+    userId: string,
+    categoryData: Omit<Category, "id" | "created_at" | "updated_at">
+  ) {
     const { data, error } = await supabase
-      .from('categories')
+      .from("categories")
       .insert([{ ...categoryData, user_id: userId }])
       .select()
-      .single()
+      .single();
 
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   }
 
   static async updateCategory(categoryId: string, updates: Partial<Category>) {
     const { data, error } = await supabase
-      .from('categories')
+      .from("categories")
       .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', categoryId)
+      .eq("id", categoryId)
       .select()
-      .single()
+      .single();
 
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   }
 
   static async deleteCategory(categoryId: string) {
     const { error } = await supabase
-      .from('categories')
+      .from("categories")
       .delete()
-      .eq('id', categoryId)
+      .eq("id", categoryId);
 
-    if (error) throw error
+    if (error) throw error;
   }
 }
 ```
@@ -487,71 +529,82 @@ export class CategoriesService {
 
 ```typescript
 // lib/supabase/transactions-service.ts
-import { supabase } from './config'
-import { Transaction } from '@/types'
+import { supabase } from "./config";
+import { Transaction } from "@clarity/types";
 
 export class TransactionsService {
-  static async getTransactions(userId: string, options?: {
-    startDate?: Date;
-    endDate?: Date;
-    limit?: number;
-  }): Promise<Transaction[]> {
+  static async getTransactions(
+    userId: string,
+    options?: {
+      startDate?: Date;
+      endDate?: Date;
+      limit?: number;
+    }
+  ): Promise<Transaction[]> {
     let query = supabase
-      .from('transactions')
-      .select(`
+      .from("transactions")
+      .select(
+        `
         *,
         categories (*)
-      `)
-      .eq('user_id', userId)
-      .order('date', { ascending: false })
+      `
+      )
+      .eq("user_id", userId)
+      .order("date", { ascending: false });
 
     if (options?.startDate) {
-      query = query.gte('date', options.startDate.toISOString())
+      query = query.gte("date", options.startDate.toISOString());
     }
 
     if (options?.endDate) {
-      query = query.lte('date', options.endDate.toISOString())
+      query = query.lte("date", options.endDate.toISOString());
     }
 
     if (options?.limit) {
-      query = query.limit(options.limit)
+      query = query.limit(options.limit);
     }
 
-    const { data, error } = await query
-    if (error) throw error
-    return data || []
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
   }
 
-  static async createTransaction(userId: string, transactionData: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>) {
+  static async createTransaction(
+    userId: string,
+    transactionData: Omit<Transaction, "id" | "created_at" | "updated_at">
+  ) {
     const { data, error } = await supabase
-      .from('transactions')
+      .from("transactions")
       .insert([{ ...transactionData, user_id: userId }])
       .select()
-      .single()
+      .single();
 
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   }
 
-  static async updateTransaction(transactionId: string, updates: Partial<Transaction>) {
+  static async updateTransaction(
+    transactionId: string,
+    updates: Partial<Transaction>
+  ) {
     const { data, error } = await supabase
-      .from('transactions')
+      .from("transactions")
       .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', transactionId)
+      .eq("id", transactionId)
       .select()
-      .single()
+      .single();
 
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   }
 
   static async deleteTransaction(transactionId: string) {
     const { error } = await supabase
-      .from('transactions')
+      .from("transactions")
       .delete()
-      .eq('id', transactionId)
+      .eq("id", transactionId);
 
-    if (error) throw error
+    if (error) throw error;
   }
 }
 ```
@@ -560,30 +613,33 @@ export class TransactionsService {
 
 ```typescript
 // lib/supabase/feature-service.ts
-import { supabase } from './config'
-import { FeatureFlag, FeatureSubscription } from '@/types'
+import { supabase } from "./config";
+import { FeatureFlag, FeatureSubscription } from "@clarity/types";
 
 export class FeatureService {
-  static async hasFeature(userId: string, feature: FeatureFlag): Promise<boolean> {
+  static async hasFeature(
+    userId: string,
+    feature: FeatureFlag
+  ): Promise<boolean> {
     const { data, error } = await supabase
-      .from('feature_subscriptions')
-      .select('status')
-      .eq('user_id', userId)
-      .eq('feature_flag', feature)
-      .single()
+      .from("feature_subscriptions")
+      .select("status")
+      .eq("user_id", userId)
+      .eq("feature_flag", feature)
+      .single();
 
-    if (error) return false
-    return data?.status === 'active'
+    if (error) return false;
+    return data?.status === "active";
   }
 
   static async getUserFeatures(userId: string): Promise<FeatureSubscription[]> {
     const { data, error } = await supabase
-      .from('feature_subscriptions')
-      .select('*')
-      .eq('user_id', userId)
+      .from("feature_subscriptions")
+      .select("*")
+      .eq("user_id", userId);
 
-    if (error) throw error
-    return data || []
+    if (error) throw error;
+    return data || [];
   }
 
   static async grantFeature(
@@ -594,37 +650,43 @@ export class FeatureService {
     notes?: string
   ) {
     const { data, error } = await supabase
-      .from('feature_subscriptions')
-      .upsert([{
-        user_id: userId,
-        feature_flag: feature,
-        feature_name: featureName,
-        status: 'active',
-        granted_by: grantedBy,
-        notes
-      }])
+      .from("feature_subscriptions")
+      .upsert([
+        {
+          user_id: userId,
+          feature_flag: feature,
+          feature_name: featureName,
+          status: "active",
+          granted_by: grantedBy,
+          notes,
+        },
+      ])
       .select()
-      .single()
+      .single();
 
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   }
 
-  static async revokeFeature(userId: string, feature: FeatureFlag, revokedBy: string) {
+  static async revokeFeature(
+    userId: string,
+    feature: FeatureFlag,
+    revokedBy: string
+  ) {
     const { data, error } = await supabase
-      .from('feature_subscriptions')
+      .from("feature_subscriptions")
       .update({
-        status: 'revoked',
+        status: "revoked",
         revoked_by: revokedBy,
-        revoked_at: new Date().toISOString()
+        revoked_at: new Date().toISOString(),
       })
-      .eq('user_id', userId)
-      .eq('feature_flag', feature)
+      .eq("user_id", userId)
+      .eq("feature_flag", feature)
       .select()
-      .single()
+      .single();
 
-    if (error) throw error
-    return data
+    if (error) throw error;
+    return data;
   }
 }
 ```
@@ -635,29 +697,31 @@ export class FeatureService {
 
 ```typescript
 // hooks/use-auth.ts
-import { useState, useEffect } from 'react'
-import { AuthService } from '@/lib/supabase/auth-service'
-import { UserService } from '@/lib/supabase/user-service'
+import { useState, useEffect } from "react";
+import { AuthService } from "@clarity/shared/supabase/auth-service";
+import { UserService } from "@clarity/shared/supabase/user-service";
 
 export function useAuth() {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = AuthService.onAuthStateChange(async (authUser) => {
+    const {
+      data: { subscription },
+    } = AuthService.onAuthStateChange(async (authUser) => {
       if (authUser) {
-        const userData = await UserService.getUser(authUser.id)
-        setUser(userData)
+        const userData = await UserService.getUser(authUser.id);
+        setUser(userData);
       } else {
-        setUser(null)
+        setUser(null);
       }
-      setLoading(false)
-    })
+      setLoading(false);
+    });
 
-    return () => subscription.unsubscribe()
-  }, [])
+    return () => subscription.unsubscribe();
+  }, []);
 
-  return { user, loading }
+  return { user, loading };
 }
 ```
 
@@ -665,32 +729,33 @@ export function useAuth() {
 
 ```typescript
 // hooks/use-categories.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { CategoriesService } from '@/lib/supabase/categories-service'
-import { useAuth } from './use-auth'
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { CategoriesService } from "@clarity/shared/supabase/categories-service";
+import { useAuth } from "./use-auth";
 
 export function useCategories() {
-  const { user } = useAuth()
-  const queryClient = useQueryClient()
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const categoriesQuery = useQuery({
-    queryKey: ['categories', user?.id],
+    queryKey: ["categories", user?.id],
     queryFn: () => CategoriesService.getCategories(user!.id),
-    enabled: !!user
-  })
+    enabled: !!user,
+  });
 
   const createCategoryMutation = useMutation({
-    mutationFn: (categoryData: any) => CategoriesService.createCategory(user!.id, categoryData),
+    mutationFn: (categoryData: any) =>
+      CategoriesService.createCategory(user!.id, categoryData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['categories', user?.id] })
-    }
-  })
+      queryClient.invalidateQueries({ queryKey: ["categories", user?.id] });
+    },
+  });
 
   return {
     categories: categoriesQuery.data || [],
     loading: categoriesQuery.isLoading,
-    createCategory: createCategoryMutation.mutate
-  }
+    createCategory: createCategoryMutation.mutate,
+  };
 }
 ```
 
@@ -724,12 +789,14 @@ GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
 ### 8. Migration Process Steps
 
 #### Step 1: Categories Migration
+
 1. Set `NEXT_PUBLIC_USE_SUPABASE_CATEGORIES=true`
 2. Test categories functionality
 3. Verify overview dashboard still works (uses transactions from Firebase)
 4. Confirm admin features remain functional
 
-#### Step 2: Transactions Migration  
+#### Step 2: Transactions Migration
+
 1. Set `NEXT_PUBLIC_USE_SUPABASE_TRANSACTIONS=true`
 2. Test transactions functionality
 3. **Critical:** Verify overview dashboard works with new transaction data
@@ -737,12 +804,14 @@ GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
 5. Test Excel import functionality
 
 #### Step 3: Features Migration
+
 1. Set `NEXT_PUBLIC_USE_SUPABASE_FEATURES=true`
 2. Test admin interface
 3. Verify feature gates work correctly
 4. Test user role management
 
 #### Step 4: Firebase Cleanup
+
 1. Remove Firebase dependencies from package.json
 2. Delete Firebase configuration
 3. Clean up unused Firebase code
@@ -751,6 +820,7 @@ GOOGLE_GENERATIVE_AI_API_KEY=your_gemini_api_key
 ### 9. Rollback Strategy
 
 If issues arise during migration, rollback is simple:
+
 1. Set the problematic module flag back to `false`
 2. Application immediately uses Firebase for that module
 3. Other migrated modules continue using Supabase
@@ -780,6 +850,7 @@ Update package.json:
 ```
 
 Remove Firebase dependencies:
+
 ```bash
 npm uninstall firebase
 ```
@@ -832,6 +903,7 @@ Your application will use both databases simultaneously based on the feature fla
 ## Migration Checklist
 
 ### Pre-Migration
+
 - [ ] Set up Supabase project
 - [ ] Configure environment variables
 - [ ] Create database schema
@@ -839,12 +911,14 @@ Your application will use both databases simultaneously based on the feature fla
 - [ ] Test local Supabase environment
 
 ### Data Migration
+
 - [ ] Export Firebase data
 - [ ] Create data migration scripts
 - [ ] Test data migration on staging
 - [ ] Validate data integrity
 
 ### Incremental Code Migration
+
 - [ ] Create database abstraction layer
 - [ ] Implement Firebase and Supabase adapters
 - [ ] **Categories Module:**
@@ -867,6 +941,7 @@ Your application will use both databases simultaneously based on the feature fla
   - [ ] Test live data updates
 
 ### Testing
+
 - [ ] Unit tests for all services
 - [ ] Integration tests
 - [ ] End-to-end testing
@@ -874,6 +949,7 @@ Your application will use both databases simultaneously based on the feature fla
 - [ ] Security testing
 
 ### Deployment
+
 - [ ] Deploy to staging
 - [ ] Run migration scripts
 - [ ] Validate all features
@@ -883,23 +959,30 @@ Your application will use both databases simultaneously based on the feature fla
 ## Risks and Mitigation
 
 ### Technical Risks
+
 1. **Module Incompatibility During Migration**
+
    - Mitigation: Database abstraction layer, feature flag rollback
 
 2. **Data Synchronization Issues**
+
    - Mitigation: Thorough testing between modules, data validation
 
 3. **Performance Degradation**
+
    - Mitigation: Proper indexing, query optimization, monitoring
 
 4. **Authentication Conflicts**
+
    - Mitigation: User mapping strategy, gradual migration
 
-4. **Real-time Subscription Failures**
+5. **Real-time Subscription Failures**
    - Mitigation: Fallback to polling, comprehensive testing
 
 ### User Experience Risks
+
 1. **User Re-authentication Required**
+
    - Mitigation: Clear communication, seamless onboarding
 
 2. **Temporary Service Disruption**
@@ -916,31 +999,34 @@ Your application will use both databases simultaneously based on the feature fla
 
 ## Timeline
 
-| Phase | Duration | Description |
-|-------|----------|-------------|
-| Phase 1 | 3 days | Foundation setup and database schema |
-| Phase 2 | 2 days | Authentication migration |
-| Phase 3 | 2 days | Categories module migration |
-| Phase 4 | 2 days | Transactions module migration |
-| Phase 5 | 2 days | Features module migration |
-| Phase 6 | 2 days | Real-time subscriptions migration |
-| Phase 7 | 1 day | Firebase cleanup |
-| Phase 8 | 2-3 days | Final testing and validation |
-| **Total** | **16-17 days** | **Complete incremental migration** |
+| Phase     | Duration       | Description                          |
+| --------- | -------------- | ------------------------------------ |
+| Phase 1   | 3 days         | Foundation setup and database schema |
+| Phase 2   | 2 days         | Authentication migration             |
+| Phase 3   | 2 days         | Categories module migration          |
+| Phase 4   | 2 days         | Transactions module migration        |
+| Phase 5   | 2 days         | Features module migration            |
+| Phase 6   | 2 days         | Real-time subscriptions migration    |
+| Phase 7   | 1 day          | Firebase cleanup                     |
+| Phase 8   | 2-3 days       | Final testing and validation         |
+| **Total** | **16-17 days** | **Complete incremental migration**   |
 
 ## Post-Migration Tasks
 
 1. **Monitoring and Alerting**
+
    - Set up Supabase monitoring
    - Configure error tracking
    - Monitor performance metrics
 
 2. **Documentation Updates**
+
    - Update README.md
    - Update CLAUDE.md
    - Create new development guides
 
 3. **Team Training**
+
    - Supabase best practices
    - New development workflows
    - Troubleshooting guides
@@ -957,6 +1043,7 @@ This migration plan provides a comprehensive roadmap for transitioning from Fire
 **Image Handling Note:** The current base64 image storage approach will continue to work seamlessly with Supabase. No changes required for profile images or receipt processing. This can optionally be upgraded to Supabase Storage in the future if persistent file storage is desired.
 
 **Migration Benefits:**
+
 - **Zero-downtime migration:** Each module migrates independently
 - **Instant rollback capability:** Feature flags allow immediate revert to Firebase
 - **Reduced risk:** Gradual migration with continuous validation

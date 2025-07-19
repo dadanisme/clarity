@@ -13,13 +13,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { User, FeatureFlag } from "@/types";
+import { User, FeatureFlag } from "@clarity/types";
 import {
   useGrantFeature,
   useRevokeFeature,
   useManageUserFeatures,
 } from "@/hooks/use-features";
-import { FEATURE_METADATA } from "@/lib/supabase/feature-service";
+import { FEATURE_METADATA } from "@clarity/shared/services/feature-service";
 import { FeatureSelection } from "./feature-selection";
 
 interface ManageFeaturesDialogProps {

@@ -12,15 +12,22 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, CheckCircle, FileSpreadsheet, Upload, X, Eye } from "lucide-react";
+import {
+  Loader2,
+  CheckCircle,
+  FileSpreadsheet,
+  Upload,
+  X,
+  Eye,
+} from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCategories } from "@/hooks/use-categories";
-import { TransactionsService } from "@/lib/supabase/transactions-service";
-import { CategoriesService } from "@/lib/supabase/categories-service";
-import { parseExcelFile } from "@/lib/utils/excel-parser";
+import { TransactionsService } from "@clarity/shared/services/transactions-service";
+import { CategoriesService } from "@clarity/shared/services/categories-service";
+import { parseExcelFile } from "@clarity/shared/utils/excel-parser";
 import { TransactionPreviewTable } from "./transaction-preview-table";
 import { toast } from "sonner";
-import type { Category } from "@/types";
+import type { Category } from "@clarity/types";
 
 interface ExcelImportProps {
   onImportComplete: () => void;
@@ -39,10 +46,14 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [parsedData, setParsedData] = useState<ParsedTransaction[] | null>(null);
-  const [step, setStep] = useState<"upload" | "preview" | "importing">("upload");
+  const [parsedData, setParsedData] = useState<ParsedTransaction[] | null>(
+    null
+  );
+  const [step, setStep] = useState<"upload" | "preview" | "importing">(
+    "upload"
+  );
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const { user } = useAuth();
   const { data: categories = [] } = useCategories(user?.id || "");
   const queryClient = useQueryClient();
@@ -92,12 +103,17 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
     setIsLoading(true);
     try {
       // Create missing categories first
-      const existingCategoryNames = new Set(categories.map(c => c.name.toLowerCase()));
+      const existingCategoryNames = new Set(
+        categories.map((c) => c.name.toLowerCase())
+      );
       const newCategoryNames = new Set<string>();
-      
-      parsedData.forEach(transaction => {
+
+      parsedData.forEach((transaction) => {
         const categoryName = transaction.categoryName.toLowerCase();
-        if (!existingCategoryNames.has(categoryName) && !newCategoryNames.has(categoryName)) {
+        if (
+          !existingCategoryNames.has(categoryName) &&
+          !newCategoryNames.has(categoryName)
+        ) {
           newCategoryNames.add(categoryName);
         }
       });
@@ -106,60 +122,70 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
       const createdCategories: Category[] = [];
       for (const categoryName of newCategoryNames) {
         // Determine category type based on transaction type
-        const sampleTransaction = parsedData.find(t => 
-          t.categoryName.toLowerCase() === categoryName
+        const sampleTransaction = parsedData.find(
+          (t) => t.categoryName.toLowerCase() === categoryName
         );
         const categoryType = sampleTransaction?.type || "expense";
-        
+
         // Generate a color for the new category
         const colors = [
-          "#ef4444", "#f97316", "#eab308", "#22c55e", 
-          "#06b6d4", "#3b82f6", "#8b5cf6", "#ec4899"
+          "#ef4444",
+          "#f97316",
+          "#eab308",
+          "#22c55e",
+          "#06b6d4",
+          "#3b82f6",
+          "#8b5cf6",
+          "#ec4899",
         ];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        
+
         const newCategory = await CategoriesService.createCategory(user.id, {
           name: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
           type: categoryType,
           color,
           is_default: false,
         });
-        
+
         createdCategories.push(newCategory);
       }
 
       // Create category lookup map
       const allCategories = [...categories, ...createdCategories];
       const categoryMap = new Map<string, string>();
-      allCategories.forEach(category => {
+      allCategories.forEach((category) => {
         categoryMap.set(category.name.toLowerCase(), category.id);
       });
 
       // Convert parsed data to transactions
-      const transactions = parsedData.map(transaction => ({
+      const transactions = parsedData.map((transaction) => ({
         amount: transaction.amount,
         type: transaction.type,
-        category_id: categoryMap.get(transaction.categoryName.toLowerCase()) || "",
+        category_id:
+          categoryMap.get(transaction.categoryName.toLowerCase()) || "",
         description: transaction.description,
         date: transaction.date.toISOString(),
       }));
 
       // Import transactions
-      await TransactionsService.createMultipleTransactions(user.id, transactions);
+      await TransactionsService.createMultipleTransactions(
+        user.id,
+        transactions
+      );
 
       // Invalidate queries to refresh UI
-      await queryClient.invalidateQueries({ 
+      await queryClient.invalidateQueries({
         queryKey: ["transactions", user.id],
-        type: "all"
+        type: "all",
       });
-      await queryClient.invalidateQueries({ 
+      await queryClient.invalidateQueries({
         queryKey: ["categories", user.id],
-        type: "all"
+        type: "all",
       });
 
       toast.success(
         `Successfully imported ${transactions.length} transactions${
-          createdCategories.length > 0 
+          createdCategories.length > 0
             ? ` and created ${createdCategories.length} new categories`
             : ""
         }`
@@ -216,9 +242,12 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
             {step === "importing" && "Importing Transactions"}
           </DialogTitle>
           <DialogDescription>
-            {step === "upload" && "Upload an Excel file to import transactions. Missing categories will be created automatically."}
-            {step === "preview" && "Review the parsed transactions before importing them."}
-            {step === "importing" && "Please wait while we import your transactions..."}
+            {step === "upload" &&
+              "Upload an Excel file to import transactions. Missing categories will be created automatically."}
+            {step === "preview" &&
+              "Review the parsed transactions before importing them."}
+            {step === "importing" &&
+              "Please wait while we import your transactions..."}
           </DialogDescription>
         </DialogHeader>
 
@@ -282,11 +311,21 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
                   Your Excel file should contain the following columns:
                 </p>
                 <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• <strong>Period</strong>: Date (DD/MM/YYYY)</li>
-                  <li>• <strong>Category</strong>: Category name</li>
-                  <li>• <strong>Note</strong>: Transaction description</li>
-                  <li>• <strong>IDR</strong>: Transaction amount</li>
-                  <li>• <strong>Type</strong>: Income or Expense</li>
+                  <li>
+                    • <strong>Period</strong>: Date (DD/MM/YYYY)
+                  </li>
+                  <li>
+                    • <strong>Category</strong>: Category name
+                  </li>
+                  <li>
+                    • <strong>Note</strong>: Transaction description
+                  </li>
+                  <li>
+                    • <strong>IDR</strong>: Transaction amount
+                  </li>
+                  <li>
+                    • <strong>Type</strong>: Income or Expense
+                  </li>
                 </ul>
               </div>
 
@@ -326,19 +365,27 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
                   <div>
                     <p className="text-muted-foreground">Date Range</p>
                     <p className="font-medium">
-                      {parsedData.length > 0 && (
-                        `${new Date(Math.min(...parsedData.map(t => t.date.getTime()))).toLocaleDateString()} - ${new Date(Math.max(...parsedData.map(t => t.date.getTime()))).toLocaleDateString()}`
-                      )}
+                      {parsedData.length > 0 &&
+                        `${new Date(
+                          Math.min(...parsedData.map((t) => t.date.getTime()))
+                        ).toLocaleDateString()} - ${new Date(
+                          Math.max(...parsedData.map((t) => t.date.getTime()))
+                        ).toLocaleDateString()}`}
                     </p>
                   </div>
                 </div>
-                
+
                 {/* Categories that will be created */}
                 {(() => {
-                  const existingCategoryNames = new Set(categories.map(c => c.name.toLowerCase()));
-                  const newCategories = [...new Set(parsedData.map(t => t.categoryName))]
-                    .filter(name => !existingCategoryNames.has(name.toLowerCase()));
-                  
+                  const existingCategoryNames = new Set(
+                    categories.map((c) => c.name.toLowerCase())
+                  );
+                  const newCategories = [
+                    ...new Set(parsedData.map((t) => t.categoryName)),
+                  ].filter(
+                    (name) => !existingCategoryNames.has(name.toLowerCase())
+                  );
+
                   if (newCategories.length > 0) {
                     return (
                       <div className="mt-3 pt-3 border-t">
@@ -373,7 +420,8 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
                   className="flex-1"
                 >
                   <CheckCircle className="w-4 h-4 mr-2" />
-                  Import {parsedData.length} Transaction{parsedData.length !== 1 ? "s" : ""}
+                  Import {parsedData.length} Transaction
+                  {parsedData.length !== 1 ? "s" : ""}
                 </Button>
               </div>
             </>

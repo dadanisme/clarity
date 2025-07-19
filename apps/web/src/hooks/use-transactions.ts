@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { TransactionsService } from "@/lib/supabase";
-import type { TransactionFormData } from "@/lib/validations";
-import { useTimeframeStore } from "@/lib/stores/timeframe-store";
+import { TransactionsService } from "@clarity/shared/services";
+import type { TransactionFormData } from "@clarity/shared/validations";
+import { useTimeframeStore } from "@clarity/shared/stores/timeframe-store";
 
 export function useTransactions(userId: string) {
   const { getDateRange, timeframe, currentPeriod } = useTimeframeStore();

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Monitor, Smartphone, Home } from "lucide-react";
-import { PATHS } from "@/lib/paths";
+import { PATHS } from "@clarity/shared/utils";
 
 interface DesktopOnlyProps {
   children: React.ReactNode;
@@ -39,7 +39,7 @@ export function DesktopOnly({ children }: DesktopOnlyProps) {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-muted">
             <Monitor className="h-8 w-8 text-muted-foreground" />
           </div>
-          
+
           <div className="space-y-2">
             <h1 className="text-xl font-semibold">Desktop Required</h1>
             <p className="text-muted-foreground">
@@ -53,10 +53,11 @@ export function DesktopOnly({ children }: DesktopOnlyProps) {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            Please access this page from a desktop or laptop computer for the best experience managing users and features.
+            Please access this page from a desktop or laptop computer for the
+            best experience managing users and features.
           </p>
 
-          <Button 
+          <Button
             onClick={() => router.push(PATHS.overview)}
             className="w-full"
           >

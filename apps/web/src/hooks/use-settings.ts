@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { UserService } from "@/lib/supabase";
-import type { User } from "@/types";
+import { UserService } from "@clarity/shared/services";
+import type { User } from "@clarity/types";
 
 export function useUpdateUserSettings() {
   const queryClient = useQueryClient();

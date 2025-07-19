@@ -1,16 +1,12 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  TrendingDown,
-  TrendingUp,
-  Calculator,
-} from "lucide-react";
+import { TrendingDown, TrendingUp, Calculator } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
-import { useTimeframeStore } from "@/lib/stores/timeframe-store";
+import { useTimeframeStore } from "@clarity/shared/stores/timeframe-store";
 import { useMemo } from "react";
-import type { Transaction } from "@/types";
-import type { TimeframeType } from "@/lib/stores/timeframe-store";
+import type { Transaction } from "@clarity/types";
+import type { TimeframeType } from "@clarity/shared/stores/timeframe-store";
 
 interface OverviewSummaryCardsProps {
   currentPeriodTransactions: Transaction[];
@@ -56,7 +52,9 @@ export function OverviewSummaryCards({
     const prevExpenses = previousPeriodTransactions.filter(
       (t) => t.type === "expense"
     );
-    const prevIncome = previousPeriodTransactions.filter((t) => t.type === "income");
+    const prevIncome = previousPeriodTransactions.filter(
+      (t) => t.type === "income"
+    );
 
     const prevTotalSpent = prevExpenses.reduce((sum, t) => sum + t.amount, 0);
     const prevTotalIncome = prevIncome.reduce((sum, t) => sum + t.amount, 0);
@@ -122,8 +120,12 @@ export function OverviewSummaryCards({
         prevBiggestExpense
       ),
     };
-  }, [currentPeriodTransactions, previousPeriodTransactions, timeframe, getDateRange]);
-
+  }, [
+    currentPeriodTransactions,
+    previousPeriodTransactions,
+    timeframe,
+    getDateRange,
+  ]);
 
   // Get average label
   const getAverageLabel = () => {
@@ -149,7 +151,7 @@ export function OverviewSummaryCards({
 
     const isPositive = comparison.percentageChange > 0;
     const isNegative = comparison.percentageChange < 0;
-    
+
     // Determine if the change is good or bad based on type
     let isGood = false;
     if (type === "income") {

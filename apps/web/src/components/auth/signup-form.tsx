@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { GoogleSignInButton } from "./google-signin-button";
-import { PATHS } from "@/lib/paths";
+import { PATHS } from "@clarity/shared/utils";
 
 const signUpSchema = z
   .object({

@@ -42,12 +42,12 @@ import {
   useUpdateTransaction,
   useDeleteTransaction,
 } from "@/hooks/use-transactions";
-import { transactionSchema } from "@/lib/validations";
+import { transactionSchema } from "@clarity/shared/validations";
 import { Plus, Edit, Trash2 } from "lucide-react";
 
 import { DatePicker } from "@/components/ui/date-picker";
-import type { Transaction } from "@/types";
-import type { TransactionFormData } from "@/lib/validations";
+import type { Transaction } from "@clarity/types";
+import type { TransactionFormData } from "@clarity/shared/validations";
 
 interface TransactionFormProps {
   transaction?: Transaction;

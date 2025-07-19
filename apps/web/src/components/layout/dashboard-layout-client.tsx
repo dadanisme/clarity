@@ -17,8 +17,9 @@ import { FloatingActionButton } from "@/components/ui/floating-action-button";
 import { useFloatingActionButton } from "@/hooks/use-floating-action-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useThemeSync } from "@/hooks/use-theme-sync";
-import { PATHS } from "@/lib/paths";
-import { UserRole } from "@/types";
+
+import { UserRole } from "@clarity/types";
+import { PATHS } from "@clarity/shared/utils";
 
 interface DashboardLayoutClientProps {
   children: React.ReactNode;

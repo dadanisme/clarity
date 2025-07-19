@@ -16,9 +16,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MoreHorizontal } from "lucide-react";
-import { UserRole, UserWithFeatures } from "@/types";
+import { UserRole, UserWithFeatures } from "@clarity/types";
 import { UserFeatures } from "./user-features";
-import { formatDate } from "@/lib/utils/date-utils";
+import { formatDate } from "@clarity/shared/utils/date-utils";
 
 interface UserTableColumnsProps {
   onManageFeatures: (user: UserWithFeatures) => void;

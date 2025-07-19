@@ -16,12 +16,12 @@ import { ReceiptParser } from "@/components/transactions/receipt-parser";
 import { ExcelImport } from "@/components/transactions/excel-import";
 import { ExcelExport } from "@/components/transactions/excel-export";
 import { InlineFeatureGate } from "@/components/features/feature-gate";
-import { FeatureFlag } from "@/types";
+import { FeatureFlag } from "@clarity/types";
 import { useAuth } from "@/hooks/use-auth";
 import { useCategories } from "@/hooks/use-categories";
 import { useTransactions } from "@/hooks/use-transactions";
 import { useFeatureAccess } from "@/hooks/use-features";
-import { PATHS } from "@/lib/paths";
+import { PATHS } from "@clarity/shared/utils";
 
 export function useFloatingActionButton() {
   const [isExpanded, setIsExpanded] = useState(false);

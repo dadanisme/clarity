@@ -32,7 +32,7 @@ import {
   useDeleteCategory,
 } from "@/hooks/use-categories";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import type { Category } from "@/types";
+import type { Category } from "@clarity/types";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 
 interface CategoryFormData {

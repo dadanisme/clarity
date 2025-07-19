@@ -17,8 +17,8 @@ import { ReceiptImageUpload } from "./receipt-image-upload";
 import { ReceiptSummary } from "./receipt-summary";
 import { ReceiptItemList } from "./receipt-item-list";
 import { useReceiptParser } from "@/hooks/use-receipt-parser";
-import { ReceiptItem, UserCategory } from "@/types/receipt";
-import { parseTimestamp } from "@/lib/utils/receipt-utils";
+import { ReceiptItem, UserCategory } from "@clarity/types/receipt";
+import { parseTimestamp } from "@clarity/shared/utils/receipt-utils";
 
 interface ReceiptParserProps {
   onReceiptParsed: (

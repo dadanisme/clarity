@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { Transaction, Category } from "@/types";
+import type { Transaction, Category } from "@clarity/types";
 import type { CategorySpending } from "@/components/dashboard/overview/types";
 
 export function useCategorySpending(
@@ -23,7 +23,10 @@ export function useCategorySpending(
     });
 
     // Group previous period transactions by category
-    const prevCategoryMap = new Map<string, { amount: number; count: number }>();
+    const prevCategoryMap = new Map<
+      string,
+      { amount: number; count: number }
+    >();
 
     previousPeriodTransactions.forEach((transaction) => {
       const existing = prevCategoryMap.get(transaction.category_id) || {
@@ -42,8 +45,11 @@ export function useCategorySpending(
     const allCategories: CategorySpending[] = Array.from(categoryMap.entries())
       .map(([category_id, { amount, count }]) => {
         const category = categories.find((c) => c.id === category_id);
-        const prevData = prevCategoryMap.get(category_id) || { amount: 0, count: 0 };
-        
+        const prevData = prevCategoryMap.get(category_id) || {
+          amount: 0,
+          count: 0,
+        };
+
         const hasData = prevData.amount > 0;
         const percentageChange = hasData
           ? ((amount - prevData.amount) / prevData.amount) * 100
@@ -140,7 +146,10 @@ export function useCategorySpending(
     });
 
     // Group previous period transactions by category
-    const prevCategoryMap = new Map<string, { amount: number; count: number }>();
+    const prevCategoryMap = new Map<
+      string,
+      { amount: number; count: number }
+    >();
 
     previousPeriodTransactions.forEach((transaction) => {
       const existing = prevCategoryMap.get(transaction.category_id) || {
@@ -158,8 +167,11 @@ export function useCategorySpending(
     return Array.from(categoryMap.entries())
       .map(([category_id, { amount, count }]) => {
         const category = categories.find((c) => c.id === category_id);
-        const prevData = prevCategoryMap.get(category_id) || { amount: 0, count: 0 };
-        
+        const prevData = prevCategoryMap.get(category_id) || {
+          amount: 0,
+          count: 0,
+        };
+
         const hasData = prevData.amount > 0;
         const percentageChange = hasData
           ? ((amount - prevData.amount) / prevData.amount) * 100

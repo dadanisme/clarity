@@ -1,12 +1,16 @@
 "use client";
 
-import { ReceiptItem, ParsedReceipt, UserCategory } from "@/types/receipt";
+import {
+  ReceiptItem,
+  ParsedReceipt,
+  UserCategory,
+} from "@clarity/types/receipt";
 import { ReceiptItemEditor } from "./receipt-item-editor";
 import { SwipeActions } from "@/components/ui/swipe-actions";
 import { Button } from "@/components/ui/button";
 import { Edit3, Trash2 } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
-import { getCategoryColor } from "@/lib/utils/category-utils";
+import { getCategoryColor } from "@clarity/shared/utils/category-utils";
 import { useCategories } from "@/hooks/use-categories";
 import { useAuth } from "@/hooks/use-auth";
 

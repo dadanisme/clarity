@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
-import { FeatureFlag, UserRole, FeatureSubscription } from "@/types";
+import { FeatureFlag, UserRole, FeatureSubscription } from "@clarity/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FeatureService } from "@/lib/supabase";
+import { FeatureService } from "@clarity/shared/services";
 
 // React Query hook with real-time updates for feature access
 export function useFeatureAccess(feature: FeatureFlag) {

@@ -16,7 +16,10 @@ import { Loader2, Download, FileSpreadsheet, FileText } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCategories } from "@/hooks/use-categories";
 import { useTransactions } from "@/hooks/use-transactions";
-import { exportTransactionsToExcel, exportTransactionsToCSV } from "@/lib/utils/excel-exporter";
+import {
+  exportTransactionsToExcel,
+  exportTransactionsToCSV,
+} from "@clarity/shared/utils/excel-exporter";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
@@ -30,7 +33,7 @@ export function ExcelExport({ trigger }: ExcelExportProps) {
   const [open, setOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [exportFormat, setExportFormat] = useState<ExportFormat>("excel");
-  
+
   const { user } = useAuth();
   const { data: transactions = [] } = useTransactions(user?.id || "");
   const { data: categories = [] } = useCategories(user?.id || "");
@@ -44,13 +47,17 @@ export function ExcelExport({ trigger }: ExcelExportProps) {
     setIsExporting(true);
     try {
       const filename = `transactions_${format(new Date(), "yyyy-MM-dd")}`;
-      
+
       if (exportFormat === "excel") {
         exportTransactionsToExcel(transactions, categories, `${filename}.xlsx`);
-        toast.success(`Successfully exported ${transactions.length} transactions to Excel`);
+        toast.success(
+          `Successfully exported ${transactions.length} transactions to Excel`
+        );
       } else {
         exportTransactionsToCSV(transactions, categories, `${filename}.csv`);
-        toast.success(`Successfully exported ${transactions.length} transactions to CSV`);
+        toast.success(
+          `Successfully exported ${transactions.length} transactions to CSV`
+        );
       }
 
       setOpen(false);
@@ -65,12 +72,19 @@ export function ExcelExport({ trigger }: ExcelExportProps) {
   const getExportStats = () => {
     if (!transactions.length) return null;
 
-    const income = transactions.filter(t => t.type === "income").length;
-    const expense = transactions.filter(t => t.type === "expense").length;
-    const dateRange = transactions.length > 0 ? {
-      earliest: new Date(Math.min(...transactions.map(t => new Date(t.date).getTime()))),
-      latest: new Date(Math.max(...transactions.map(t => new Date(t.date).getTime())))
-    } : null;
+    const income = transactions.filter((t) => t.type === "income").length;
+    const expense = transactions.filter((t) => t.type === "expense").length;
+    const dateRange =
+      transactions.length > 0
+        ? {
+            earliest: new Date(
+              Math.min(...transactions.map((t) => new Date(t.date).getTime()))
+            ),
+            latest: new Date(
+              Math.max(...transactions.map((t) => new Date(t.date).getTime()))
+            ),
+          }
+        : null;
 
     return { income, expense, dateRange };
   };
@@ -110,14 +124,19 @@ export function ExcelExport({ trigger }: ExcelExportProps) {
                 </div>
                 <div>
                   <p className="text-muted-foreground">Income/Expense</p>
-                  <p className="font-medium">{stats.income}/{stats.expense}</p>
+                  <p className="font-medium">
+                    {stats.income}/{stats.expense}
+                  </p>
                 </div>
                 {stats.dateRange && (
                   <>
                     <div className="col-span-2">
-                      <p className="text-muted-foreground">Transaction Date Range</p>
+                      <p className="text-muted-foreground">
+                        Transaction Date Range
+                      </p>
                       <p className="font-medium">
-                        {format(stats.dateRange.earliest, "dd/MM/yyyy")} - {format(stats.dateRange.latest, "dd/MM/yyyy")}
+                        {format(stats.dateRange.earliest, "dd/MM/yyyy")} -{" "}
+                        {format(stats.dateRange.latest, "dd/MM/yyyy")}
                       </p>
                     </div>
                   </>
@@ -129,24 +148,39 @@ export function ExcelExport({ trigger }: ExcelExportProps) {
           {/* Format Selection */}
           <div className="space-y-3">
             <Label className="text-base font-medium">Export Format</Label>
-            <RadioGroup value={exportFormat} onValueChange={(value: string) => setExportFormat(value as ExportFormat)}>
+            <RadioGroup
+              value={exportFormat}
+              onValueChange={(value: string) =>
+                setExportFormat(value as ExportFormat)
+              }
+            >
               <div className="flex items-center space-x-2 border rounded-lg p-3 hover:bg-muted/50 transition-colors">
                 <RadioGroupItem value="excel" id="excel" />
-                <Label htmlFor="excel" className="flex items-center space-x-3 cursor-pointer flex-1">
+                <Label
+                  htmlFor="excel"
+                  className="flex items-center space-x-3 cursor-pointer flex-1"
+                >
                   <FileSpreadsheet className="w-5 h-5 text-green-600" />
                   <div>
                     <p className="font-medium">Excel (.xlsx)</p>
-                    <p className="text-sm text-muted-foreground">Best for data analysis and spreadsheet applications</p>
+                    <p className="text-sm text-muted-foreground">
+                      Best for data analysis and spreadsheet applications
+                    </p>
                   </div>
                 </Label>
               </div>
               <div className="flex items-center space-x-2 border rounded-lg p-3 hover:bg-muted/50 transition-colors">
                 <RadioGroupItem value="csv" id="csv" />
-                <Label htmlFor="csv" className="flex items-center space-x-3 cursor-pointer flex-1">
+                <Label
+                  htmlFor="csv"
+                  className="flex items-center space-x-3 cursor-pointer flex-1"
+                >
                   <FileText className="w-5 h-5 text-blue-600" />
                   <div>
                     <p className="font-medium">CSV (.csv)</p>
-                    <p className="text-sm text-muted-foreground">Universal format compatible with most applications</p>
+                    <p className="text-sm text-muted-foreground">
+                      Universal format compatible with most applications
+                    </p>
                   </div>
                 </Label>
               </div>
@@ -160,17 +194,31 @@ export function ExcelExport({ trigger }: ExcelExportProps) {
               Your exported file will contain the following columns:
             </p>
             <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• <strong>Period</strong>: Date (DD/MM/YYYY)</li>
-              <li>• <strong>Category</strong>: Category name</li>
-              <li>• <strong>Note</strong>: Transaction description</li>
-              <li>• <strong>IDR</strong>: Transaction amount</li>
-              <li>• <strong>Type</strong>: Income or Expense</li>
+              <li>
+                • <strong>Period</strong>: Date (DD/MM/YYYY)
+              </li>
+              <li>
+                • <strong>Category</strong>: Category name
+              </li>
+              <li>
+                • <strong>Note</strong>: Transaction description
+              </li>
+              <li>
+                • <strong>IDR</strong>: Transaction amount
+              </li>
+              <li>
+                • <strong>Type</strong>: Income or Expense
+              </li>
             </ul>
           </div>
 
           {/* Export Button */}
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setOpen(false)} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              className="flex-1"
+            >
               Cancel
             </Button>
             <Button
@@ -186,7 +234,8 @@ export function ExcelExport({ trigger }: ExcelExportProps) {
               ) : (
                 <>
                   <Download className="w-4 h-4 mr-2" />
-                  Export {transactions.length} Transaction{transactions.length !== 1 ? "s" : ""}
+                  Export {transactions.length} Transaction
+                  {transactions.length !== 1 ? "s" : ""}
                 </>
               )}
             </Button>

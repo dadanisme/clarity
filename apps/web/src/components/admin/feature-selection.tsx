@@ -1,8 +1,8 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
-import { FeatureFlag } from "@/types";
-import { FEATURE_METADATA } from "@/lib/supabase/feature-service";
+import { FEATURE_METADATA } from "@clarity/shared/services/feature-service";
+import { FeatureFlag } from "@clarity/types";
 
 interface FeatureSelectionProps {
   selectedFeatures: FeatureFlag[];

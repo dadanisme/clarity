@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
-import { UserRole } from "@/types";
+import { UserRole } from "@clarity/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { UserService } from "@/lib/supabase";
+import { UserService } from "@clarity/shared/services";
 
 // Hook to get all users (admin only)
 export function useAdminUsers() {

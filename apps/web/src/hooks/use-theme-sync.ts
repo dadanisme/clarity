@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
 import { useUpdateUserSettings } from "./use-settings";
-import { Theme } from "@/types";
+import { Theme } from "@clarity/types";
 
 export function useThemeSync() {
   const { theme } = useTheme();

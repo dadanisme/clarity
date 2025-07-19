@@ -14,7 +14,7 @@ import {
 import {
   useTimeframeStore,
   type TimeframeType,
-} from "@/lib/stores/timeframe-store";
+} from "@clarity/shared/stores/timeframe-store";
 
 export function OverviewTimeframeControls() {
   const {
@@ -25,7 +25,7 @@ export function OverviewTimeframeControls() {
     goToPrevious,
     goToNext,
   } = useTimeframeStore();
-  
+
   const getSelectOptions = () => {
     const currentYear = new Date().getFullYear();
 

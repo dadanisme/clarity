@@ -24,9 +24,10 @@ import { PWAInstallButton } from "./pwa-install-button";
 import { LogOut, User, Mail, Calendar, Zap } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { useUserFeatures } from "@/hooks/use-features";
-import { FEATURE_METADATA } from "@/lib/supabase/feature-service";
-import { FeatureSubscription } from "@/types";
-import { formatDate } from "@/lib/utils/date-utils";
+
+import { FeatureSubscription } from "@clarity/types";
+import { formatDate } from "@clarity/shared/utils/date-utils";
+import { FEATURE_METADATA } from "@clarity/shared/services/feature-service";
 
 export function SettingsContent() {
   const { user, logout } = useAuth();

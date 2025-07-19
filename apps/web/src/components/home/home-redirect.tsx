@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { PageLoading } from "@/components/ui/loading";
-import { PATHS } from "@/lib/paths";
+import { PATHS } from "@clarity/shared/utils";
 
 export function HomeRedirect() {
   const { user, loading } = useAuth();

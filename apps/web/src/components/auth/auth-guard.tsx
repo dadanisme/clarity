@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
-import { PATHS } from "@/lib/paths";
+import { PATHS } from "@clarity/shared/utils";
 
 interface AuthGuardProps {
   children: React.ReactNode;

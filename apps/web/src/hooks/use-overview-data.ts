@@ -1,19 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import { TransactionsService } from "@/lib/supabase/transactions-service";
-import { useTimeframeStore } from "@/lib/stores/timeframe-store";
+import { TransactionsService } from "@clarity/shared/services/transactions-service";
+import { useTimeframeStore } from "@clarity/shared/stores/timeframe-store";
 import { subMonths, subQuarters, subYears } from "date-fns";
-import { 
-  startOfMonth, 
-  endOfMonth, 
-  startOfQuarter, 
-  endOfQuarter, 
-  startOfYear, 
-  endOfYear 
+import {
+  startOfMonth,
+  endOfMonth,
+  startOfQuarter,
+  endOfQuarter,
+  startOfYear,
+  endOfYear,
 } from "date-fns";
 
 export function useOverviewData(userId: string) {
   const { timeframe, currentPeriod } = useTimeframeStore();
-  
+
   // Get current period date range
   const getCurrentPeriodRange = () => {
     switch (timeframe) {
@@ -38,7 +38,7 @@ export function useOverviewData(userId: string) {
   // Get previous period date range
   const getPreviousPeriodRange = () => {
     let previousPeriodDate: Date;
-    
+
     switch (timeframe) {
       case "daily":
         previousPeriodDate = subMonths(currentPeriod, 1);

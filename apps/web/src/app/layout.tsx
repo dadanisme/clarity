@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { QueryProvider } from "@/lib/providers/query-provider";
-import { ThemeProvider } from "@/lib/providers/theme-provider";
+
 import { Toaster } from "sonner";
+import { ThemeProvider } from "@/lib/providers/theme-provider";
+import { QueryProvider } from "@/lib/providers/query-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 

@@ -3,7 +3,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useOverviewData } from "@/hooks/use-overview-data";
 import { useCategories } from "@/hooks/use-categories";
-import { useTimeframeStore } from "@/lib/stores/timeframe-store";
+import { useTimeframeStore } from "@clarity/shared/stores/timeframe-store";
 import { OverviewTimeframeControls } from "./overview/overview-timeframe-controls";
 import { OverviewSummaryCards } from "./overview/overview-summary-cards";
 import { CategoryAnalysis } from "./overview/category-analysis";
@@ -11,16 +11,18 @@ import { EmptyState } from "./empty-state";
 
 export function DashboardOverview() {
   const { user } = useAuth();
-  const { 
-    currentPeriodTransactions, 
+  const {
+    currentPeriodTransactions,
     previousPeriodTransactions,
-    isLoading: transactionsLoading 
+    isLoading: transactionsLoading,
   } = useOverviewData(user?.id || "");
   const { data: categories = [] } = useCategories(user?.id || "");
   const { timeframe } = useTimeframeStore();
 
   // Filter to expense transactions only for spending analysis
-  const expenseTransactions = currentPeriodTransactions.filter(t => t.type === "expense");
+  const expenseTransactions = currentPeriodTransactions.filter(
+    (t) => t.type === "expense"
+  );
 
   const renderContent = () => {
     if (transactionsLoading) {
@@ -58,10 +60,11 @@ export function DashboardOverview() {
         {/* Category Analysis */}
         <CategoryAnalysis
           transactions={expenseTransactions}
-          previousPeriodTransactions={previousPeriodTransactions.filter(t => t.type === "expense")}
+          previousPeriodTransactions={previousPeriodTransactions.filter(
+            (t) => t.type === "expense"
+          )}
           categories={categories}
         />
-
       </div>
     );
   };

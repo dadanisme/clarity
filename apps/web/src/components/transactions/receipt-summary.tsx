@@ -1,5 +1,5 @@
 import { CheckCircle } from "lucide-react";
-import { ParsedReceipt } from "@/types/receipt";
+import { ParsedReceipt } from "@clarity/types/receipt";
 import { formatCurrency } from "@/lib/utils";
 
 interface ReceiptSummaryProps {

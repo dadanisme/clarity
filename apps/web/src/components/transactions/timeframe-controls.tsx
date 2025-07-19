@@ -14,7 +14,7 @@ import {
 import {
   useTimeframeStore,
   type TimeframeType,
-} from "@/lib/stores/timeframe-store";
+} from "@clarity/shared/stores/timeframe-store";
 
 export function TimeframeControls() {
   const {

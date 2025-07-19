@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CategoriesService } from "@/lib/supabase";
-import type { CategoryFormData } from "@/lib/validations";
+
+import type { CategoryFormData } from "@clarity/shared/validations";
+import { CategoriesService } from "@clarity/shared/services";
 
 export function useCategories(userId: string) {
   return useQuery({

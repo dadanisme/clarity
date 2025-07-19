@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { toast } from "sonner";
-import { UserRole, UserWithFeatures } from "@/types";
+import { UserRole, UserWithFeatures } from "@clarity/types";
 import { useUpdateUserRole, useAdminUsers } from "@/hooks/use-users-management";
 import { ManageFeaturesDialog } from "./manage-features-dialog";
 import { createUserTableColumns } from "./user-table-columns";

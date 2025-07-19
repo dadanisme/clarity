@@ -4,7 +4,7 @@ import { Calendar, Edit } from "lucide-react";
 import { format } from "date-fns";
 import { formatCurrency } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import type { Transaction, Category } from "@/types";
+import type { Transaction, Category } from "@clarity/types";
 import type { ReactNode } from "react";
 
 interface TransactionItemProps {

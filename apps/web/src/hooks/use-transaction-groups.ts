@@ -1,11 +1,7 @@
 import { useMemo } from "react";
-import {
-  format,
-  startOfWeek,
-  startOfMonth,
-} from "date-fns";
-import { Transaction } from "@/types";
-import { useTimeframeStore } from "@/lib/stores/timeframe-store";
+import { format, startOfWeek, startOfMonth } from "date-fns";
+import { Transaction } from "@clarity/types";
+import { useTimeframeStore } from "@clarity/shared/stores/timeframe-store";
 
 export function useTransactionGroups(transactions: Transaction[]) {
   const {
@@ -59,7 +55,6 @@ export function useTransactionGroups(transactions: Transaction[]) {
       return new Date(b).getTime() - new Date(a).getTime();
     });
   }, [filteredTransactions, timeframe]);
-
 
   return {
     timeframe,

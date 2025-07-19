@@ -6,7 +6,7 @@ import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionItem } from "@/components/transactions/transaction-item";
 import { Button } from "@/components/ui/button";
 import { Edit, ChevronDown, ChevronUp } from "lucide-react";
-import { Transaction, Category } from "@/types";
+import { Transaction, Category } from "@clarity/types";
 import { formatCurrency, formatCurrencyShort } from "@/lib/utils";
 
 interface TransactionGroupProps {
@@ -23,7 +23,7 @@ export function TransactionGroup({
   categories,
 }: TransactionGroupProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   const getGroupTitle = (groupKey: string) => {
     const date = new Date(groupKey);
 
@@ -47,23 +47,23 @@ export function TransactionGroup({
 
   const calculateTotals = () => {
     const income = groupTransactions
-      .filter(t => t.type === "income")
+      .filter((t) => t.type === "income")
       .reduce((sum, t) => sum + t.amount, 0);
-    
+
     const expenses = groupTransactions
-      .filter(t => t.type === "expense")
+      .filter((t) => t.type === "expense")
       .reduce((sum, t) => sum + t.amount, 0);
-    
+
     return { income, expenses };
   };
 
   const { income, expenses } = calculateTotals();
-  
+
   // Determine which transactions to show
   const MAX_VISIBLE_ITEMS = 5;
   const hasMoreItems = groupTransactions.length > MAX_VISIBLE_ITEMS;
-  const visibleTransactions = isExpanded 
-    ? groupTransactions 
+  const visibleTransactions = isExpanded
+    ? groupTransactions
     : groupTransactions.slice(0, MAX_VISIBLE_ITEMS);
   const remainingCount = groupTransactions.length - MAX_VISIBLE_ITEMS;
 
@@ -83,14 +83,22 @@ export function TransactionGroup({
           <div className="flex items-center gap-4">
             {income > 0 && (
               <span className="text-green-600 dark:text-green-400">
-                <span className="md:hidden">+{formatCurrencyShort(income)}</span>
-                <span className="hidden md:inline">+{formatCurrency(income)}</span>
+                <span className="md:hidden">
+                  +{formatCurrencyShort(income)}
+                </span>
+                <span className="hidden md:inline">
+                  +{formatCurrency(income)}
+                </span>
               </span>
             )}
             {expenses > 0 && (
               <span className="text-red-600 dark:text-red-400">
-                <span className="md:hidden">-{formatCurrencyShort(expenses)}</span>
-                <span className="hidden md:inline">-{formatCurrency(expenses)}</span>
+                <span className="md:hidden">
+                  -{formatCurrencyShort(expenses)}
+                </span>
+                <span className="hidden md:inline">
+                  -{formatCurrency(expenses)}
+                </span>
               </span>
             )}
           </div>
@@ -127,7 +135,7 @@ export function TransactionGroup({
             }
           />
         ))}
-        
+
         {hasMoreItems && (
           <div className="pt-2">
             <Button

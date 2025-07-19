@@ -1,7 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { FeatureSubscription } from "@/types";
+import { FeatureSubscription } from "@clarity/types";
 
 interface UserFeaturesProps {
   userFeatures: FeatureSubscription[];

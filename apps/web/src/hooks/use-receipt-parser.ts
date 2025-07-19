@@ -2,8 +2,12 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { ReceiptItem, ParsedReceipt, UserCategory } from "@/types/receipt";
-import { calculateTotal } from "@/lib/utils/receipt-utils";
+import {
+  ReceiptItem,
+  ParsedReceipt,
+  UserCategory,
+} from "@clarity/types/receipt";
+import { calculateTotal } from "@clarity/shared/utils/receipt-utils";
 import { useImageUpload } from "./use-image-upload";
 
 interface UseReceiptParserProps {

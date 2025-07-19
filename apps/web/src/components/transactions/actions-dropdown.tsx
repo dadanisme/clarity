@@ -11,7 +11,7 @@ import { MoreVertical, FileSpreadsheet, Download } from "lucide-react";
 import { ExcelImport } from "./excel-import";
 import { ExcelExport } from "./excel-export";
 import { InlineFeatureGate } from "@/components/features/feature-gate";
-import { FeatureFlag } from "@/types";
+import { FeatureFlag } from "@clarity/types";
 import { useFeatureAccess } from "@/hooks/use-features";
 
 interface ActionsDropdownProps {
@@ -20,8 +20,12 @@ interface ActionsDropdownProps {
 
 export function ActionsDropdown({ onImportComplete }: ActionsDropdownProps) {
   // Check if user has access to any of the features in the dropdown
-  const { data: hasExcelExport = false } = useFeatureAccess(FeatureFlag.EXCEL_EXPORT);
-  const { data: hasExcelImport = false } = useFeatureAccess(FeatureFlag.EXCEL_IMPORT);
+  const { data: hasExcelExport = false } = useFeatureAccess(
+    FeatureFlag.EXCEL_EXPORT
+  );
+  const { data: hasExcelImport = false } = useFeatureAccess(
+    FeatureFlag.EXCEL_IMPORT
+  );
 
   // Don't render the dropdown if user has no access to any features
   if (!hasExcelExport && !hasExcelImport) {
