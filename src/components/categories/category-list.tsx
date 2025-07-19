@@ -74,6 +74,7 @@ export function CategoryList() {
                       <p className="text-sm text-muted-foreground capitalize">
                         {category.type}
                         {category.is_default && " • Default"}
+                        {category.count !== undefined && ` • ${category.count} transactions`}
                       </p>
                     </div>
                   </div>
