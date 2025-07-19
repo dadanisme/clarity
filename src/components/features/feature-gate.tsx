@@ -6,7 +6,7 @@ import { FeatureFlag } from "@/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Lock } from "lucide-react";
-import { FEATURE_METADATA } from "@/lib/firebase/feature-service";
+import { FEATURE_METADATA } from "@/lib/supabase/feature-service";
 
 interface FeatureGateProps {
   feature: FeatureFlag;

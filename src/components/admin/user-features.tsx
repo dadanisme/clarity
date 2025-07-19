@@ -1,15 +1,13 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { useUserFeaturesById } from "@/hooks/use-features";
+import { FeatureSubscription } from "@/types";
 
 interface UserFeaturesProps {
-  userId: string;
+  userFeatures: FeatureSubscription[];
 }
 
-export function UserFeatures({ userId }: UserFeaturesProps) {
-  const { data: userFeatures = [] } = useUserFeaturesById(userId);
-
+export function UserFeatures({ userFeatures }: UserFeaturesProps) {
   const activeFeatures = userFeatures.filter((f) => f.status === "active");
 
   if (activeFeatures.length === 0) {
@@ -20,7 +18,7 @@ export function UserFeatures({ userId }: UserFeaturesProps) {
     <div className="flex flex-wrap gap-1">
       {activeFeatures.slice(0, 2).map((feature) => (
         <Badge key={feature.id} variant="outline" className="text-xs">
-          {feature.featureName}
+          {feature.feature_name}
         </Badge>
       ))}
       {activeFeatures.length > 2 && (

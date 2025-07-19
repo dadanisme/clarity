@@ -50,7 +50,7 @@ export function createTransactionsFromReceipt(
   return items.map((item) => ({
     amount: item.amount,
     type: "expense" as const,
-    categoryId: mapReceiptCategoryToUserCategory(item.category, userCategories),
+    category_id: mapReceiptCategoryToUserCategory(item.category, userCategories),
     description: item.description,
     date,
     userId,

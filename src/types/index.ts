@@ -1,50 +1,46 @@
+import { Tables } from "./database";
+
+export type { Database } from "./database";
+
+// Main table types from Supabase
+export type User = Tables<"users">;
+export type Category = Tables<"categories">;
+export type Transaction = Tables<"transactions">;
+export type FeatureSubscription = Tables<"feature_subscriptions">;
+
+// Enhanced types for relationships
+export type TransactionWithCategory = Transaction & {
+  categories: Category;
+};
+
+export type UserWithFeatures = User & {
+  feature_subscriptions: FeatureSubscription[];
+};
+
+// Enums for better type safety
 export enum UserRole {
   USER = "user",
-  ADMIN = "admin"
+  ADMIN = "admin",
 }
 
 export enum Theme {
   LIGHT = "light",
   DARK = "dark",
-  SYSTEM = "system"
+  SYSTEM = "system",
 }
 
-export interface User {
-  id: string;
-  displayName: string;
-  email: string;
-  role: UserRole;
-  profileImage?: string;
-  createdAt: Date;
-  settings: {
-    theme: Theme;
-  };
+export enum FeatureSubscriptionStatus {
+  ACTIVE = "active",
+  REVOKED = "revoked",
 }
 
-export interface Category {
-  id: string;
-  name: string;
-  type: "income" | "expense";
-  color: string;
-  createdAt: Date;
-  isDefault: boolean;
+export enum FeatureFlag {
+  AI_RECEIPT_SCANNING = "ai_receipt_scanning",
+  EXCEL_IMPORT = "excel_import",
+  EXCEL_EXPORT = "excel_export",
 }
 
-export interface Transaction {
-  id: string;
-  amount: number;
-  type: "income" | "expense";
-  categoryId: string;
-  description?: string;
-  date: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface TransactionWithCategory extends Transaction {
-  category: Category;
-}
-
+// Summary types for analytics
 export interface MonthlySummary {
   month: string;
   income: number;
@@ -53,30 +49,8 @@ export interface MonthlySummary {
 }
 
 export interface CategorySummary {
-  categoryId: string;
+  category_id: string;
   category: Category;
   total: number;
   count: number;
-}
-
-export enum FeatureSubscriptionStatus {
-  ACTIVE = "active",
-  REVOKED = "revoked"
-}
-
-export enum FeatureFlag {
-  AI_RECEIPT_SCANNING = "ai_receipt_scanning",
-  EXCEL_IMPORT = "excel_import"
-}
-
-export interface FeatureSubscription {
-  id: string;
-  userId: string;
-  featureName: string;
-  status: FeatureSubscriptionStatus;
-  grantedAt: Date;
-  grantedBy: string;
-  revokedBy?: string;
-  revokedAt?: Date;
-  notes?: string;
 }

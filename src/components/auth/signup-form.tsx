@@ -16,7 +16,7 @@ import { PATHS } from "@/lib/paths";
 
 const signUpSchema = z
   .object({
-    displayName: z.string().min(2, "Name must be at least 2 characters"),
+    display_name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string(),
@@ -44,7 +44,7 @@ export function SignUpForm() {
   const onSubmit = async (data: SignUpFormData) => {
     try {
       setError("");
-      await signUp(data.email, data.password, data.displayName);
+      await signUp(data.email, data.password, data.display_name);
       router.push(PATHS.transactions);
     } catch {
       setError("Failed to create account. Please try again.");
@@ -90,17 +90,17 @@ export function SignUpForm() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="displayName" className="text-sm font-medium">
+                  <Label htmlFor="display_name" className="text-sm font-medium">
                     Full name
                   </Label>
                   <Input
-                    id="displayName"
+                    id="display_name"
                     type="text"
                     placeholder="Enter your full name"
                     className="h-11 transition-all duration-200 focus:ring-2 focus:ring-primary/20"
-                    {...register("displayName")}
+                    {...register("display_name")}
                   />
-                  {errors.displayName && (
+                  {errors.display_name && (
                     <p className="text-sm text-destructive flex items-center gap-1">
                       <svg
                         className="w-4 h-4"
@@ -115,7 +115,7 @@ export function SignUpForm() {
                           d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      {errors.displayName.message}
+                      {errors.display_name.message}
                     </p>
                   )}
                 </div>

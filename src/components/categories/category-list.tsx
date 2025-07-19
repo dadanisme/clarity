@@ -73,7 +73,7 @@ export function CategoryList() {
                       <p className="font-medium">{category.name}</p>
                       <p className="text-sm text-muted-foreground capitalize">
                         {category.type}
-                        {category.isDefault && " • Default"}
+                        {category.is_default && " • Default"}
                       </p>
                     </div>
                   </div>

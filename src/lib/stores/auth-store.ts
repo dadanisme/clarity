@@ -1,28 +1,17 @@
-import { create } from 'zustand';
+import { create } from "zustand";
+import { User as SupabaseUser } from "@supabase/supabase-js";
 import {
-  User as FirebaseUser,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  updateProfile as updateFirebaseProfile,
-} from "firebase/auth";
-import { auth, googleProvider } from "@/lib/firebase/config";
-import {
-  createUser,
-  getUser,
-  subscribeToUser,
-  createDefaultCategories,
-  updateUser,
-  uploadProfileImage as uploadProfileImageToStorage,
-  deleteProfileImage,
-} from "@/lib/firebase/services";
+  AuthService,
+  UserService,
+  CategoriesService,
+  supabase,
+} from "@/lib/supabase";
 import { User, UserRole, Theme } from "@/types";
+import { PATHS } from "@/lib/paths";
 
 interface AuthState {
   user: User | null;
-  firebaseUser: FirebaseUser | null;
+  supabaseUser: SupabaseUser | null;
   loading: boolean;
   initialized: boolean;
 }
@@ -30,8 +19,14 @@ interface AuthState {
 interface AuthActions {
   signIn: (email: string, password: string) => Promise<void>;
   signInWithGoogle: () => Promise<void>;
-  signUp: (email: string, password: string, displayName: string) => Promise<void>;
-  updateProfile: (updates: Partial<Pick<User, "displayName" | "profileImage">>) => Promise<void>;
+  signUp: (
+    email: string,
+    password: string,
+    displayName: string
+  ) => Promise<void>;
+  updateProfile: (
+    updates: Partial<Pick<User, "display_name" | "profile_image">>
+  ) => Promise<void>;
   uploadProfileImage: (file: File) => Promise<void>;
   removeProfileImage: () => Promise<void>;
   logout: () => Promise<void>;
@@ -41,96 +36,95 @@ interface AuthActions {
 type AuthStore = AuthState & AuthActions;
 
 export const useAuthStore = create<AuthStore>((set, get) => {
-  let userUnsubscribe: (() => void) | null = null;
-  
   return {
     // State
     user: null,
-    firebaseUser: null,
+    supabaseUser: null,
     loading: true,
     initialized: false,
 
     // Actions
     signIn: async (email: string, password: string) => {
-      await signInWithEmailAndPassword(auth, email, password);
+      await AuthService.signIn(email, password);
     },
 
     signInWithGoogle: async () => {
-      await signInWithPopup(auth, googleProvider);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}${PATHS.authCallback}`,
+        },
+      });
+      if (error) throw error;
     },
 
     signUp: async (email: string, password: string, displayName: string) => {
-      const { user: newFirebaseUser } = await createUserWithEmailAndPassword(
-        auth,
+      const { user: newSupabaseUser } = await AuthService.signUp(
         email,
-        password
+        password,
+        displayName
       );
-      await updateFirebaseProfile(newFirebaseUser, { displayName });
+
+      if (newSupabaseUser) {
+        // Create user record in our database
+        await UserService.createUser({
+          id: newSupabaseUser.id,
+          email: newSupabaseUser.email!,
+          display_name: displayName,
+          role: UserRole.USER,
+          theme: Theme.SYSTEM,
+        });
+      }
     },
 
-    updateProfile: async (updates: Partial<Pick<User, "displayName" | "profileImage">>) => {
-      const { firebaseUser } = get();
-      
-      if (!firebaseUser) {
+    updateProfile: async (
+      updates: Partial<Pick<User, "display_name" | "profile_image">>
+    ) => {
+      const { supabaseUser } = get();
+
+      if (!supabaseUser) {
         throw new Error("No user logged in");
       }
 
-      // Update Firebase Auth profile if displayName is being updated
-      if (updates.displayName) {
-        await updateFirebaseProfile(firebaseUser, {
-          displayName: updates.displayName,
-        });
-      }
-
-      // Update Firestore user document
-      await updateUser(firebaseUser.uid, updates);
+      // Update user in database
+      await UserService.updateUser(supabaseUser.id, updates);
 
       // Local state will be updated automatically via real-time listener
     },
 
     uploadProfileImage: async (file: File) => {
-      const { firebaseUser, user } = get();
-      
-      if (!firebaseUser) {
+      const { supabaseUser } = get();
+
+      if (!supabaseUser) {
         throw new Error("No user logged in");
       }
 
-      // Delete old image if it exists and is not from Google
-      if (
-        user?.profileImage &&
-        !user.profileImage.includes("googleusercontent.com")
-      ) {
-        await deleteProfileImage(user.profileImage);
-      }
+      // Convert file to base64 (keeping same approach as Firebase)
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
 
-      // Upload new image
-      const imageUrl = await uploadProfileImageToStorage(firebaseUser.uid, file);
+      const base64Image = await base64Promise;
 
-      // Update user profile
-      await get().updateProfile({ profileImage: imageUrl });
+      // Update user profile with base64 image
+      await get().updateProfile({ profile_image: base64Image });
     },
 
     removeProfileImage: async () => {
-      const { firebaseUser, user } = get();
-      
-      if (!firebaseUser) {
+      const { supabaseUser } = get();
+
+      if (!supabaseUser) {
         throw new Error("No user logged in");
       }
 
-      // Delete image from storage if it exists and is not from Google
-      if (
-        user?.profileImage &&
-        !user.profileImage.includes("googleusercontent.com")
-      ) {
-        await deleteProfileImage(user.profileImage);
-      }
-
-      // Update user profile
-      await get().updateProfile({ profileImage: undefined });
+      // Update user profile to remove image
+      await get().updateProfile({ profile_image: undefined });
     },
 
     logout: async () => {
-      await signOut(auth);
+      await AuthService.signOut();
     },
 
     initializeAuth: () => {
@@ -138,45 +132,38 @@ export const useAuthStore = create<AuthStore>((set, get) => {
 
       set({ initialized: true });
 
-      const authUnsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-        set({ firebaseUser });
+      const {
+        data: { subscription },
+      } = AuthService.onAuthStateChange(async (supabaseUser) => {
+        set({ supabaseUser });
 
-        // Clean up previous user listener
-        if (userUnsubscribe) {
-          userUnsubscribe();
-          userUnsubscribe = null;
-        }
-
-        if (firebaseUser) {
+        if (supabaseUser) {
           try {
-            let userData = await getUser(firebaseUser.uid);
+            let userData = await UserService.getUser(supabaseUser.id);
 
             // If user document doesn't exist, create it
             if (!userData) {
               const newUserData = {
-                displayName: firebaseUser.displayName || "User",
-                email: firebaseUser.email || "",
+                id: supabaseUser.id,
+                email: supabaseUser.email!,
+                display_name:
+                  supabaseUser.user_metadata?.display_name || "User",
                 role: UserRole.USER,
-                profileImage: firebaseUser.photoURL || undefined,
-                settings: {
-                  theme: Theme.SYSTEM,
-                },
+                profile_image:
+                  supabaseUser.user_metadata?.avatar_url || undefined,
+                theme: Theme.SYSTEM,
               };
-              userData = await createUser(firebaseUser.uid, newUserData);
+              userData = await UserService.createUser(newUserData);
 
               // Create default categories for new users
               try {
-                await createDefaultCategories(firebaseUser.uid);
+                await createDefaultCategories(supabaseUser.id);
               } catch (error) {
                 console.error("Error creating default categories:", error);
               }
             }
 
-            // Set up real-time listener for user data
-            userUnsubscribe = subscribeToUser(firebaseUser.uid, (updatedUser) => {
-              set({ user: updatedUser, loading: false });
-            });
-
+            set({ user: userData, loading: false });
           } catch (error) {
             console.error("Error fetching user data:", error);
             set({ loading: false });
@@ -186,18 +173,100 @@ export const useAuthStore = create<AuthStore>((set, get) => {
         }
       });
 
-      // Return cleanup function
       return () => {
-        authUnsubscribe();
-        if (userUnsubscribe) {
-          userUnsubscribe();
-        }
+        subscription.unsubscribe();
       };
     },
   };
 });
 
+// Create default categories for new users
+async function createDefaultCategories(userId: string) {
+  const defaultCategories = [
+    {
+      name: "Food & Dining",
+      type: "expense" as const,
+      color: "#FF6B6B",
+      is_default: true,
+    },
+    {
+      name: "Transportation",
+      type: "expense" as const,
+      color: "#4ECDC4",
+      is_default: true,
+    },
+    {
+      name: "Shopping",
+      type: "expense" as const,
+      color: "#45B7D1",
+      is_default: true,
+    },
+    {
+      name: "Entertainment",
+      type: "expense" as const,
+      color: "#FFA07A",
+      is_default: true,
+    },
+    {
+      name: "Bills & Utilities",
+      type: "expense" as const,
+      color: "#98D8C8",
+      is_default: true,
+    },
+    {
+      name: "Healthcare",
+      type: "expense" as const,
+      color: "#F7DC6F",
+      is_default: true,
+    },
+    {
+      name: "Education",
+      type: "expense" as const,
+      color: "#BB8FCE",
+      is_default: true,
+    },
+    {
+      name: "Travel",
+      type: "expense" as const,
+      color: "#85C1E9",
+      is_default: true,
+    },
+    {
+      name: "Salary",
+      type: "income" as const,
+      color: "#58D68D",
+      is_default: true,
+    },
+    {
+      name: "Business",
+      type: "income" as const,
+      color: "#52C41A",
+      is_default: true,
+    },
+    {
+      name: "Investment",
+      type: "income" as const,
+      color: "#73D13D",
+      is_default: true,
+    },
+    {
+      name: "Other Income",
+      type: "income" as const,
+      color: "#95F985",
+      is_default: true,
+    },
+  ];
+
+  for (const category of defaultCategories) {
+    try {
+      await CategoriesService.createCategory(userId, category);
+    } catch (error) {
+      console.error("Error creating category:", category.name, error);
+    }
+  }
+}
+
 // Initialize auth on module load (client-side only)
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   useAuthStore.getState().initializeAuth();
 }

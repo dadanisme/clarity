@@ -19,7 +19,7 @@ import {
   useRevokeFeature,
   useManageUserFeatures,
 } from "@/hooks/use-features";
-import { FEATURE_METADATA } from "@/lib/firebase/feature-service";
+import { FEATURE_METADATA } from "@/lib/supabase/feature-service";
 import { FeatureSelection } from "./feature-selection";
 
 interface ManageFeaturesDialogProps {
@@ -51,7 +51,7 @@ export function ManageFeaturesDialog({
     if (open && user && currentUserFeatures.length > 0) {
       const activeFeatureIds = currentUserFeatures
         .filter((f) => f.status === "active")
-        .map((f) => f.id as FeatureFlag);
+        .map((f) => f.feature_flag as FeatureFlag);
       setSelectedFeatures(activeFeatureIds);
     }
   }, [currentUserFeatures, open, user]);
@@ -76,7 +76,7 @@ export function ManageFeaturesDialog({
       const currentActiveFeatures = new Set(
         currentUserFeatures
           .filter((f) => f.status === "active")
-          .map((f) => f.id)
+          .map((f) => f.feature_flag)
       );
 
       const newSelectedFeatures = new Set(selectedFeatures);
@@ -99,7 +99,7 @@ export function ManageFeaturesDialog({
             {
               userId: user.id,
               feature,
-              featureName,
+              feature_name: featureName,
               notes: notes || undefined,
             },
             {
@@ -130,7 +130,7 @@ export function ManageFeaturesDialog({
       if (changes.length > 0) {
         toast.success(
           `Successfully ${changes.join(" and ")} feature(s) for ${
-            user.displayName
+            user.display_name
           }`
         );
       } else {
@@ -161,7 +161,7 @@ export function ManageFeaturesDialog({
         <DialogHeader>
           <DialogTitle>Manage Features</DialogTitle>
           <DialogDescription>
-            Manage feature access for {user?.displayName} ({user?.email})
+            Manage feature access for {user?.display_name} ({user?.email})
           </DialogDescription>
         </DialogHeader>
 

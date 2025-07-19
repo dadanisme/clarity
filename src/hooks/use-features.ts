@@ -1,105 +1,38 @@
 import { useAuth } from "@/hooks/use-auth";
 import { FeatureFlag, UserRole, FeatureSubscription } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FeatureService } from "@/lib/firebase/feature-service";
-import { useEffect, useRef } from "react";
+import { FeatureService } from "@/lib/supabase";
 
 // React Query hook with real-time updates for feature access
 export function useFeatureAccess(feature: FeatureFlag) {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
-  const unsubscribeRef = useRef<(() => void) | null>(null);
 
-  const query = useQuery({
+  return useQuery({
     queryKey: ["feature-access", user?.id, feature],
     queryFn: async (): Promise<boolean> => {
       if (!user?.id) return false;
-
-      // Get initial value
-      const hasAccess = await FeatureService.hasFeature(user.id, feature);
-
-      // Set up real-time listener for subsequent updates
-      if (unsubscribeRef.current) {
-        unsubscribeRef.current();
-      }
-
-      unsubscribeRef.current = FeatureService.subscribeToFeature(
-        user.id,
-        feature,
-        (access) => {
-          // Update React Query cache with real-time data
-          queryClient.setQueryData(
-            ["feature-access", user.id, feature],
-            access
-          );
-        }
-      );
-
-      return hasAccess;
+      return FeatureService.hasFeature(user.id, feature);
     },
     enabled: !!user?.id,
     staleTime: Infinity, // Never stale since we update via subscription
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes after unmount
   });
-
-  // Cleanup listener on unmount or user change
-  useEffect(() => {
-    return () => {
-      if (unsubscribeRef.current) {
-        unsubscribeRef.current();
-        unsubscribeRef.current = null;
-      }
-    };
-  }, [user?.id, feature]);
-
-  return query;
 }
 
 // React Query hook with real-time updates for all user features
 export function useUserFeatures() {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
-  const unsubscribeRef = useRef<(() => void) | null>(null);
 
-  const query = useQuery({
+  return useQuery({
     queryKey: ["user-features", user?.id],
     queryFn: async (): Promise<FeatureSubscription[]> => {
       if (!user?.id) return [];
-
-      // Get initial value
-      const features = await FeatureService.getUserFeatures(user.id);
-
-      // Set up real-time listener for subsequent updates
-      if (unsubscribeRef.current) {
-        unsubscribeRef.current();
-      }
-
-      unsubscribeRef.current = FeatureService.subscribeToUserFeatures(
-        user.id,
-        (userFeatures) => {
-          // Update React Query cache with real-time data
-          queryClient.setQueryData(["user-features", user.id], userFeatures);
-        }
-      );
-
-      return features;
+      return FeatureService.getUserFeatures(user.id);
     },
     enabled: !!user?.id,
     staleTime: Infinity, // Never stale since we update via subscription
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes after unmount
   });
-
-  // Cleanup listener on unmount or user change
-  useEffect(() => {
-    return () => {
-      if (unsubscribeRef.current) {
-        unsubscribeRef.current();
-        unsubscribeRef.current = null;
-      }
-    };
-  }, [user?.id]);
-
-  return query;
 }
 
 // React Query-based feature gate hook
@@ -114,7 +47,6 @@ export function useFeatureGate(feature: FeatureFlag) {
   };
 }
 
-
 // Admin feature management hooks using service directly
 export function useGrantFeature() {
   const queryClient = useQueryClient();
@@ -124,12 +56,12 @@ export function useGrantFeature() {
     mutationFn: async ({
       userId,
       feature,
-      featureName,
+      feature_name,
       notes,
     }: {
       userId: string;
       feature: FeatureFlag;
-      featureName: string;
+      feature_name: string;
       notes?: string;
     }) => {
       if (!user?.id || user.role !== UserRole.ADMIN) {
@@ -140,7 +72,7 @@ export function useGrantFeature() {
         userId,
         feature,
         user.id,
-        featureName,
+        feature_name,
         notes
       );
     },
@@ -175,31 +107,6 @@ export function useRevokeFeature() {
   });
 }
 
-export function useDeleteFeature() {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
-
-  return useMutation({
-    mutationFn: async ({
-      userId,
-      feature,
-    }: {
-      userId: string;
-      feature: FeatureFlag;
-    }) => {
-      if (!user?.id || user.role !== UserRole.ADMIN) {
-        throw new Error("Unauthorized: Admin access required");
-      }
-
-      return FeatureService.deleteFeature(userId, feature);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-    },
-  });
-}
-
-
 // For backwards compatibility - features that aren't converted yet
 export function useUserFeaturesById(userId: string) {
   return useQuery({
@@ -218,7 +125,7 @@ export function useManageUserFeatures(userId: string, enabled: boolean = true) {
     queryKey: ["manage-user-features", userId],
     queryFn: async () => {
       if (!userId) return [];
-      return FeatureService.getUserFeatures(userId);
+      return FeatureService.getAllUserFeatures(userId);
     },
     enabled: !!userId && enabled,
     staleTime: 1000, // Very short cache since this is for admin management

@@ -1,16 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  getCategories,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-} from "@/lib/firebase/services";
+import { CategoriesService } from "@/lib/supabase";
 import type { CategoryFormData } from "@/lib/validations";
 
 export function useCategories(userId: string) {
   return useQuery({
     queryKey: ["categories", userId],
-    queryFn: () => getCategories(userId),
+    queryFn: () => CategoriesService.getCategories(userId),
     enabled: !!userId,
   });
 }
@@ -25,9 +20,9 @@ export function useCreateCategory() {
     }: {
       userId: string;
       data: CategoryFormData;
-    }) => createCategory(userId, data),
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ["categories", userId] });
+    }) => CategoriesService.createCategory(userId, data),
+    onSuccess: ({ user_id }) => {
+      queryClient.invalidateQueries({ queryKey: ["categories", user_id] });
     },
   });
 }
@@ -37,16 +32,14 @@ export function useUpdateCategory() {
 
   return useMutation({
     mutationFn: ({
-      userId,
-      categoryId,
+      category_id,
       data,
     }: {
-      userId: string;
-      categoryId: string;
+      category_id: string;
       data: Partial<CategoryFormData>;
-    }) => updateCategory(userId, categoryId, data),
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ["categories", userId] });
+    }) => CategoriesService.updateCategory(category_id, data),
+    onSuccess: ({ user_id }) => {
+      queryClient.invalidateQueries({ queryKey: ["categories", user_id] });
     },
   });
 }
@@ -55,15 +48,10 @@ export function useDeleteCategory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      userId,
-      categoryId,
-    }: {
-      userId: string;
-      categoryId: string;
-    }) => deleteCategory(userId, categoryId),
-    onSuccess: (_, { userId }) => {
-      queryClient.invalidateQueries({ queryKey: ["categories", userId] });
+    mutationFn: ({ category_id }: { category_id: string }) =>
+      CategoriesService.deleteCategory(category_id),
+    onSuccess: ({ user_id }) => {
+      queryClient.invalidateQueries({ queryKey: ["categories", user_id] });
     },
   });
 }

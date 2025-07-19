@@ -122,14 +122,14 @@ export function DashboardLayoutClient({
                     className="relative h-8 w-8 rounded-full"
                   >
                     <Avatar className="h-8 w-8">
-                      {user?.profileImage && (
+                      {user?.profile_image && (
                         <AvatarImage
-                          src={user.profileImage}
-                          alt={user.displayName}
+                          src={user.profile_image}
+                          alt={user.display_name}
                         />
                       )}
                       <AvatarFallback>
-                        {user?.displayName?.charAt(0).toUpperCase() || "U"}
+                        {user?.display_name?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -138,19 +138,19 @@ export function DashboardLayoutClient({
                   <DropdownMenuItem className="flex flex-col items-start space-y-1 p-4">
                     <div className="flex items-center space-x-3 w-full">
                       <Avatar className="h-10 w-10">
-                        {user?.profileImage && (
+                        {user?.profile_image && (
                           <AvatarImage
-                            src={user.profileImage}
-                            alt={user.displayName}
+                            src={user.profile_image}
+                            alt={user.display_name}
                           />
                         )}
                         <AvatarFallback>
-                          {user?.displayName?.charAt(0).toUpperCase() || "U"}
+                          {user?.display_name?.charAt(0).toUpperCase() || "U"}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col min-w-0 flex-1">
                         <span className="font-medium truncate">
-                          {user?.displayName}
+                          {user?.display_name}
                         </span>
                         <span className="text-sm text-muted-foreground truncate">
                           {user?.email}

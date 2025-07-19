@@ -15,7 +15,8 @@ import {
 import { Loader2, CheckCircle, FileSpreadsheet, Upload, X, Eye } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useCategories } from "@/hooks/use-categories";
-import { createMultipleTransactions, createCategory } from "@/lib/firebase/services";
+import { TransactionsService } from "@/lib/supabase/transactions-service";
+import { CategoriesService } from "@/lib/supabase/categories-service";
 import { parseExcelFile } from "@/lib/utils/excel-parser";
 import { TransactionPreviewTable } from "./transaction-preview-table";
 import { toast } from "sonner";
@@ -117,11 +118,11 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
         ];
         const color = colors[Math.floor(Math.random() * colors.length)];
         
-        const newCategory = await createCategory(user.id, {
+        const newCategory = await CategoriesService.createCategory(user.id, {
           name: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
           type: categoryType,
           color,
-          isDefault: false,
+          is_default: false,
         });
         
         createdCategories.push(newCategory);
@@ -138,13 +139,13 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
       const transactions = parsedData.map(transaction => ({
         amount: transaction.amount,
         type: transaction.type,
-        categoryId: categoryMap.get(transaction.categoryName.toLowerCase()) || "",
+        category_id: categoryMap.get(transaction.categoryName.toLowerCase()) || "",
         description: transaction.description,
-        date: transaction.date,
+        date: transaction.date.toISOString(),
       }));
 
       // Import transactions
-      await createMultipleTransactions(user.id, transactions);
+      await TransactionsService.createMultipleTransactions(user.id, transactions);
 
       // Invalidate queries to refresh UI
       await queryClient.invalidateQueries({ 
@@ -201,12 +202,9 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="outline" className="relative">
+          <Button variant="outline">
             <FileSpreadsheet className="w-4 h-4 mr-2" />
             Import Excel
-            <span className="absolute -top-2 -right-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
-              New
-            </span>
           </Button>
         )}
       </DialogTrigger>

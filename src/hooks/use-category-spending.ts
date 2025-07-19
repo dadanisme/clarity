@@ -12,11 +12,11 @@ export function useCategorySpending(
     const categoryMap = new Map<string, { amount: number; count: number }>();
 
     transactions.forEach((transaction) => {
-      const existing = categoryMap.get(transaction.categoryId) || {
+      const existing = categoryMap.get(transaction.category_id) || {
         amount: 0,
         count: 0,
       };
-      categoryMap.set(transaction.categoryId, {
+      categoryMap.set(transaction.category_id, {
         amount: existing.amount + transaction.amount,
         count: existing.count + 1,
       });
@@ -26,11 +26,11 @@ export function useCategorySpending(
     const prevCategoryMap = new Map<string, { amount: number; count: number }>();
 
     previousPeriodTransactions.forEach((transaction) => {
-      const existing = prevCategoryMap.get(transaction.categoryId) || {
+      const existing = prevCategoryMap.get(transaction.category_id) || {
         amount: 0,
         count: 0,
       };
-      prevCategoryMap.set(transaction.categoryId, {
+      prevCategoryMap.set(transaction.category_id, {
         amount: existing.amount + transaction.amount,
         count: existing.count + 1,
       });
@@ -40,9 +40,9 @@ export function useCategorySpending(
 
     // Convert to CategorySpending array with previous period comparison
     const allCategories: CategorySpending[] = Array.from(categoryMap.entries())
-      .map(([categoryId, { amount, count }]) => {
-        const category = categories.find((c) => c.id === categoryId);
-        const prevData = prevCategoryMap.get(categoryId) || { amount: 0, count: 0 };
+      .map(([category_id, { amount, count }]) => {
+        const category = categories.find((c) => c.id === category_id);
+        const prevData = prevCategoryMap.get(category_id) || { amount: 0, count: 0 };
         
         const hasData = prevData.amount > 0;
         const percentageChange = hasData
@@ -50,7 +50,7 @@ export function useCategorySpending(
           : 0;
 
         return {
-          categoryId,
+          category_id,
           name: category?.name || "Unknown",
           color: category?.color || "#6B7280",
           amount,
@@ -105,7 +105,7 @@ export function useCategorySpending(
           : 0;
 
         const othersCategory: CategorySpending = {
-          categoryId: "others",
+          category_id: "others",
           name: "Others",
           color: "#9CA3AF",
           amount: othersAmount,
@@ -129,11 +129,11 @@ export function useCategorySpending(
     const categoryMap = new Map<string, { amount: number; count: number }>();
 
     transactions.forEach((transaction) => {
-      const existing = categoryMap.get(transaction.categoryId) || {
+      const existing = categoryMap.get(transaction.category_id) || {
         amount: 0,
         count: 0,
       };
-      categoryMap.set(transaction.categoryId, {
+      categoryMap.set(transaction.category_id, {
         amount: existing.amount + transaction.amount,
         count: existing.count + 1,
       });
@@ -143,11 +143,11 @@ export function useCategorySpending(
     const prevCategoryMap = new Map<string, { amount: number; count: number }>();
 
     previousPeriodTransactions.forEach((transaction) => {
-      const existing = prevCategoryMap.get(transaction.categoryId) || {
+      const existing = prevCategoryMap.get(transaction.category_id) || {
         amount: 0,
         count: 0,
       };
-      prevCategoryMap.set(transaction.categoryId, {
+      prevCategoryMap.set(transaction.category_id, {
         amount: existing.amount + transaction.amount,
         count: existing.count + 1,
       });
@@ -156,9 +156,9 @@ export function useCategorySpending(
     const totalSpent = transactions.reduce((sum, t) => sum + t.amount, 0);
 
     return Array.from(categoryMap.entries())
-      .map(([categoryId, { amount, count }]) => {
-        const category = categories.find((c) => c.id === categoryId);
-        const prevData = prevCategoryMap.get(categoryId) || { amount: 0, count: 0 };
+      .map(([category_id, { amount, count }]) => {
+        const category = categories.find((c) => c.id === category_id);
+        const prevData = prevCategoryMap.get(category_id) || { amount: 0, count: 0 };
         
         const hasData = prevData.amount > 0;
         const percentageChange = hasData
@@ -166,7 +166,7 @@ export function useCategorySpending(
           : 0;
 
         return {
-          categoryId,
+          category_id,
           name: category?.name || "Unknown",
           color: category?.color || "#6B7280",
           amount,

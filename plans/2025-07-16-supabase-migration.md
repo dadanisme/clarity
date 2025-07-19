@@ -100,7 +100,7 @@ CREATE TABLE users (
   display_name TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
   profile_image TEXT,
-  settings JSONB DEFAULT '{"theme": "system"}',
+  theme TEXT NOT NULL DEFAULT 'system' CHECK (theme IN ('light', 'dark', 'system')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   role_updated_by UUID REFERENCES users(id)

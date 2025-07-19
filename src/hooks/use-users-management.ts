@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { UserRole } from "@/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { UserService } from "@/lib/firebase/user-service";
+import { UserService } from "@/lib/supabase";
 
 // Hook to get all users (admin only)
 export function useAdminUsers() {

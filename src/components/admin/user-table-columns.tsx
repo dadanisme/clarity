@@ -16,28 +16,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MoreHorizontal } from "lucide-react";
-import { User, UserRole } from "@/types";
+import { UserRole, UserWithFeatures } from "@/types";
 import { UserFeatures } from "./user-features";
 import { formatDate } from "@/lib/utils/date-utils";
 
 interface UserTableColumnsProps {
-  onManageFeatures: (user: User) => void;
+  onManageFeatures: (user: UserWithFeatures) => void;
   onRoleChange: (userId: string, newRole: UserRole) => void;
 }
 
 export function createUserTableColumns({
   onManageFeatures,
   onRoleChange,
-}: UserTableColumnsProps): ColumnDef<User>[] {
+}: UserTableColumnsProps): ColumnDef<UserWithFeatures>[] {
   return [
     {
-      accessorKey: "displayName",
+      accessorKey: "display_name",
       header: "Name",
       cell: ({ row }) => {
         const user = row.original;
         return (
           <div>
-            <div className="font-medium">{user.displayName}</div>
+            <div className="font-medium">{user.display_name}</div>
             <div className="text-sm text-muted-foreground">{user.email}</div>
           </div>
         );
@@ -69,17 +69,17 @@ export function createUserTableColumns({
       header: "Active Features",
       cell: ({ row }) => {
         const user = row.original;
-        return <UserFeatures userId={user.id} />;
+        return <UserFeatures userFeatures={user.feature_subscriptions} />;
       },
     },
     {
-      accessorKey: "createdAt",
+      accessorKey: "created_at",
       header: "Created",
       cell: ({ row }) => {
         const user = row.original;
         return (
           <div className="text-sm">
-            {user.createdAt ? formatDate(user.createdAt) : "N/A"}
+            {user.created_at ? formatDate(user.created_at) : "N/A"}
           </div>
         );
       },
