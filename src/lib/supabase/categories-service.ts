@@ -17,7 +17,7 @@ export class CategoriesService {
     return (data || []).map(category => ({
       ...category,
       count: category.transactions?.[0]?.count || 0
-    }));
+    })).sort((a, b) => b.count - a.count);
   }
 
   static async createCategory(
@@ -118,7 +118,7 @@ export class CategoriesService {
     return (data || []).map(category => ({
       ...category,
       count: category.transactions?.[0]?.count || 0
-    }));
+    })).sort((a, b) => b.count - a.count);
   }
 
   static async getDefaultCategories(userId: string): Promise<Category[]> {
