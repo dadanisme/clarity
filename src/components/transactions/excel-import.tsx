@@ -201,12 +201,9 @@ export function ExcelImport({ onImportComplete, trigger }: ExcelImportProps) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button variant="outline" className="relative">
+          <Button variant="outline">
             <FileSpreadsheet className="w-4 h-4 mr-2" />
             Import Excel
-            <span className="absolute -top-2 -right-1 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded-full">
-              New
-            </span>
           </Button>
         )}
       </DialogTrigger>

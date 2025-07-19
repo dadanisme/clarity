@@ -66,7 +66,8 @@ export enum FeatureSubscriptionStatus {
 
 export enum FeatureFlag {
   AI_RECEIPT_SCANNING = "ai_receipt_scanning",
-  EXCEL_IMPORT = "excel_import"
+  EXCEL_IMPORT = "excel_import",
+  EXCEL_EXPORT = "excel_export"
 }
 
 export interface FeatureSubscription {

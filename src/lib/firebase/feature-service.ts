@@ -189,4 +189,9 @@ export const FEATURE_METADATA = {
     description: "Import transactions from Excel/CSV files",
     icon: "file-spreadsheet",
   },
+  [FeatureFlag.EXCEL_EXPORT]: {
+    name: "Excel Export",
+    description: "Export transactions to Excel/CSV files",
+    icon: "download",
+  },
 } as const;
