@@ -13,6 +13,10 @@ export type TransactionWithCategory = Transaction & {
   categories: Category;
 };
 
+export type CategoryWithCount = Category & {
+  count: number;
+};
+
 export type UserWithFeatures = User & {
   feature_subscriptions: FeatureSubscription[];
 };

@@ -1,16 +1,23 @@
 import { supabase } from "./config";
-import { Category } from "@/types";
+import { Category, CategoryWithCount } from "@/types";
 
 export class CategoriesService {
-  static async getCategories(userId: string): Promise<Category[]> {
+  static async getCategories(userId: string): Promise<CategoryWithCount[]> {
     const { data, error } = await supabase
       .from("categories")
-      .select("*")
+      .select(`
+        *,
+        transactions!category_id(count)
+      `)
       .eq("user_id", userId)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    
+    return (data || []).map(category => ({
+      ...category,
+      count: category.transactions?.[0]?.count || 0
+    }));
   }
 
   static async createCategory(
@@ -95,16 +102,23 @@ export class CategoriesService {
   static async getCategoriesByType(
     userId: string,
     type: "income" | "expense"
-  ): Promise<Category[]> {
+  ): Promise<CategoryWithCount[]> {
     const { data, error } = await supabase
       .from("categories")
-      .select("*")
+      .select(`
+        *,
+        transactions!category_id(count)
+      `)
       .eq("user_id", userId)
       .eq("type", type)
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    
+    return (data || []).map(category => ({
+      ...category,
+      count: category.transactions?.[0]?.count || 0
+    }));
   }
 
   static async getDefaultCategories(userId: string): Promise<Category[]> {
