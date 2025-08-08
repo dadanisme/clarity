@@ -44,9 +44,9 @@ export function TransactionPreviewTable({
 
   const getTypeIcon = (type: "income" | "expense") => {
     return type === "income" ? (
-      <TrendingUp className="w-4 h-4 text-green-600" />
+      <TrendingUp className="w-4 h-4 text-success" />
     ) : (
-      <TrendingDown className="w-4 h-4 text-red-600" />
+      <TrendingDown className="w-4 h-4 text-destructive" />
     );
   };
 
@@ -56,8 +56,8 @@ export function TransactionPreviewTable({
         variant={type === "income" ? "default" : "secondary"}
         className={
           type === "income" 
-            ? "bg-green-100 text-green-800 hover:bg-green-100" 
-            : "bg-red-100 text-red-800 hover:bg-red-100"
+            ? "bg-success/10 text-success hover:bg-success/10" 
+            : "bg-destructive/10 text-destructive hover:bg-destructive/10"
         }
       >
         {type === "income" ? "Income" : "Expense"}
@@ -112,8 +112,8 @@ export function TransactionPreviewTable({
                   <TableCell className="text-right font-mono">
                     <span className={
                       transaction.type === "income" 
-                        ? "text-green-600 font-medium" 
-                        : "text-red-600"
+                        ? "text-success font-medium" 
+                        : "text-destructive"
                     }>
                       {formatCurrency(transaction.amount)}
                     </span>

@@ -3,8 +3,9 @@
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Camera, Upload, XCircle } from "lucide-react";
+import { Camera, Upload, XCircle, Expand } from "lucide-react";
 import { toast } from "sonner";
+import { FullscreenImageViewer } from "@/components/ui/fullscreen-image-viewer";
 
 interface ReceiptImageUploadProps {
   imagePreview: string | null;
@@ -40,7 +41,6 @@ export function ReceiptImageUpload({
     }
   };
 
-
   const handleClearImage = () => {
     onImageClear();
     if (fileInputRef.current) {
@@ -71,6 +71,7 @@ export function ReceiptImageUpload({
               variant="ghost"
               size="sm"
               onClick={handleFileClear}
+              className="shrink-0"
             >
               <XCircle className="w-4 h-4" />
             </Button>
@@ -102,11 +103,24 @@ export function ReceiptImageUpload({
       />
 
       {imagePreview && (
-        <div className="relative">
-          <img
+        <div className="relative group">
+          <FullscreenImageViewer
             src={imagePreview}
             alt="Receipt preview"
-            className="w-full max-h-64 object-contain rounded-lg border"
+            trigger={
+              <div className="relative cursor-pointer">
+                <img
+                  src={imagePreview}
+                  alt="Receipt preview"
+                  className="w-full max-h-64 object-contain rounded-lg border transition-opacity group-hover:opacity-90"
+                />
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20 rounded-lg">
+                  <div className="bg-background/90 p-2 rounded-full">
+                    <Expand className="w-5 h-5 text-foreground" />
+                  </div>
+                </div>
+              </div>
+            }
           />
         </div>
       )}

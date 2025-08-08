@@ -160,7 +160,7 @@ export function ExcelExport({ trigger }: ExcelExportProps) {
                   htmlFor="excel"
                   className="flex items-center space-x-3 cursor-pointer flex-1"
                 >
-                  <FileSpreadsheet className="w-5 h-5 text-green-600" />
+                  <FileSpreadsheet className="w-5 h-5 text-success" />
                   <div>
                     <p className="font-medium">Excel (.xlsx)</p>
                     <p className="text-sm text-muted-foreground">
@@ -175,7 +175,7 @@ export function ExcelExport({ trigger }: ExcelExportProps) {
                   htmlFor="csv"
                   className="flex items-center space-x-3 cursor-pointer flex-1"
                 >
-                  <FileText className="w-5 h-5 text-blue-600" />
+                  <FileText className="w-5 h-5 text-primary" />
                   <div>
                     <p className="font-medium">CSV (.csv)</p>
                     <p className="text-sm text-muted-foreground">

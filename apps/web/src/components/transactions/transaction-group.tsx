@@ -82,7 +82,7 @@ export function TransactionGroup({
         <div className="text-xs">
           <div className="flex items-center gap-4">
             {income > 0 && (
-              <span className="text-green-600 dark:text-green-400">
+              <span className="text-success">
                 <span className="md:hidden">
                   +{formatCurrencyShort(income)}
                 </span>
@@ -92,7 +92,7 @@ export function TransactionGroup({
               </span>
             )}
             {expenses > 0 && (
-              <span className="text-red-600 dark:text-red-400">
+              <span className="text-destructive">
                 <span className="md:hidden">
                   -{formatCurrencyShort(expenses)}
                 </span>

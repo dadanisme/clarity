@@ -87,7 +87,7 @@ export function TransactionItem({
             <p
               className={`text-sm font-semibold ${
                 transaction.type === "income"
-                  ? "text-green-600"
+                  ? "text-success"
                   : "text-destructive"
               }`}
             >
