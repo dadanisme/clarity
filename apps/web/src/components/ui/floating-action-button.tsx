@@ -42,7 +42,7 @@ export function FloatingActionButton({
   if (!show) return null;
 
   return (
-    <div className="md:hidden fixed bottom-20 right-4 z-50">
+    <div className="md:hidden fixed bottom-24 right-4 z-50">
       {children ? (
         <div className={className}>{children}</div>
       ) : (

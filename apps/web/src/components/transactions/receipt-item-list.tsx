@@ -136,7 +136,7 @@ export function ReceiptItemList({
                           }}
                         />
                         <div className="text-xs text-muted-foreground flex items-center space-x-2">
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-muted-foreground">
                             {item.category}
                             {item.discount && (
                               <span className="text-success ml-2">
@@ -145,17 +145,10 @@ export function ReceiptItemList({
                             )}
                           </p>
 
-                          <div className="h-2 w-2 bg-accent rounded-full" />
+                          <div className="h-1 w-1 bg-foreground rounded-full" />
                           <div className="text-right mr-4">
                             <p className="font-medium">
                               {formatCurrency(item.amount)}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {item.discount && (
-                                <span className="text-success">
-                                  -{formatCurrency(item.discount)}
-                                </span>
-                              )}
                             </p>
                           </div>
                         </div>

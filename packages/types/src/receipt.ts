@@ -11,7 +11,6 @@ export interface ParsedReceipt {
   items: ReceiptItem[];
   timestamp: string | null;
   rounding: number;
-  total: number;
   currency: string;
   note: string;
 }

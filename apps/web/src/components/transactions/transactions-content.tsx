@@ -2,13 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import {
-  useTransactions,
-  useCreateTransaction,
-} from "@/hooks/use-transactions";
+import { useTransactions } from "@/hooks/use-transactions";
 import { useCategories } from "@/hooks/use-categories";
 import { useTransactionGroups } from "@/hooks/use-transaction-groups";
-import { createTransactionsFromReceipt } from "@clarity/shared/utils/category-mapper";
+import { useReceiptHandler } from "@/hooks/use-receipt-handler";
 import { TransactionForm } from "@/components/transactions/transaction-form";
 import { TransactionGroup } from "@/components/transactions/transaction-group";
 import { TimeframeControls } from "@/components/transactions/timeframe-controls";
@@ -28,49 +25,7 @@ export function TransactionsContent() {
     refetch,
   } = useTransactions(user?.id || "");
   const { data: categories = [] } = useCategories(user?.id || "");
-  const createTransaction = useCreateTransaction();
-
-  const handleReceiptParsed = async (
-    items: Array<{
-      amount: number;
-      discount: number | null;
-      tax: number;
-      serviceFee: number;
-      category: string;
-      description: string;
-    }>,
-    total: number,
-    timestamp: string | null
-  ) => {
-    if (!user?.id) return;
-
-    try {
-      // Create transactions from receipt items
-      const transactions = createTransactionsFromReceipt(
-        items,
-        categories,
-        user.id
-      );
-
-      // If we have a timestamp, use it for the date
-      if (timestamp) {
-        const date = new Date(timestamp);
-        if (!isNaN(date.getTime())) {
-          transactions.forEach((t) => (t.date = date));
-        }
-      }
-
-      // Create all transactions
-      for (const transaction of transactions) {
-        await createTransaction.mutateAsync({
-          userId: user.id,
-          data: transaction,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to create transactions from receipt:", error);
-    }
-  };
+  const { handleReceiptParsed } = useReceiptHandler();
   const { timeframe, currentPeriod, sortedGroups } =
     useTransactionGroups(transactions);
 
@@ -106,7 +61,9 @@ export function TransactionsContent() {
           {/* AI Receipt Scanner - Always visible */}
           <InlineFeatureGate feature={FeatureFlag.AI_RECEIPT_SCANNING}>
             <ReceiptParser
-              onReceiptParsed={handleReceiptParsed}
+              onReceiptParsed={(items, timestamp) =>
+                handleReceiptParsed(items, timestamp, categories)
+              }
               userCategories={categories}
             />
           </InlineFeatureGate>

@@ -23,7 +23,6 @@ import { parseTimestamp } from "@clarity/shared/utils/receipt-utils";
 interface ReceiptParserProps {
   onReceiptParsed: (
     items: ReceiptItem[],
-    total: number,
     timestamp: string | null
   ) => void;
   trigger?: React.ReactNode;
@@ -54,6 +53,7 @@ export function ReceiptParser({
     saveEdit,
     cancelEdit,
     updateEditingValues,
+    updateTimestamp,
   } = useReceiptParser({ userCategories });
 
   const handleUseParsedData = () => {
@@ -61,12 +61,11 @@ export function ReceiptParser({
 
     // Convert parsed items to transaction format
     const items = parsedReceipt.items;
-    const total = parsedReceipt.total;
 
     // Try to parse timestamp
     const timestamp = parseTimestamp(parsedReceipt.timestamp);
 
-    onReceiptParsed(items, total, timestamp);
+    onReceiptParsed(items, timestamp);
     setOpen(false);
     resetForm();
   };
@@ -143,7 +142,10 @@ export function ReceiptParser({
           {parsedReceipt && (
             <div className="space-y-4">
               {/* Summary Card */}
-              <ReceiptSummary parsedReceipt={parsedReceipt} />
+              <ReceiptSummary 
+                parsedReceipt={parsedReceipt} 
+                onTimestampChange={updateTimestamp}
+              />
 
               {/* Items List */}
               <ReceiptItemList

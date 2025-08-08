@@ -7,7 +7,7 @@ import {
   ParsedReceipt,
   UserCategory,
 } from "@clarity/types/receipt";
-import { calculateTotal } from "@clarity/shared/utils/receipt-utils";
+
 import { useImageUpload } from "./use-image-upload";
 
 interface UseReceiptParserProps {
@@ -34,14 +34,21 @@ export function useReceiptParser({ userCategories }: UseReceiptParserProps) {
   const { selectedImage, imagePreview, handleImageSelect, clearImage } =
     useImageUpload();
 
-  // Update total when items change
-  const updateTotal = (items: ReceiptItem[]) => {
+  // Update items
+  const updateItems = (items: ReceiptItem[]) => {
     if (!parsedReceipt) return;
-    const newTotal = calculateTotal(items);
     setParsedReceipt({
       ...parsedReceipt,
       items,
-      total: newTotal,
+    });
+  };
+
+  // Update timestamp
+  const updateTimestamp = (timestamp: string | null) => {
+    if (!parsedReceipt) return;
+    setParsedReceipt({
+      ...parsedReceipt,
+      timestamp,
     });
   };
 
@@ -49,7 +56,7 @@ export function useReceiptParser({ userCategories }: UseReceiptParserProps) {
   const removeItem = (index: number) => {
     if (!parsedReceipt) return;
     const newItems = parsedReceipt.items.filter((_, i) => i !== index);
-    updateTotal(newItems);
+    updateItems(newItems);
     toast.success("Item removed");
   };
 
@@ -86,7 +93,7 @@ export function useReceiptParser({ userCategories }: UseReceiptParserProps) {
       category: editingValues.category,
     };
 
-    updateTotal(newItems);
+    updateItems(newItems);
     setEditingItem(null);
     setEditingValues({ description: "", amount: "", category: "" });
     toast.success("Item updated successfully");
@@ -139,7 +146,14 @@ export function useReceiptParser({ userCategories }: UseReceiptParserProps) {
       }
 
       const data = await response.json();
-      setParsedReceipt(data);
+      const parsed: ParsedReceipt = {
+        items: data.items || [],
+        timestamp: data.timestamp || null,
+        rounding: data.rounding || 0,
+        currency: data.currency || "IDR",
+        note: data.note || "",
+      };
+      setParsedReceipt(parsed);
       toast.success("Receipt parsed successfully!");
     } catch (error) {
       console.error("Error parsing receipt:", error);
@@ -169,16 +183,12 @@ export function useReceiptParser({ userCategories }: UseReceiptParserProps) {
   };
 
   return {
-    // State
     isLoading,
-    selectedImage,
     imagePreview,
     userOrder,
     parsedReceipt,
     editingItem,
     editingValues,
-
-    // Actions
     setUserOrder,
     handleImageSelect,
     clearImage,
@@ -189,5 +199,6 @@ export function useReceiptParser({ userCategories }: UseReceiptParserProps) {
     saveEdit,
     cancelEdit,
     updateEditingValues,
+    updateTimestamp,
   };
 }

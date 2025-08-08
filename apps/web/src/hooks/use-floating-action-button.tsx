@@ -21,6 +21,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useCategories } from "@/hooks/use-categories";
 import { useTransactions } from "@/hooks/use-transactions";
 import { useFeatureAccess } from "@/hooks/use-features";
+import { useReceiptHandler } from "@/hooks/use-receipt-handler";
 import { PATHS } from "@clarity/shared/utils";
 
 export function useFloatingActionButton() {
@@ -29,6 +30,7 @@ export function useFloatingActionButton() {
   const { user } = useAuth();
   const { data: categories = [] } = useCategories(user?.id || "");
   const { refetch: refetchTransactions } = useTransactions(user?.id || "");
+  const { handleReceiptParsed } = useReceiptHandler();
 
   // Check feature access for all features
   const { data: hasExcelExport = false } = useFeatureAccess(
@@ -109,10 +111,9 @@ export function useFloatingActionButton() {
             </InlineFeatureGate>
             <InlineFeatureGate feature={FeatureFlag.AI_RECEIPT_SCANNING}>
               <ReceiptParser
-                onReceiptParsed={() => {
-                  // The receipt parser will handle the data internally
-                  // User can manually create transactions from the parsed data
-                }}
+                onReceiptParsed={(items, timestamp) =>
+                  handleReceiptParsed(items, timestamp, categories)
+                }
                 userCategories={categories}
                 trigger={
                   <div className="w-14 h-14 rounded-full shadow-lg bg-secondary hover:bg-secondary/80 flex items-center justify-center transition-all duration-200">
