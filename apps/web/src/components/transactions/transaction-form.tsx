@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -48,12 +48,16 @@ import { Plus, Edit, Trash2 } from "lucide-react";
 import { DatePicker } from "@/components/ui/date-picker";
 import type { Transaction } from "@clarity/types";
 import type { TransactionFormData } from "@clarity/shared/validations";
+import { useHotkeys } from "react-hotkeys-hook";
+import { addDays } from "date-fns";
 
 interface TransactionFormProps {
   transaction?: Transaction;
   mode: "create" | "edit";
   trigger?: React.ReactNode;
   defaultDate?: Date;
+  enableHotkey?: boolean;
+  lastTransactionDate?: Date;
 }
 
 export function TransactionForm({
@@ -61,6 +65,8 @@ export function TransactionForm({
   mode,
   trigger,
   defaultDate,
+  enableHotkey = false,
+  lastTransactionDate,
 }: TransactionFormProps) {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
@@ -94,6 +100,52 @@ export function TransactionForm({
           date: defaultDate || new Date(),
         },
   });
+
+  const createFromDate = useCallback(
+    (date: Date) => {
+      setOpen(true);
+      reset({
+        amount: 0,
+        type: "expense",
+        category_id: "",
+        description: "",
+        date,
+      });
+    },
+    [reset]
+  );
+
+  // ENTER = create transaction (today)
+  useHotkeys(
+    "enter",
+    (e) => {
+      e.preventDefault();
+      createFromDate(defaultDate || new Date());
+    },
+    { enabled: enableHotkey && !open }
+  );
+
+  // SPACE = create transaction for last date
+  useHotkeys(
+    "space",
+    (e) => {
+      e.preventDefault();
+      createFromDate(lastTransactionDate || defaultDate || new Date());
+    },
+    { enabled: enableHotkey && !open }
+  );
+
+  // CTRL = create transaction for last date + 1
+  useHotkeys(
+    "ctrl",
+    (e) => {
+      e.preventDefault();
+      const dateToUse = lastTransactionDate || new Date();
+      const nextDay = addDays(dateToUse, 1);
+      createFromDate(nextDay);
+    },
+    { enabled: enableHotkey && !open }
+  );
 
   const watchedType = watch("type");
   const filteredCategories = categories.filter(
@@ -134,24 +186,8 @@ export function TransactionForm({
     }
   };
 
-  const handleOpenChange = (newOpen: boolean) => {
-    setOpen(newOpen);
-    if (!newOpen) {
-      reset();
-    } else if (newOpen && transaction && mode === "edit") {
-      // Reset form with transaction data when opening in edit mode
-      reset({
-        amount: transaction.amount,
-        type: transaction.type as "income" | "expense",
-        category_id: transaction.category_id,
-        description: transaction.description || "",
-        date: new Date(transaction.date),
-      });
-    }
-  };
-
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
           <Button>

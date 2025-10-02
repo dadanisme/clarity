@@ -15,8 +15,8 @@
     "dev:supabase": "concurrently \"npm run supabase:start\" \"npm run dev\""
   },
   "dependencies": {
-    "@clarity/types": "*",
     "@clarity/shared": "*",
+    "@clarity/types": "*",
     "@ducanh2912/next-pwa": "^10.2.9",
     "@faker-js/faker": "^9.9.0",
     "@google/genai": "^1.9.0",
@@ -46,6 +46,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.60.0",
+    "react-hotkeys-hook": "^5.1.0",
     "react-swipeable-list": "^1.10.0",
     "recharts": "^3.1.0",
     "sonner": "^2.0.6",

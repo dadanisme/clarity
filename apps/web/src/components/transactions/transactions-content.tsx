@@ -16,6 +16,7 @@ import { FeatureFlag } from "@clarity/types";
 import { Plus } from "lucide-react";
 import { format } from "date-fns";
 import { TransactionSkeletonList } from "./transaction-skeleton-list";
+import { useMemo } from "react";
 
 export function TransactionsContent() {
   const { user } = useAuth();
@@ -28,6 +29,11 @@ export function TransactionsContent() {
   const { handleReceiptParsed } = useReceiptHandler();
   const { timeframe, currentPeriod, sortedGroups } =
     useTransactionGroups(transactions);
+
+  // Get the most recent transaction date (transactions are already sorted descending)
+  const lastTransactionDate = useMemo(() => {
+    return transactions.length > 0 ? new Date(transactions[0].date) : undefined;
+  }, [transactions]);
 
   const getEmptyStateMessage = () => {
     if (transactions.length === 0) {
@@ -71,6 +77,8 @@ export function TransactionsContent() {
           {/* Add Transaction - Primary action */}
           <TransactionForm
             mode="create"
+            enableHotkey
+            lastTransactionDate={lastTransactionDate}
             trigger={
               <Button>
                 <Plus className="w-4 h-4 mr-2" />
