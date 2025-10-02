@@ -1,10 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { CurrencyInput } from "@/components/ui/currency-input";
@@ -15,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import {
   Dialog,
   DialogContent,
@@ -35,21 +30,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useAuth } from "@/hooks/use-auth";
-import { useCategories } from "@/hooks/use-categories";
-import {
-  useCreateTransaction,
-  useUpdateTransaction,
-  useDeleteTransaction,
-} from "@/hooks/use-transactions";
-import { transactionSchema } from "@clarity/shared/validations";
 import { Plus, Edit, Trash2 } from "lucide-react";
-
 import { DatePicker } from "@/components/ui/date-picker";
+import { useTransactionForm } from "@/hooks/use-transaction-form";
 import type { Transaction } from "@clarity/types";
-import type { TransactionFormData } from "@clarity/shared/validations";
-import { useHotkeys } from "react-hotkeys-hook";
-import { addDays } from "date-fns";
 
 interface TransactionFormProps {
   transaction?: Transaction;
@@ -60,6 +44,10 @@ interface TransactionFormProps {
   lastTransactionDate?: Date;
 }
 
+/**
+ * Transaction form component (View layer)
+ * Renders UI and delegates business logic to useTransactionForm hook
+ */
 export function TransactionForm({
   transaction,
   mode,
@@ -68,12 +56,21 @@ export function TransactionForm({
   enableHotkey = false,
   lastTransactionDate,
 }: TransactionFormProps) {
-  const [open, setOpen] = useState(false);
-  const { user } = useAuth();
-  const { data: categories = [] } = useCategories(user?.id || "");
-  const createTransaction = useCreateTransaction();
-  const updateTransaction = useUpdateTransaction();
-  const deleteTransaction = useDeleteTransaction();
+  const {
+    open,
+    setOpen,
+    form,
+    watchedType,
+    filteredCategories,
+    onSubmit,
+    handleDelete,
+  } = useTransactionForm({
+    transaction,
+    mode,
+    defaultDate,
+    enableHotkey,
+    lastTransactionDate,
+  });
 
   const {
     register,
@@ -81,110 +78,7 @@ export function TransactionForm({
     setValue,
     watch,
     formState: { errors, isSubmitting },
-    reset,
-  } = useForm<TransactionFormData>({
-    resolver: zodResolver(transactionSchema),
-    defaultValues: transaction
-      ? {
-          amount: transaction.amount,
-          type: transaction.type as "income" | "expense",
-          category_id: transaction.category_id,
-          description: transaction.description || "",
-          date: new Date(transaction.date),
-        }
-      : {
-          amount: 0,
-          type: "expense",
-          category_id: "",
-          description: "",
-          date: defaultDate || new Date(),
-        },
-  });
-
-  const createFromDate = useCallback(
-    (date: Date) => {
-      setOpen(true);
-      reset({
-        amount: 0,
-        type: "expense",
-        category_id: "",
-        description: "",
-        date,
-      });
-    },
-    [reset]
-  );
-
-  // ENTER = create transaction (today)
-  useHotkeys(
-    "enter",
-    (e) => {
-      e.preventDefault();
-      createFromDate(defaultDate || new Date());
-    },
-    { enabled: enableHotkey && !open }
-  );
-
-  // SPACE = create transaction for last date
-  useHotkeys(
-    "space",
-    (e) => {
-      e.preventDefault();
-      createFromDate(lastTransactionDate || defaultDate || new Date());
-    },
-    { enabled: enableHotkey && !open }
-  );
-
-  // CTRL = create transaction for last date + 1
-  useHotkeys(
-    "ctrl",
-    (e) => {
-      e.preventDefault();
-      const dateToUse = lastTransactionDate || new Date();
-      const nextDay = addDays(dateToUse, 1);
-      createFromDate(nextDay);
-    },
-    { enabled: enableHotkey && !open }
-  );
-
-  const watchedType = watch("type");
-  const filteredCategories = categories.filter(
-    (cat) => cat.type === watchedType
-  );
-
-  const onSubmit = async (data: TransactionFormData) => {
-    try {
-      if (mode === "create" && user?.id) {
-        await createTransaction.mutateAsync({
-          userId: user.id,
-          data,
-        });
-      } else if (mode === "edit" && user?.id && transaction) {
-        await updateTransaction.mutateAsync({
-          transactionId: transaction.id,
-          data,
-        });
-      }
-
-      setOpen(false);
-      reset();
-    } catch (error) {
-      console.error("Transaction save failed:", error);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (user?.id && transaction) {
-      try {
-        await deleteTransaction.mutateAsync({
-          transactionId: transaction.id,
-        });
-        setOpen(false);
-      } catch (error) {
-        console.error("Delete failed:", error);
-      }
-    }
-  };
+  } = form;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
