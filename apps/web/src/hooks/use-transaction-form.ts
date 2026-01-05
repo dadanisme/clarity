@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useId } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -11,6 +11,7 @@ import {
   useDeleteTransaction,
 } from "@/hooks/use-transactions";
 import { transactionSchema } from "@clarity/shared/validations";
+import { useTransactionDialogStore } from "@clarity/shared/stores";
 import type { Transaction } from "@clarity/types";
 import type { TransactionFormData } from "@clarity/shared/validations";
 
@@ -33,7 +34,26 @@ export function useTransactionForm({
   enableHotkey = false,
   lastTransactionDate,
 }: UseTransactionFormProps) {
-  const [open, setOpen] = useState(false);
+  const dialogId = useId();
+  const {
+    isOpen: isAnyDialogOpen,
+    dialogId: activeDialogId,
+    openDialog,
+    closeDialog,
+  } = useTransactionDialogStore();
+
+  const open = isAnyDialogOpen && activeDialogId === dialogId;
+  const setOpen = useCallback(
+    (value: boolean) => {
+      if (value) {
+        openDialog(dialogId);
+      } else {
+        closeDialog();
+      }
+    },
+    [dialogId, openDialog, closeDialog]
+  );
+
   const { user } = useAuth();
   const { data: categories = [] } = useCategories(user?.id || "");
   const createTransaction = useCreateTransaction();
@@ -85,7 +105,7 @@ export function useTransactionForm({
       e.preventDefault();
       createFromDate(defaultDate || new Date());
     },
-    { enabled: enableHotkey && !open }
+    { enabled: enableHotkey && !isAnyDialogOpen }
   );
 
   // SPACE = create transaction for last date
@@ -95,7 +115,7 @@ export function useTransactionForm({
       e.preventDefault();
       createFromDate(lastTransactionDate || defaultDate || new Date());
     },
-    { enabled: enableHotkey && !open }
+    { enabled: enableHotkey && !isAnyDialogOpen }
   );
 
   // CTRL = create transaction for last date + 1
@@ -107,7 +127,7 @@ export function useTransactionForm({
       const nextDay = addDays(dateToUse, 1);
       createFromDate(nextDay);
     },
-    { enabled: enableHotkey && !open }
+    { enabled: enableHotkey && !isAnyDialogOpen }
   );
 
   const onSubmit = async (data: TransactionFormData) => {
