@@ -27,34 +27,21 @@ export function OverviewTimeframeControls() {
   } = useTimeframeStore();
 
   const getSelectOptions = () => {
-    const currentYear = new Date().getFullYear();
+    const periodYear = currentPeriod.getFullYear();
 
     switch (timeframe) {
       case "daily":
-        // Show this year and previous 2 years
-        return [currentYear, currentYear - 1, currentYear - 2].flatMap((year) =>
-          Array.from({ length: 12 }, (_, monthIndex) => ({
-            value: `${year}-${String(monthIndex + 1).padStart(2, "0")}`,
-            label: format(new Date(year, monthIndex), "MMMM yyyy"),
-          }))
-        );
+        return Array.from({ length: 12 }, (_, monthIndex) => ({
+          value: `${periodYear}-${String(monthIndex + 1).padStart(2, "0")}`,
+          label: format(new Date(periodYear, monthIndex), "MMMM yyyy"),
+        }));
       case "weekly":
-        // Show this year and previous 2 years
-        return [currentYear, currentYear - 1, currentYear - 2].flatMap((year) =>
-          Array.from({ length: 4 }, (_, quarter) => ({
-            value: `${year}-Q${quarter + 1}`,
-            label: `Q${quarter + 1} ${year}`,
-          }))
-        );
+        return Array.from({ length: 4 }, (_, quarter) => ({
+          value: `${periodYear}-Q${quarter + 1}`,
+          label: `Q${quarter + 1} ${periodYear}`,
+        }));
       case "monthly":
-        // Show last 5 years
-        return Array.from({ length: 5 }, (_, i) => {
-          const year = currentYear - 4 + i;
-          return {
-            value: year.toString(),
-            label: year.toString(),
-          };
-        });
+        return [{ value: periodYear.toString(), label: periodYear.toString() }];
       default:
         return [];
     }
