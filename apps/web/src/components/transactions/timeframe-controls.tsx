@@ -30,11 +30,13 @@ export function TimeframeControls() {
 
     switch (timeframe) {
       case "daily":
-        // Only show this year
-        return Array.from({ length: 12 }, (_, monthIndex) => ({
-          value: `${currentYear}-${String(monthIndex + 1).padStart(2, "0")}`,
-          label: format(new Date(currentYear, monthIndex), "MMMM yyyy"),
-        }));
+        // Show this year and previous 2 years
+        return [currentYear, currentYear - 1, currentYear - 2].flatMap((year) =>
+          Array.from({ length: 12 }, (_, monthIndex) => ({
+            value: `${year}-${String(monthIndex + 1).padStart(2, "0")}`,
+            label: format(new Date(year, monthIndex), "MMMM yyyy"),
+          }))
+        );
       case "weekly":
         // Show this year and previous 2 years
         return [currentYear, currentYear - 1, currentYear - 2].flatMap((year) =>
