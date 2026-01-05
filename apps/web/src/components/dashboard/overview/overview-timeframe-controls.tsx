@@ -74,50 +74,6 @@ export function OverviewTimeframeControls() {
     }
   };
 
-  const isPreviousDisabled = () => {
-    const currentYear = new Date().getFullYear();
-
-    switch (timeframe) {
-      case "daily":
-        // Disable if current period is January of current year
-        return (
-          currentPeriod.getFullYear() === currentYear &&
-          currentPeriod.getMonth() === 0
-        );
-      case "weekly":
-        // Disable if current period is Q1 of 2 years ago
-        const quarter = Math.floor(currentPeriod.getMonth() / 3) + 1;
-        return currentPeriod.getFullYear() === currentYear - 2 && quarter === 1;
-      case "monthly":
-        // Disable if current period is 5 years ago
-        return currentPeriod.getFullYear() === currentYear - 4;
-      default:
-        return false;
-    }
-  };
-
-  const isNextDisabled = () => {
-    const currentYear = new Date().getFullYear();
-
-    switch (timeframe) {
-      case "daily":
-        // Disable if current period is December of current year
-        return (
-          currentPeriod.getFullYear() === currentYear &&
-          currentPeriod.getMonth() === 11
-        );
-      case "weekly":
-        // Disable if current period is Q4 of current year
-        const quarter = Math.floor(currentPeriod.getMonth() / 3) + 1;
-        return currentPeriod.getFullYear() === currentYear && quarter === 4;
-      case "monthly":
-        // Disable if current period is current year
-        return currentPeriod.getFullYear() === currentYear;
-      default:
-        return false;
-    }
-  };
-
   const handleTimeframeChange = (value: string) => {
     const newTimeframe = value as TimeframeType;
     setTimeframe(newTimeframe);
@@ -156,7 +112,6 @@ export function OverviewTimeframeControls() {
           variant="outline"
           size="sm"
           onClick={goToPrevious}
-          disabled={isPreviousDisabled()}
           className="flex items-center space-x-1"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -180,7 +135,6 @@ export function OverviewTimeframeControls() {
           variant="outline"
           size="sm"
           onClick={goToNext}
-          disabled={isNextDisabled()}
           className="flex items-center space-x-1"
         >
           <span className="hidden sm:inline">Next</span>
