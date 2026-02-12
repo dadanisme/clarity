@@ -32,7 +32,7 @@ Thumbs.db
 *.swp
 
 # Build info
-.tsbuildinfo
+*.tsbuildinfo
 
 # Turbo
 .turbo/
