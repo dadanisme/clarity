@@ -19,8 +19,8 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
             outerRadius={100}
             fill="#8884d8"
             dataKey="amount"
-            label={({ name, percentage }) =>
-              `${name} ${percentage.toFixed(1)}%`
+            label={({ name, percent }) =>
+              `${name} ${((percent ?? 0) * 100).toFixed(1)}%`
             }
           >
             {data.map((entry, index) => (

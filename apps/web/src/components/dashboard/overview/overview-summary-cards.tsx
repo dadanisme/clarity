@@ -139,44 +139,6 @@ export function OverviewSummaryCards({
     }
   };
 
-  // Helper component to render comparison
-  const ComparisonIndicator = ({
-    comparison,
-    type,
-  }: {
-    comparison: PeriodComparison;
-    type: "income" | "expense" | "neutral";
-  }) => {
-    if (!comparison.hasData) return null;
-
-    const isPositive = comparison.percentageChange > 0;
-    const isNegative = comparison.percentageChange < 0;
-
-    // Determine if the change is good or bad based on type
-    let isGood = false;
-    if (type === "income") {
-      isGood = isPositive; // Income increase = good
-    } else if (type === "expense") {
-      isGood = isNegative; // Expense decrease = good
-    }
-
-    return (
-      <div
-        className={`text-xs flex items-center gap-1 ${
-          isGood
-            ? "text-primary"
-            : !isGood && (isPositive || isNegative)
-            ? "text-destructive"
-            : "text-muted-foreground"
-        }`}
-      >
-        {isPositive && <TrendingUp className="w-3 h-3" />}
-        {isNegative && <TrendingDown className="w-3 h-3" />}
-        {Math.abs(comparison.percentageChange).toFixed(1)}%
-      </div>
-    );
-  };
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Card className="rounded-2xl">
@@ -264,6 +226,42 @@ export function OverviewSummaryCards({
           </div>
         </CardContent>
       </Card>
+    </div>
+  );
+}
+
+function ComparisonIndicator({
+  comparison,
+  type,
+}: {
+  comparison: PeriodComparison;
+  type: "income" | "expense" | "neutral";
+}) {
+  if (!comparison.hasData) return null;
+
+  const isPositive = comparison.percentageChange > 0;
+  const isNegative = comparison.percentageChange < 0;
+
+  let isGood = false;
+  if (type === "income") {
+    isGood = isPositive;
+  } else if (type === "expense") {
+    isGood = isNegative;
+  }
+
+  return (
+    <div
+      className={`text-xs flex items-center gap-1 ${
+        isGood
+          ? "text-primary"
+          : !isGood && (isPositive || isNegative)
+          ? "text-destructive"
+          : "text-muted-foreground"
+      }`}
+    >
+      {isPositive && <TrendingUp className="w-3 h-3" />}
+      {isNegative && <TrendingDown className="w-3 h-3" />}
+      {Math.abs(comparison.percentageChange).toFixed(1)}%
     </div>
   );
 }

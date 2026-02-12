@@ -95,7 +95,7 @@ export function useTransactionForm({
         date,
       });
     },
-    [form]
+    [form, setOpen]
   );
 
   // ENTER = create transaction (today)
